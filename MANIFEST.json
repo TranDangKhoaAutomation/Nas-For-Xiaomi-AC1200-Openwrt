@@ -1,8 +1,8 @@
 [
   {
     "file": ".gitattributes",
-    "bytes": 387,
-    "sha256": "62a32793c85eb74e0f50793367b8897002e4cc3e992cb731379c83be00a67741"
+    "bytes": 367,
+    "sha256": "cfffc79e1ab50b821bbd706f821ecd9c4a7fdc641f2515bd8cf3b4568cd569ec"
   },
   {
     "file": ".gitignore",
@@ -10,9 +10,29 @@
     "sha256": "368cac4da564f557c42755ce7dee6d5082dbbfbaf50f20470227115a39695445"
   },
   {
+    "file": "CHANGELOG.md",
+    "bytes": 731,
+    "sha256": "b251abf6b1a4761b718c5199127d999369ea2ba6f96c0dcee0ac1e79ac7c039e"
+  },
+  {
+    "file": "NOTICE.md",
+    "bytes": 346,
+    "sha256": "e099929d75d7ba42b633006a84ff36f03c4a0d3bf57d4884b7b73659df3d5808"
+  },
+  {
+    "file": "README.md",
+    "bytes": 10398,
+    "sha256": "5ef7b9ef440f5833b9d6ddc5e50cd9b3a5ae80ca77e77d57373448b8d7869e2e"
+  },
+  {
+    "file": "SECURITY.md",
+    "bytes": 812,
+    "sha256": "262ed63fc831f0526cb544b0cef255e7e39f91d5cc3635107a6c1fb7cfaf16bb"
+  },
+  {
     "file": "apps/android/.gitignore",
-    "bytes": 794,
-    "sha256": "0581d23086f7283dc97d2d5bde4f60724f8115f67baa76949596790ab9800dd7"
+    "bytes": 746,
+    "sha256": "441eaa1de5b3db9fae056e7503567e9f8dd94173e1389c60f76956abf729015a"
   },
   {
     "file": "apps/android/.metadata",
@@ -20,49 +40,54 @@
     "sha256": "58722ea30dee29265312c762bace9500d02150420efb3e1c03b668b05d6275c7"
   },
   {
+    "file": "apps/android/README-NAS.md",
+    "bytes": 444,
+    "sha256": "24adb5fd76797cecb36be956c63ad62c3f895b6fa698e7eb3039a536844a6afd"
+  },
+  {
+    "file": "apps/android/README.md",
+    "bytes": 444,
+    "sha256": "24adb5fd76797cecb36be956c63ad62c3f895b6fa698e7eb3039a536844a6afd"
+  },
+  {
     "file": "apps/android/analysis_options.yaml",
-    "bytes": 1525,
-    "sha256": "fc302dc92270b006a98a89de02cf931fd347ceccd3b32ea5400a6cec72aa6171"
+    "bytes": 1491,
+    "sha256": "9932af44285f42f569a54f5e35791a927b6a387c513107ccdc26fb0e3c29e0a5"
   },
   {
     "file": "apps/android/android/.gitignore",
-    "bytes": 267,
-    "sha256": "c9af75dbc2c8aa867476a09426c80b178c4aeed8b9393ae48503eedfa3273d71"
+    "bytes": 253,
+    "sha256": "b027c9de1011765c015e5819bf857c0d75bfcd0886fb01721c091159012e50f1"
   },
   {
     "file": "apps/android/android/app/build.gradle.kts",
-    "bytes": 1829,
-    "sha256": "3c4f7d4678f784fc1a0a3fe7bb391b268e4e85b5168ee0887f098f3796e28330"
+    "bytes": 1780,
+    "sha256": "43d9d070038dc42e79b4350c771a148bc1989ce66040a19a2ca1ec00789f580d"
   },
   {
     "file": "apps/android/android/app/src/debug/AndroidManifest.xml",
-    "bytes": 385,
-    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
   },
   {
     "file": "apps/android/android/app/src/main/AndroidManifest.xml",
-    "bytes": 2311,
-    "sha256": "53063a4e0e68c9e974a480b2b0054c5c259d35dfb1c05391a9e76a2c681d68fc"
-  },
-  {
-    "file": "apps/android/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
-    "bytes": 516,
-    "sha256": "462f4a19778f3fe486674c6ab64b62f555095bddb6dfb6690a1d63ad92ef0f54"
+    "bytes": 2265,
+    "sha256": "2e1af9c4c092515e11512204fc5bc0a6f9c7f15a27a3aa2f701e7409bd2a535c"
   },
   {
     "file": "apps/android/android/app/src/main/kotlin/com/trandangkhoa/nas_client/MainActivity.kt",
-    "bytes": 134,
-    "sha256": "4210247fe15fe9a2b11d9ccc2f63c1913d207d3f9caf44aefec8744b0ce7ad72"
-  },
-  {
-    "file": "apps/android/android/app/src/main/res/drawable/launch_background.xml",
-    "bytes": 446,
-    "sha256": "2df60e2cfbee873ce2858088cf003e6b93498f2f568476da437610467ea1a9d7"
+    "bytes": 129,
+    "sha256": "b135e1e635d8443750306b7e8fbc8311d3e47c5b24b1219ab6dfca1c1a888838"
   },
   {
     "file": "apps/android/android/app/src/main/res/drawable-v21/launch_background.xml",
-    "bytes": 450,
-    "sha256": "dca312ec77de83e43ef70a825c299b51451247286c29167d62f19165750b8793"
+    "bytes": 438,
+    "sha256": "7ca6d5cec2169c5a98661a119db23a6f3399c8fef2256ff04f3a642831282478"
+  },
+  {
+    "file": "apps/android/android/app/src/main/res/drawable/launch_background.xml",
+    "bytes": 434,
+    "sha256": "94433756fe10005ddd6fc55cc5c0b1e9f3c10b66a08ceac795ece6713d34e28a"
   },
   {
     "file": "apps/android/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -90,64 +115,49 @@
     "sha256": "3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180"
   },
   {
-    "file": "apps/android/android/app/src/main/res/values/styles.xml",
-    "bytes": 1014,
-    "sha256": "cca15a99b59380a548bf6a890f7ca5380ee509b1f9bbb2f5f9ec3589fa25c2f7"
+    "file": "apps/android/android/app/src/main/res/values-night/styles.xml",
+    "bytes": 995,
+    "sha256": "8c5bad5152f217e837519f9c15211d19f39bd45f5f67faf6dd81cb4b299e518f"
   },
   {
-    "file": "apps/android/android/app/src/main/res/values-night/styles.xml",
-    "bytes": 1013,
-    "sha256": "ea763597dc1a84c8034251caee98d7753e0fbf57340ffc94677427de4b537516"
+    "file": "apps/android/android/app/src/main/res/values/styles.xml",
+    "bytes": 996,
+    "sha256": "937d7c82f539c72eb94fd3a3773f29b3d3fef1997213c92cb632298cedf4bda9"
   },
   {
     "file": "apps/android/android/app/src/profile/AndroidManifest.xml",
-    "bytes": 385,
-    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
   },
   {
     "file": "apps/android/android/build.gradle.kts",
-    "bytes": 561,
-    "sha256": "218f400e3fff31c9c986a2535dfb974560e1b4d33cc27b7c1fee96a2b7e44454"
-  },
-  {
-    "file": "apps/android/android/gradle/wrapper/gradle-wrapper.jar",
-    "bytes": 53636,
-    "sha256": "16caeaf66d57a0d1d2087fef6a97efa62de8da69afa5b908f40db35afc4342da"
-  },
-  {
-    "file": "apps/android/android/gradle/wrapper/gradle-wrapper.properties",
-    "bytes": 207,
-    "sha256": "594a00250ef7a36609a01f3263bf5ed63963afaf9ca9f82f2cd1de0f6f056383"
+    "bytes": 537,
+    "sha256": "6a26dba2cb8dfba1e74f540b0d17a89d96c1301d3c3bfda14348bed257fddcba"
   },
   {
     "file": "apps/android/android/gradle.properties",
-    "bytes": 427,
-    "sha256": "047a47ec0f22b72e0d5ff986abc342bd960c7644193318b56e1510ad1ad38100"
+    "bytes": 420,
+    "sha256": "131066842bca9e5a83c9b7fdf8a61ba74221149ce45f3c18556737e850ce1802"
   },
   {
-    "file": "apps/android/android/gradlew",
-    "bytes": 4971,
-    "sha256": "ec56c02543666d92d9ac5ae7fcc48f88ce4de0deb8b7f9b39928ca46f68c1b2b"
-  },
-  {
-    "file": "apps/android/android/gradlew.bat",
-    "bytes": 2404,
-    "sha256": "c13c6e91b9a517783976de213d46398c661ea9e17651376d7301e839eaedcc62"
+    "file": "apps/android/android/gradle/wrapper/gradle-wrapper.properties",
+    "bytes": 202,
+    "sha256": "b690d26223576fe4e63889fad9a00df81945cb870b9476cc5a563152a1a88a74"
   },
   {
     "file": "apps/android/android/settings.gradle.kts",
-    "bytes": 796,
-    "sha256": "092ba880c8d4a07591aafc082f45deedc9afcf60c113a4bb3d13cbe1a1fce9de"
+    "bytes": 770,
+    "sha256": "016759283e88ade6eba92910583feeef88b962839b957aa414296afd2952d122"
   },
   {
     "file": "apps/android/lib/main.dart",
-    "bytes": 15817,
-    "sha256": "c32f2c2885054f1203f4929246cff2e9f9dea7052f9b152dc74c97fe3dd4aa9d"
+    "bytes": 15295,
+    "sha256": "b8caf40aaaee4c2df6b30b71a80d187d3127852d60a6a89fafc4666ffd3c77bc"
   },
   {
     "file": "apps/android/lib/smb_service.dart",
-    "bytes": 2931,
-    "sha256": "06ba474aa2db80619955f18121e66454cb3fa7ec8a17a1481e643227b6ef037e"
+    "bytes": 2825,
+    "sha256": "3d7d8da3636db8a6dea8a666ff8ae0cfef93b619ecf5b40ab3fa6622f728ef2c"
   },
   {
     "file": "apps/android/pubspec.lock",
@@ -156,58 +166,38 @@
   },
   {
     "file": "apps/android/pubspec.yaml",
-    "bytes": 4032,
-    "sha256": "4ca5015a8ba0609c873fa3d714130d4eb960372804da4ba4f6e67646e81b8005"
-  },
-  {
-    "file": "apps/android/README-NAS.md",
-    "bytes": 461,
-    "sha256": "adbf75284c4a139f653fbd0bed0e89702c78d442be476c5874c25694704f4541"
-  },
-  {
-    "file": "apps/android/README.md",
-    "bytes": 461,
-    "sha256": "adbf75284c4a139f653fbd0bed0e89702c78d442be476c5874c25694704f4541"
+    "bytes": 3939,
+    "sha256": "333df7f324ceeae107ddcc9d76c224d6eb0cdf1190078cf6bf71575ebe97bde6"
   },
   {
     "file": "apps/android/test/widget_test.dart",
-    "bytes": 505,
-    "sha256": "3f34ef4283a0fd0551459b0597fc2fe2e54b80f7d1fd7a4dd967e549f64151f7"
+    "bytes": 487,
+    "sha256": "1c14c61dc2e9b8d59e401992f3a65f567a88e8c00ba117d549091cb5f0ccdac7"
   },
   {
     "file": "apps/windows/README.md",
-    "bytes": 687,
-    "sha256": "980515d1efbd36cc9f50d70ffbc8fc6b6e026160f2ddcdf6af5ed192aeb6b64f"
-  },
-  {
-    "file": "apps/windows/src/__pycache__/khoa_nas_pc.cpython-312.pyc",
-    "bytes": 46343,
-    "sha256": "4ccf0609cf7201b25c4622ae4435b6274d2a0b0f2d3bafe96c5cd449cfcd7f5e"
+    "bytes": 664,
+    "sha256": "59eb5db3a06bf3ddcd98f03e00e405b250353e5d245599a36b647fef68385f6b"
   },
   {
     "file": "apps/windows/src/Khoa-NAS-PC.spec",
-    "bytes": 744,
-    "sha256": "3ed91c82fe80f3a1d1cb98aeba7c274db030ca1eeb6e6a783573b792abfbf3d6"
+    "bytes": 706,
+    "sha256": "3c717424481025c8014b0afac13b9fe92aa73fd2b48015d9b04c00a77a507b05"
   },
   {
     "file": "apps/windows/src/khoa_nas_pc.py",
-    "bytes": 29102,
-    "sha256": "27023f17dae64a917e3c8f23ef01f04d247c1329c6bcf19725ba014473121009"
+    "bytes": 28296,
+    "sha256": "75dbf5e97e96bc7ed4d2a9240b06747b8d2ba46855a06c96c9f7b4965a2a607a"
+  },
+  {
+    "file": "backups/README.md",
+    "bytes": 395,
+    "sha256": "7e803a9fa62b59052115c0f90bbc9c3bc08489ffd25bef96d162f17f6372fff4"
   },
   {
     "file": "backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip",
     "bytes": 23687531,
     "sha256": "88cf0fddbb7d6808aaf226b7e53a3a9e34c38745a9509fea6fd7a3f37bff60f1"
-  },
-  {
-    "file": "backups/README.md",
-    "bytes": 404,
-    "sha256": "9a29182d861f90cabddbecb35a354f8b021b02dc88b515382e836ee718e352fa"
-  },
-  {
-    "file": "CHANGELOG.md",
-    "bytes": 753,
-    "sha256": "6d7966121e7ae9e0729ceef4c64b896d2bb9ed35e34c20aa38937af7c94be3da"
   },
   {
     "file": "config/snapshots/firewall.final",
@@ -231,18 +221,18 @@
   },
   {
     "file": "docs/APPS.md",
-    "bytes": 997,
-    "sha256": "6137fef052b146112621245a6c2aaa820f03c498841fbf2e7585dff00a82aece"
+    "bytes": 945,
+    "sha256": "87a729b5ae53a7e328d5b3c6a3f779ba559ab546cd007bbea47d46e8665c82ee"
   },
   {
     "file": "docs/BACKUP-RESTORE.md",
-    "bytes": 2206,
-    "sha256": "39c71d1e05c4cbc0c7a5e68a33138fadf770dca9194d275cd529995f62cc5eda"
+    "bytes": 2121,
+    "sha256": "72d39895c5ea555737d85319546738103ac081271ed14885333a51309196d9c6"
   },
   {
     "file": "docs/CLIENT-APPS.md",
-    "bytes": 991,
-    "sha256": "c15b4abbf80e42d90e5e8ba713a408cc05550acc2a9277fb67d480017e70a2d7"
+    "bytes": 934,
+    "sha256": "c8e4d80ac5d89e109ee0c6d7b66279bbf4bd0920293bd20191c0b896149e9b84"
   },
   {
     "file": "docs/CURRENT-DEPLOYMENT.md",
@@ -251,8 +241,48 @@
   },
   {
     "file": "docs/CURRENT-STATE.md",
-    "bytes": 1831,
-    "sha256": "bf38cba716d0fdcc3959bf7a94b5cd551ce1890d0fa6187f5558073f7b778a0f"
+    "bytes": 1762,
+    "sha256": "e933e83e54d5ec8ce7e9c95153ea0a7c6dd9f3b0ed40ad38feef0c84e4c26c9d"
+  },
+  {
+    "file": "docs/OPERATIONS.md",
+    "bytes": 764,
+    "sha256": "03cb074619013cca87815b98e9c33d32ed831dc25172f45b23c9c45c4f8fe005"
+  },
+  {
+    "file": "docs/QUICK-START.md",
+    "bytes": 1950,
+    "sha256": "137160468517af114748942c862244d4cbd0d60fb804e19286a3b25588681b3f"
+  },
+  {
+    "file": "docs/RECOVERY.md",
+    "bytes": 687,
+    "sha256": "f315f066bc63f0f16548422c698cd945a3a56b6cf874e4ab40410dd7cc5ca0c8"
+  },
+  {
+    "file": "docs/ROUTER-CONFIG.md",
+    "bytes": 1114,
+    "sha256": "a19ce4933f6f8eb789aad315706dc303bc6ace36fed8dc166d350aa6c106545b"
+  },
+  {
+    "file": "docs/SECURITY.md",
+    "bytes": 1101,
+    "sha256": "5ab87dc769d2d10942410ed0d151cd3e592fb2972eabd6b29a82f3214e57b5ca"
+  },
+  {
+    "file": "docs/SMB-PASSWORD.md",
+    "bytes": 656,
+    "sha256": "ec84731a3a1fa1291d436f23256dfe47241f6b308bcb096407c2cef8ce3bebe2"
+  },
+  {
+    "file": "docs/STORAGE-VERACRYPT.md",
+    "bytes": 1279,
+    "sha256": "8bca1e39ce859c0a529ea4c83e43a1e2e9ec705f284b65ff7bbf139bdd32a5d4"
+  },
+  {
+    "file": "docs/TROUBLESHOOTING.md",
+    "bytes": 2187,
+    "sha256": "da9eb41bc23f1d877831fd2df4a8f39025d21bb4b132b9db6d9679ee4ef511c1"
   },
   {
     "file": "docs/history/01_CHKDSK_F_REPAIR.txt",
@@ -261,63 +291,13 @@
   },
   {
     "file": "docs/history/Bao-Cao-Hoan-Tat-Router-NAS.md",
-    "bytes": 23062,
-    "sha256": "4dfe018de76c51627d2558289ea7f5b78dd95ff2e0799362fd317c761cde9273"
-  },
-  {
-    "file": "docs/OPERATIONS.md",
-    "bytes": 817,
-    "sha256": "ad2ec386f677e7cd58c8bb660d2c9a8479f50087810dac3fe71d762fe2c8e9af"
-  },
-  {
-    "file": "docs/QUICK-START.md",
-    "bytes": 2034,
-    "sha256": "0d4c488ddcf96a715aa5102d52150ca859bf9ee417f3858ca4e52898000e6355"
-  },
-  {
-    "file": "docs/RECOVERY.md",
-    "bytes": 712,
-    "sha256": "9af660f5932a2d962eb92655d831c0028b27b8283adb3b164a9b53d25f9a9904"
-  },
-  {
-    "file": "docs/ROUTER-CONFIG.md",
-    "bytes": 1141,
-    "sha256": "771fa03964cd482370adf74646806f5c8f16ba4a4bdd7a13733b11b866f4ab57"
-  },
-  {
-    "file": "docs/SECURITY.md",
-    "bytes": 1139,
-    "sha256": "32add52ba01afc5602a58901f2701cbf78cac38bdba173787df8f85934e19d5c"
-  },
-  {
-    "file": "docs/SMB-PASSWORD.md",
-    "bytes": 688,
-    "sha256": "07fc8f61c00c5300a6f8fd560fddb66f6379d78dd0e700421a18fc276e8f8581"
-  },
-  {
-    "file": "docs/STORAGE-VERACRYPT.md",
-    "bytes": 1341,
-    "sha256": "3b4f528f186526e4f694ee08099e39d58b88fddab5276e2314589d352eb4d3f6"
-  },
-  {
-    "file": "docs/TROUBLESHOOTING.md",
-    "bytes": 2282,
-    "sha256": "1d8ebf4718b392b589d831b77c24569317746440d5dc9d76caab65a6c55445bc"
+    "bytes": 22269,
+    "sha256": "d7743fb5278bfb2b275a89ebf99666dd6a68aff06739407c0abd66882e7ac4e8"
   },
   {
     "file": "firmware/README.md",
-    "bytes": 773,
-    "sha256": "97611e0203eebe5154d7a6b1ddd0e29b3af834dd68177789f8f4ef83e1257271"
-  },
-  {
-    "file": "NOTICE.md",
-    "bytes": 353,
-    "sha256": "bd21ad707eac83aba23811a314301761431339fdc6f07d56ace77b99102b935e"
-  },
-  {
-    "file": "README.md",
-    "bytes": 10758,
-    "sha256": "e21d21cf8b52ef0df5440b1c9f44b2d7527a4e3dfbdfde15062fdff39ef961fe"
+    "bytes": 749,
+    "sha256": "ef07c752aa008441f34a8959a8edb77e109506fc60e60a97bb825e27401ae21b"
   },
   {
     "file": "releases/Khoa-NAS-Android-v1.0.0.apk",
@@ -350,6 +330,11 @@
     "sha256": "989ecdd827d89ca977e088149f38a1a601cd2e84c04dbc512ff45ba455123400"
   },
   {
+    "file": "router/current/STATUS-SNAPSHOT.txt",
+    "bytes": 1483,
+    "sha256": "8c9d899bed9420b1dfa36db1afa97c45be271439dfc2956c54f1363e0edf9138"
+  },
+  {
     "file": "router/current/etc-config-firewall",
     "bytes": 2997,
     "sha256": "cc3449a88abfb365f791af6913066574a9775d67bd4ae52246ec9644d69f38d8"
@@ -375,11 +360,6 @@
     "sha256": "70c6c732fccbd75b44d3c785db0665e0fe9f4972ad5529a40887f6d31f36308d"
   },
   {
-    "file": "router/current/STATUS-SNAPSHOT.txt",
-    "bytes": 1483,
-    "sha256": "8c9d899bed9420b1dfa36db1afa97c45be271439dfc2956c54f1363e0edf9138"
-  },
-  {
     "file": "router/current/usr-sbin-nas-private-autounlock",
     "bytes": 3059,
     "sha256": "c2562b52f811843c76107e93e88c11e9477d26a3a88ba6738e05644a23e56c55"
@@ -401,33 +381,33 @@
   },
   {
     "file": "router/helpers/router/create-private-backup.sh",
-    "bytes": 324,
-    "sha256": "8c6d0336416b48167b59c9737f21b4ddcf9271a86e6d30a3bc448801acafcc88"
+    "bytes": 311,
+    "sha256": "27725c8cacda06b7a53f493cef950ba0f7a0cc718f74408e2bb3ce194862a798"
   },
   {
     "file": "router/helpers/router/install-packages.sh",
-    "bytes": 318,
-    "sha256": "c51dfb09f4335862e347508c677973ccb77d7bdc4e8b30c251782d850f4ed28a"
+    "bytes": 298,
+    "sha256": "c73ad578e480dab9883695f7da49d15fbe193252affe9bb626ec2d01ae709ffb"
   },
   {
     "file": "router/helpers/windows/Change-SMB-Password.ps1",
-    "bytes": 365,
-    "sha256": "3b4d32b0c6f088e42309b6a542b01391914cc36fb6b2f25e89af2a4499563fe9"
+    "bytes": 355,
+    "sha256": "85855dc83f3c4624040c14bf1b768fafbd59c240881a34907d147905a691ea9f"
   },
   {
     "file": "router/helpers/windows/Clear-NAS-SMB-Sessions.ps1",
-    "bytes": 246,
-    "sha256": "430005261dd4c192d2b8f2ef684d5ed79195b64894569b4d0ccd8e2380b325f6"
+    "bytes": 240,
+    "sha256": "7eab752b7f13b4bde13fd4ddb42f6ac0e81054ca9756b0f6f4c98d7efacf145c"
   },
   {
     "file": "router/helpers/windows/Status-NAS.ps1",
-    "bytes": 158,
-    "sha256": "723d766764a95e0ac5c597a7bb453ccb635bbc386521cba42b1cdf00c64263d1"
+    "bytes": 152,
+    "sha256": "f361dc7d62fdf5f1ea8f692aaec39c9c8f7f8a95854ae5bae78ddebffd1071bc"
   },
   {
     "file": "router/helpers/windows/Unlock-PRIVATE.ps1",
-    "bytes": 169,
-    "sha256": "798a93468325adf0ba7132f8edfad171a4e4c57b37ff73654750cb488e50b1e9"
+    "bytes": 163,
+    "sha256": "20b68e49328ae1b5356a7d9ee671bee0703fa31b7b84e68d5119a2970a48b8de"
   },
   {
     "file": "scripts/router/95-nas-storage",
@@ -476,43 +456,38 @@
   },
   {
     "file": "scripts/windows/Change-SMB-Password.ps1",
-    "bytes": 336,
-    "sha256": "7c25eeed99ba027dfcb17fc54065fe501ffae687015a00f7ef564dcb2298e28a"
+    "bytes": 327,
+    "sha256": "8964b133b642b0fc2dbe30751f2909aae565886c37b232037940a02150a5e540"
   },
   {
     "file": "scripts/windows/Clear-SMB-Sessions.ps1",
-    "bytes": 279,
-    "sha256": "a9d753616745207ff47f077f3510a96b1518e8bd131663bc8b2a5842620560fa"
+    "bytes": 270,
+    "sha256": "df6219e10a05dcfd958790a5ee223593bd3c5ebb952678ac15d376f4720ca8c2"
   },
   {
     "file": "scripts/windows/Create-Private-Backup.ps1",
-    "bytes": 726,
-    "sha256": "c08eda80dc119b629bea3d9ada5402fc918cbf7f1c80b88d5c051e05f6454b76"
+    "bytes": 708,
+    "sha256": "674dd70d2b36272394214e6ed708a074f6f91b1f39d5477cbe053074657edb1d"
   },
   {
     "file": "scripts/windows/legacy/NAS-Remote-Menu.cmd",
-    "bytes": 1412,
-    "sha256": "658ccc78e7f42848129f4d063ffed3e3c1eecf197ca67c4761ed2171d8bffae1"
+    "bytes": 1344,
+    "sha256": "5456f13caefbdec50ef962a1f952fe6fc8756555842870d396319e58a85f0728"
   },
   {
     "file": "scripts/windows/legacy/NAS-Status.cmd",
-    "bytes": 235,
-    "sha256": "b53ba62469a8762dcd5472fd2969eda38483da0baefd9b952e97c13c041d74cd"
+    "bytes": 228,
+    "sha256": "4dbaca9ba4f55610bec209fd51cc6c306c03563be72c2a8e94bebe70b1bbd3d7"
   },
   {
     "file": "scripts/windows/legacy/Unlock-PRIVATE.cmd",
-    "bytes": 254,
-    "sha256": "0bf2487d8b41e86216ead225bd4c457b46419dfc4ff14461f24dc49c459d8200"
-  },
-  {
-    "file": "SECURITY.md",
-    "bytes": 845,
-    "sha256": "fd2639a042d7e6d032a0769408408b707986244b58f23da618f7167212c9cd51"
+    "bytes": 247,
+    "sha256": "1e707fd2e731a3ca45b9f84463571e57c943912ad0942636b942892fe308827d"
   },
   {
     "file": "software/android/.gitignore",
-    "bytes": 794,
-    "sha256": "0581d23086f7283dc97d2d5bde4f60724f8115f67baa76949596790ab9800dd7"
+    "bytes": 746,
+    "sha256": "441eaa1de5b3db9fae056e7503567e9f8dd94173e1389c60f76956abf729015a"
   },
   {
     "file": "software/android/.metadata",
@@ -520,49 +495,49 @@
     "sha256": "58722ea30dee29265312c762bace9500d02150420efb3e1c03b668b05d6275c7"
   },
   {
+    "file": "software/android/README.md",
+    "bytes": 444,
+    "sha256": "24adb5fd76797cecb36be956c63ad62c3f895b6fa698e7eb3039a536844a6afd"
+  },
+  {
     "file": "software/android/analysis_options.yaml",
-    "bytes": 1525,
-    "sha256": "fc302dc92270b006a98a89de02cf931fd347ceccd3b32ea5400a6cec72aa6171"
+    "bytes": 1491,
+    "sha256": "9932af44285f42f569a54f5e35791a927b6a387c513107ccdc26fb0e3c29e0a5"
   },
   {
     "file": "software/android/android/.gitignore",
-    "bytes": 267,
-    "sha256": "c9af75dbc2c8aa867476a09426c80b178c4aeed8b9393ae48503eedfa3273d71"
+    "bytes": 253,
+    "sha256": "b027c9de1011765c015e5819bf857c0d75bfcd0886fb01721c091159012e50f1"
   },
   {
     "file": "software/android/android/app/build.gradle.kts",
-    "bytes": 1829,
-    "sha256": "3c4f7d4678f784fc1a0a3fe7bb391b268e4e85b5168ee0887f098f3796e28330"
+    "bytes": 1780,
+    "sha256": "43d9d070038dc42e79b4350c771a148bc1989ce66040a19a2ca1ec00789f580d"
   },
   {
     "file": "software/android/android/app/src/debug/AndroidManifest.xml",
-    "bytes": 385,
-    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
   },
   {
     "file": "software/android/android/app/src/main/AndroidManifest.xml",
-    "bytes": 2311,
-    "sha256": "53063a4e0e68c9e974a480b2b0054c5c259d35dfb1c05391a9e76a2c681d68fc"
-  },
-  {
-    "file": "software/android/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
-    "bytes": 516,
-    "sha256": "462f4a19778f3fe486674c6ab64b62f555095bddb6dfb6690a1d63ad92ef0f54"
+    "bytes": 2265,
+    "sha256": "2e1af9c4c092515e11512204fc5bc0a6f9c7f15a27a3aa2f701e7409bd2a535c"
   },
   {
     "file": "software/android/android/app/src/main/kotlin/com/trandangkhoa/nas_client/MainActivity.kt",
-    "bytes": 134,
-    "sha256": "4210247fe15fe9a2b11d9ccc2f63c1913d207d3f9caf44aefec8744b0ce7ad72"
-  },
-  {
-    "file": "software/android/android/app/src/main/res/drawable/launch_background.xml",
-    "bytes": 446,
-    "sha256": "2df60e2cfbee873ce2858088cf003e6b93498f2f568476da437610467ea1a9d7"
+    "bytes": 129,
+    "sha256": "b135e1e635d8443750306b7e8fbc8311d3e47c5b24b1219ab6dfca1c1a888838"
   },
   {
     "file": "software/android/android/app/src/main/res/drawable-v21/launch_background.xml",
-    "bytes": 450,
-    "sha256": "dca312ec77de83e43ef70a825c299b51451247286c29167d62f19165750b8793"
+    "bytes": 438,
+    "sha256": "7ca6d5cec2169c5a98661a119db23a6f3399c8fef2256ff04f3a642831282478"
+  },
+  {
+    "file": "software/android/android/app/src/main/res/drawable/launch_background.xml",
+    "bytes": 434,
+    "sha256": "94433756fe10005ddd6fc55cc5c0b1e9f3c10b66a08ceac795ece6713d34e28a"
   },
   {
     "file": "software/android/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -590,64 +565,49 @@
     "sha256": "3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180"
   },
   {
-    "file": "software/android/android/app/src/main/res/values/styles.xml",
-    "bytes": 1014,
-    "sha256": "cca15a99b59380a548bf6a890f7ca5380ee509b1f9bbb2f5f9ec3589fa25c2f7"
+    "file": "software/android/android/app/src/main/res/values-night/styles.xml",
+    "bytes": 995,
+    "sha256": "8c5bad5152f217e837519f9c15211d19f39bd45f5f67faf6dd81cb4b299e518f"
   },
   {
-    "file": "software/android/android/app/src/main/res/values-night/styles.xml",
-    "bytes": 1013,
-    "sha256": "ea763597dc1a84c8034251caee98d7753e0fbf57340ffc94677427de4b537516"
+    "file": "software/android/android/app/src/main/res/values/styles.xml",
+    "bytes": 996,
+    "sha256": "937d7c82f539c72eb94fd3a3773f29b3d3fef1997213c92cb632298cedf4bda9"
   },
   {
     "file": "software/android/android/app/src/profile/AndroidManifest.xml",
-    "bytes": 385,
-    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
   },
   {
     "file": "software/android/android/build.gradle.kts",
-    "bytes": 561,
-    "sha256": "218f400e3fff31c9c986a2535dfb974560e1b4d33cc27b7c1fee96a2b7e44454"
-  },
-  {
-    "file": "software/android/android/gradle/wrapper/gradle-wrapper.jar",
-    "bytes": 53636,
-    "sha256": "16caeaf66d57a0d1d2087fef6a97efa62de8da69afa5b908f40db35afc4342da"
-  },
-  {
-    "file": "software/android/android/gradle/wrapper/gradle-wrapper.properties",
-    "bytes": 207,
-    "sha256": "594a00250ef7a36609a01f3263bf5ed63963afaf9ca9f82f2cd1de0f6f056383"
+    "bytes": 537,
+    "sha256": "6a26dba2cb8dfba1e74f540b0d17a89d96c1301d3c3bfda14348bed257fddcba"
   },
   {
     "file": "software/android/android/gradle.properties",
-    "bytes": 427,
-    "sha256": "047a47ec0f22b72e0d5ff986abc342bd960c7644193318b56e1510ad1ad38100"
+    "bytes": 420,
+    "sha256": "131066842bca9e5a83c9b7fdf8a61ba74221149ce45f3c18556737e850ce1802"
   },
   {
-    "file": "software/android/android/gradlew",
-    "bytes": 4971,
-    "sha256": "ec56c02543666d92d9ac5ae7fcc48f88ce4de0deb8b7f9b39928ca46f68c1b2b"
-  },
-  {
-    "file": "software/android/android/gradlew.bat",
-    "bytes": 2404,
-    "sha256": "c13c6e91b9a517783976de213d46398c661ea9e17651376d7301e839eaedcc62"
+    "file": "software/android/android/gradle/wrapper/gradle-wrapper.properties",
+    "bytes": 202,
+    "sha256": "b690d26223576fe4e63889fad9a00df81945cb870b9476cc5a563152a1a88a74"
   },
   {
     "file": "software/android/android/settings.gradle.kts",
-    "bytes": 796,
-    "sha256": "092ba880c8d4a07591aafc082f45deedc9afcf60c113a4bb3d13cbe1a1fce9de"
+    "bytes": 770,
+    "sha256": "016759283e88ade6eba92910583feeef88b962839b957aa414296afd2952d122"
   },
   {
     "file": "software/android/lib/main.dart",
-    "bytes": 15817,
-    "sha256": "c32f2c2885054f1203f4929246cff2e9f9dea7052f9b152dc74c97fe3dd4aa9d"
+    "bytes": 15295,
+    "sha256": "b8caf40aaaee4c2df6b30b71a80d187d3127852d60a6a89fafc4666ffd3c77bc"
   },
   {
     "file": "software/android/lib/smb_service.dart",
-    "bytes": 2931,
-    "sha256": "06ba474aa2db80619955f18121e66454cb3fa7ec8a17a1481e643227b6ef037e"
+    "bytes": 2825,
+    "sha256": "3d7d8da3636db8a6dea8a666ff8ae0cfef93b619ecf5b40ab3fa6622f728ef2c"
   },
   {
     "file": "software/android/pubspec.lock",
@@ -656,33 +616,28 @@
   },
   {
     "file": "software/android/pubspec.yaml",
-    "bytes": 4032,
-    "sha256": "4ca5015a8ba0609c873fa3d714130d4eb960372804da4ba4f6e67646e81b8005"
-  },
-  {
-    "file": "software/android/README.md",
-    "bytes": 461,
-    "sha256": "adbf75284c4a139f653fbd0bed0e89702c78d442be476c5874c25694704f4541"
+    "bytes": 3939,
+    "sha256": "333df7f324ceeae107ddcc9d76c224d6eb0cdf1190078cf6bf71575ebe97bde6"
   },
   {
     "file": "software/android/test/widget_test.dart",
-    "bytes": 505,
-    "sha256": "3f34ef4283a0fd0551459b0597fc2fe2e54b80f7d1fd7a4dd967e549f64151f7"
+    "bytes": 487,
+    "sha256": "1c14c61dc2e9b8d59e401992f3a65f567a88e8c00ba117d549091cb5f0ccdac7"
   },
   {
     "file": "software/android/windows/.gitignore",
-    "bytes": 308,
-    "sha256": "955e3110cb16494ee76e1cd5df47e2c212309eb94a49a123fe87f718de413cb8"
+    "bytes": 291,
+    "sha256": "96345475f1a3c66bd32d28178fba151ab1506b35b1f7857b8f7651863093ea11"
   },
   {
     "file": "software/android/windows/CMakeLists.txt",
-    "bytes": 4264,
-    "sha256": "9234d3d2e1eb53c95c72827abe5f0ac5df00216496457bfe1a2aa3629b5e8108"
+    "bytes": 4156,
+    "sha256": "a7f37359e81a7281fce8f158d1898b0a6e9bd51790d6744c6d5c45885a7489c0"
   },
   {
     "file": "software/android/windows/flutter/CMakeLists.txt",
-    "bytes": 3851,
-    "sha256": "bd05e3268b2f246bcbafdb778165fe67a7bafdba04eb73599502563a67b8ae7e"
+    "bytes": 3742,
+    "sha256": "1fe418971b6f41bb35ceb3d64113a835f3f6f171ecaa707bf232492b57a588d6"
   },
   {
     "file": "software/android/windows/flutter/generated_plugin_registrant.cc",
@@ -701,28 +656,33 @@
   },
   {
     "file": "software/android/windows/runner/CMakeLists.txt",
-    "bytes": 1836,
-    "sha256": "d765fdd05f63ad099e585a2cced0cbff13ec3229b7de68c8681b2107db850089"
+    "bytes": 1796,
+    "sha256": "34119ec122e36940235ef4bc245fcfb43b6960ed443e28af1a8d833a81209b9e"
+  },
+  {
+    "file": "software/android/windows/runner/Runner.rc",
+    "bytes": 3047,
+    "sha256": "529b21f0367d6e2f15712bc6ae40b4b4ab269b9e7298a7aef781c7b7bb2b35c8"
   },
   {
     "file": "software/android/windows/runner/flutter_window.cpp",
-    "bytes": 2193,
-    "sha256": "d615eedc06ae37321e59c2c00c7687d1887dcd97904eb7225fafd8dcb5b83da6"
+    "bytes": 2122,
+    "sha256": "dd185884c0b5301d400b58f12ebb36b1c8b326531597e531b40e44a6eeb0e943"
   },
   {
     "file": "software/android/windows/runner/flutter_window.h",
-    "bytes": 961,
-    "sha256": "0252b804f5da380c7709cbe1daff2b8d18daf6c49d7e6dd43e5af3c99c19f56c"
+    "bytes": 928,
+    "sha256": "38e0fcd3a0b83895852ec295cb70d90179c0dcd40d58f065eb5232a4ecd84898"
   },
   {
     "file": "software/android/windows/runner/main.cpp",
-    "bytes": 1306,
-    "sha256": "38e649af1818329d720b209dcf6e77bbe1aeef0c624157d8775e363cf13bd6ec"
+    "bytes": 1263,
+    "sha256": "46dcafad88362034e001ce04715f5d901657c802bac26c0582af10d08f7ec078"
   },
   {
     "file": "software/android/windows/runner/resource.h",
-    "bytes": 448,
-    "sha256": "d0e8bf7835468b4b6b1f8f0747f2e8f25c19841f2df2ac60aaa584ddae3aa7c6"
+    "bytes": 432,
+    "sha256": "1fa98588b04561590ba1cf0521ab86a9db4a878312f21c9d5861d965ddd8d1ae"
   },
   {
     "file": "software/android/windows/runner/resources/app_icon.ico",
@@ -731,43 +691,38 @@
   },
   {
     "file": "software/android/windows/runner/runner.exe.manifest",
-    "bytes": 616,
-    "sha256": "639a56233fcd8cbcb8bbefcd93e4680ec2664f32d9acfb3d2ec1d8726a96e090"
-  },
-  {
-    "file": "software/android/windows/runner/Runner.rc",
-    "bytes": 3168,
-    "sha256": "1e7cdeb4be0c40022427273eea074ef770447ceb6ce607763f0353dc508bcc6a"
+    "bytes": 602,
+    "sha256": "825d243e9fa1542619909c1b72d09b3ed7c1f3b225bb8367c125835e5dc3f8aa"
   },
   {
     "file": "software/android/windows/runner/utils.cpp",
-    "bytes": 2237,
-    "sha256": "a128b67b9f3c2579e2ecef5b0dde2c33f222a097cdfe5da2a3067c73d1485b39"
+    "bytes": 2168,
+    "sha256": "6c2c87106b4b29d534c7edcafb3b7f7b9079caa3cdafa7e56671ad2adf5a2543"
   },
   {
     "file": "software/android/windows/runner/utils.h",
-    "bytes": 691,
-    "sha256": "832e246b6758253f89016fb0374b30791242e97ad950d27fc678b3d9feacfdc4"
+    "bytes": 672,
+    "sha256": "95a7f7dddb832997cefa937a96f89472332277e75734a5de553610760b744b03"
   },
   {
     "file": "software/android/windows/runner/win32_window.cpp",
-    "bytes": 8822,
-    "sha256": "4e4f4dcf8e86ea6e097562cb3476039e693449bd8045367538afee579c017511"
+    "bytes": 8534,
+    "sha256": "9065f31ccf746cf8b390121f958f9e959033af864aed779597066625ed56bc36"
   },
   {
     "file": "software/android/windows/runner/win32_window.h",
-    "bytes": 3624,
-    "sha256": "d154cf89ba85f820631a9b5bedacbe64fc5815e428fe6bc5da579ce649f69841"
-  },
-  {
-    "file": "software/pc/khoa_nas_pc.py",
-    "bytes": 29102,
-    "sha256": "27023f17dae64a917e3c8f23ef01f04d247c1329c6bcf19725ba014473121009"
+    "bytes": 3522,
+    "sha256": "7dd03746b19dcf3542829b2f6e8ed40a2714ce5f2cb3b0e23f0118a2fcf62d62"
   },
   {
     "file": "software/pc/README.md",
-    "bytes": 687,
-    "sha256": "980515d1efbd36cc9f50d70ffbc8fc6b6e026160f2ddcdf6af5ed192aeb6b64f"
+    "bytes": 664,
+    "sha256": "59eb5db3a06bf3ddcd98f03e00e405b250353e5d245599a36b647fef68385f6b"
+  },
+  {
+    "file": "software/pc/khoa_nas_pc.py",
+    "bytes": 28296,
+    "sha256": "75dbf5e97e96bc7ed4d2a9240b06747b8d2ba46855a06c96c9f7b4965a2a607a"
   },
   {
     "file": "software/releases/Khoa-NAS-Android-v1.0.0.apk",
