@@ -1,0 +1,13 @@
+config rule 'allow_smb_tailscale'
+    option name 'Allow-SMB-from-Tailscale'
+    option src 'tailscale'
+    option proto 'tcp'
+    option dest_port '445'
+    option target 'ACCEPT'
+
+config rule 'reject_smb_wan'
+    option name 'Reject-SMB-from-WAN'
+    option src 'wan'
+    option proto 'tcp'
+    option dest_port '445'
+    option target 'REJECT'

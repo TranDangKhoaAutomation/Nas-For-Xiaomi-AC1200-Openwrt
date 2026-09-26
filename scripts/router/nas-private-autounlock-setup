@@ -1,0 +1,52 @@
+#!/bin/sh
+# One-time interactive setup for PRIVATE auto-unlock.
+# Run only from an interactive SSH TTY.
+
+KEYFILE="/root/.nas-private-passphrase"
+TMP="/root/.nas-private-passphrase.tmp.$$"
+TTY="/dev/tty"
+
+cleanup() {
+    rm -f "$TMP"
+    unset pass
+}
+trap cleanup EXIT INT TERM HUP
+
+dev="$(p1=$(/sbin/block info 2>/dev/null | awk '/01DC8764756E6240/ {sub(/:.*/,"",$0); print; exit}'); p2=$(/sbin/block info 2>/dev/null | awk '/78F6F2BBF6F278A8/ {sub(/:.*/,"",$0); print; exit}'); b1=${p1%%[0-9]*}; b2=${p2%%[0-9]*}; [ -n "$p1" ] && [ -n "$p2" ] && [ "$b1" = "$b2" ] && printf '%s3' "$b1")"
+
+[ -n "$dev" ] && [ -b "$dev" ] || {
+    echo "PRIVATE device not found. Connect the managed HDD first." >&2
+    exit 1
+}
+
+echo "WARNING: enabling auto-unlock stores the VeraCrypt passphrase on router flash."
+echo "The file is root-only (0600), but root access or theft of router+HDD can expose the encrypted data."
+printf "Enter VeraCrypt passphrase: " > "$TTY"
+IFS= read -r -s pass < "$TTY"
+printf "\n" > "$TTY"
+
+[ -n "$pass" ] || {
+    echo "Empty passphrase; cancelled." >&2
+    exit 1
+}
+
+umask 077
+printf '%s' "$pass" > "$TMP"
+unset pass
+chmod 600 "$TMP"
+
+echo "Validating passphrase against VeraCrypt header..."
+if ! cryptsetup tcryptDump --veracrypt --key-file=- "$dev" < "$TMP" >/dev/null 2>&1; then
+    echo "Passphrase validation FAILED. Nothing was saved." >&2
+    exit 1
+fi
+
+mv "$TMP" "$KEYFILE"
+chmod 600 "$KEYFILE"
+trap - EXIT INT TERM HUP
+
+rm -f /tmp/nas-private-autounlock-attempted
+echo "Auto-unlock secret saved successfully (root-only)."
+echo "Unlocking PRIVATE now..."
+/usr/sbin/nas-private-autounlock reset
+/usr/sbin/nas-storage-manager status

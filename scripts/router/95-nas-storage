@@ -1,0 +1,15 @@
+#!/bin/sh
+case "$ACTION" in
+    add)
+        (
+            sleep 1
+            /usr/sbin/nas-storage-manager scan
+            sleep 1
+            /usr/sbin/nas-private-autounlock attempt
+        ) >/dev/null 2>&1 &
+        ;;
+    remove)
+        /usr/sbin/nas-private-autounlock clear >/dev/null 2>&1 || true
+        /usr/sbin/nas-storage-manager remove "$DEVNAME" >/dev/null 2>&1 &
+        ;;
+esac

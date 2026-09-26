@@ -1,0 +1,20 @@
+* text=auto
+*.md text eol=lf
+*.txt text eol=lf
+*.sh text eol=lf
+scripts/router/* text eol=lf
+config/**/*.final text eol=lf
+config/**/*.example text eol=lf
+*.dart text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.properties text eol=lf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.exe binary
+*.apk binary
+*.zip binary
+*.bin binary
+*.jar binary
+*.png binary
+*.ico binary

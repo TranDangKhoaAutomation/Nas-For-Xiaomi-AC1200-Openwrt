@@ -1,0 +1,447 @@
+[
+  {
+    "path": ".gitattributes",
+    "size": 387,
+    "sha256": "62a32793c85eb74e0f50793367b8897002e4cc3e992cb731379c83be00a67741"
+  },
+  {
+    "path": ".gitignore",
+    "size": 212,
+    "sha256": "8c4bcdec78171afab904df3524d0daec2892ee61a8241f92e108a1578f058e43"
+  },
+  {
+    "path": "backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip",
+    "size": 23354685,
+    "sha256": "2ea1b8406b91d7cc09ee50397f1f5e9b3e0f974d5dc077554434ef02cb323d79"
+  },
+  {
+    "path": "backups/README.md",
+    "size": 553,
+    "sha256": "d685490d9e9a8c32dcdbf9f29101d9400c24ffae7234c12949250368c2e24428"
+  },
+  {
+    "path": "CHANGELOG.md",
+    "size": 753,
+    "sha256": "6d7966121e7ae9e0729ceef4c64b896d2bb9ed35e34c20aa38937af7c94be3da"
+  },
+  {
+    "path": "config/snapshots/firewall.final",
+    "size": 2997,
+    "sha256": "cc3449a88abfb365f791af6913066574a9775d67bd4ae52246ec9644d69f38d8"
+  },
+  {
+    "path": "config/snapshots/ksmbd.final",
+    "size": 805,
+    "sha256": "63b3a98d5286eb60655fa694c7f104f52e95c27d8d28c77600fe45d4580262fc"
+  },
+  {
+    "path": "config/templates/firewall.example",
+    "size": 360,
+    "sha256": "182f86ec622735d2e7f5b2d57f185035a48a23cba425fa44b1f439e8d12b4e04"
+  },
+  {
+    "path": "config/templates/ksmbd.example",
+    "size": 447,
+    "sha256": "b1197d6d4af12944c6ddfadddebd24072224cb0121125cfcc969e5027e79a1b9"
+  },
+  {
+    "path": "docs/BACKUP-RESTORE.md",
+    "size": 1437,
+    "sha256": "d521a4568465cde5f7819e5c9169a45df3e6042cb0a97aeef66470206c1f62a7"
+  },
+  {
+    "path": "docs/CLIENT-APPS.md",
+    "size": 991,
+    "sha256": "c15b4abbf80e42d90e5e8ba713a408cc05550acc2a9277fb67d480017e70a2d7"
+  },
+  {
+    "path": "docs/CURRENT-DEPLOYMENT.md",
+    "size": 716,
+    "sha256": "51102fd39da53d51c0ee393bb90d6020f333915d5cfb74a8ac1716f9be6bb2ce"
+  },
+  {
+    "path": "docs/OPERATIONS.md",
+    "size": 648,
+    "sha256": "6ae00fb77bb3cccd4f054181cbafffece340122f0d0995db10f8dd17830bb1af"
+  },
+  {
+    "path": "docs/QUICK-START.md",
+    "size": 1391,
+    "sha256": "747cd4d6a588be52ca6287671f0fc16f65f1534d2d60d2d201750a4c07a16125"
+  },
+  {
+    "path": "docs/RECOVERY.md",
+    "size": 738,
+    "sha256": "2c219283b050faee4b591622e75c974e1bf336244a4263c37d137e03ffeb4215"
+  },
+  {
+    "path": "docs/SMB-PASSWORD.md",
+    "size": 688,
+    "sha256": "07fc8f61c00c5300a6f8fd560fddb66f6379d78dd0e700421a18fc276e8f8581"
+  },
+  {
+    "path": "docs/TROUBLESHOOTING.md",
+    "size": 3700,
+    "sha256": "2241abc2d172f765081b14c052fc624055ebc4e485482d176bf3fdf7ee000c0b"
+  },
+  {
+    "path": "README.md",
+    "size": 7748,
+    "sha256": "d1c91a42cace2e35797d7490eca15b4f5c773dbe5c4979fead8fc5cddc57b755"
+  },
+  {
+    "path": "reports/01_CHKDSK_F_REPAIR.txt",
+    "size": 96278,
+    "sha256": "9b9aad4765e6dcdcfb656b349f89b3b7bac0718db454c9aaf7d2545f76f277ee"
+  },
+  {
+    "path": "reports/Bao-Cao-Hoan-Tat-Router-NAS.md",
+    "size": 23218,
+    "sha256": "d6499c90b30eac2633fb4da73dc50bb183b28bef986152fdc3b7ec96d743f9a0"
+  },
+  {
+    "path": "reports/README.md",
+    "size": 290,
+    "sha256": "9bbf9fa7b1ff553a03cc5ce4d38bdeb7f2f2afde66cb4f35cf3a3711ca249dc3"
+  },
+  {
+    "path": "scripts/router/95-nas-storage",
+    "size": 399,
+    "sha256": "29ce4f82ded51247efc12fc3940828483c700325cd581dc349ea0f31b49f913d"
+  },
+  {
+    "path": "scripts/router/change-smb-password.sh",
+    "size": 135,
+    "sha256": "81b7109ece300bffb84f700aad36e5dc90301970ca6b1bcd6aee3e64a8665025"
+  },
+  {
+    "path": "scripts/router/install-packages.sh",
+    "size": 282,
+    "sha256": "2429d326675740c150284e7b6a0f41c3a50e5319294108998129086b6462ad2b"
+  },
+  {
+    "path": "scripts/router/nas-private-autounlock",
+    "size": 3059,
+    "sha256": "c2562b52f811843c76107e93e88c11e9477d26a3a88ba6738e05644a23e56c55"
+  },
+  {
+    "path": "scripts/router/nas-private-autounlock-disable",
+    "size": 180,
+    "sha256": "309bfb4afa7692b6f8516a5e91be491e3c94f3d9a95e6873ebb87c5b614d2507"
+  },
+  {
+    "path": "scripts/router/nas-private-autounlock-setup",
+    "size": 1654,
+    "sha256": "c2a4bc60585e334c75eaec8db7ef5c95d73adc6cef92a67260dab839c9ccb86e"
+  },
+  {
+    "path": "scripts/router/nas-private-autounlock.init",
+    "size": 140,
+    "sha256": "12faeaa25fd0cfde1915e136642f948769c8ded624a7dc0e111bf753e53965b8"
+  },
+  {
+    "path": "scripts/router/nas-storage-manager",
+    "size": 13189,
+    "sha256": "e1e2361544998160a48478f328d255df08fb84106bb2f56d58a7ecf44e75ab02"
+  },
+  {
+    "path": "scripts/router/nas-storage.init",
+    "size": 492,
+    "sha256": "70c6c732fccbd75b44d3c785db0665e0fe9f4972ad5529a40887f6d31f36308d"
+  },
+  {
+    "path": "scripts/windows/Change-SMB-Password.ps1",
+    "size": 336,
+    "sha256": "7c25eeed99ba027dfcb17fc54065fe501ffae687015a00f7ef564dcb2298e28a"
+  },
+  {
+    "path": "scripts/windows/Clear-SMB-Sessions.ps1",
+    "size": 279,
+    "sha256": "a9d753616745207ff47f077f3510a96b1518e8bd131663bc8b2a5842620560fa"
+  },
+  {
+    "path": "scripts/windows/Create-Private-Backup.ps1",
+    "size": 726,
+    "sha256": "c08eda80dc119b629bea3d9ada5402fc918cbf7f1c80b88d5c051e05f6454b76"
+  },
+  {
+    "path": "scripts/windows/legacy/NAS-Remote-Menu.cmd",
+    "size": 1412,
+    "sha256": "658ccc78e7f42848129f4d063ffed3e3c1eecf197ca67c4761ed2171d8bffae1"
+  },
+  {
+    "path": "scripts/windows/legacy/NAS-Status.cmd",
+    "size": 235,
+    "sha256": "b53ba62469a8762dcd5472fd2969eda38483da0baefd9b952e97c13c041d74cd"
+  },
+  {
+    "path": "scripts/windows/legacy/Unlock-PRIVATE.cmd",
+    "size": 254,
+    "sha256": "0bf2487d8b41e86216ead225bd4c457b46419dfc4ff14461f24dc49c459d8200"
+  },
+  {
+    "path": "SECURITY.md",
+    "size": 845,
+    "sha256": "fd2639a042d7e6d032a0769408408b707986244b58f23da618f7167212c9cd51"
+  },
+  {
+    "path": "SHA256SUMS.txt",
+    "size": 305,
+    "sha256": "34bd1696687a95754132bd4c00454334a9e941d0e57dd3ac50497c8f686c5553"
+  },
+  {
+    "path": "software/android/.gitignore",
+    "size": 794,
+    "sha256": "0581d23086f7283dc97d2d5bde4f60724f8115f67baa76949596790ab9800dd7"
+  },
+  {
+    "path": "software/android/.metadata",
+    "size": 1118,
+    "sha256": "58722ea30dee29265312c762bace9500d02150420efb3e1c03b668b05d6275c7"
+  },
+  {
+    "path": "software/android/analysis_options.yaml",
+    "size": 1525,
+    "sha256": "fc302dc92270b006a98a89de02cf931fd347ceccd3b32ea5400a6cec72aa6171"
+  },
+  {
+    "path": "software/android/android/.gitignore",
+    "size": 267,
+    "sha256": "c9af75dbc2c8aa867476a09426c80b178c4aeed8b9393ae48503eedfa3273d71"
+  },
+  {
+    "path": "software/android/android/app/build.gradle.kts",
+    "size": 1829,
+    "sha256": "3c4f7d4678f784fc1a0a3fe7bb391b268e4e85b5168ee0887f098f3796e28330"
+  },
+  {
+    "path": "software/android/android/app/src/debug/AndroidManifest.xml",
+    "size": 385,
+    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+  },
+  {
+    "path": "software/android/android/app/src/main/AndroidManifest.xml",
+    "size": 2311,
+    "sha256": "53063a4e0e68c9e974a480b2b0054c5c259d35dfb1c05391a9e76a2c681d68fc"
+  },
+  {
+    "path": "software/android/android/app/src/main/kotlin/com/trandangkhoa/nas_client/MainActivity.kt",
+    "size": 134,
+    "sha256": "4210247fe15fe9a2b11d9ccc2f63c1913d207d3f9caf44aefec8744b0ce7ad72"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/drawable/launch_background.xml",
+    "size": 446,
+    "sha256": "2df60e2cfbee873ce2858088cf003e6b93498f2f568476da437610467ea1a9d7"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/drawable-v21/launch_background.xml",
+    "size": 450,
+    "sha256": "dca312ec77de83e43ef70a825c299b51451247286c29167d62f19165750b8793"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "size": 544,
+    "sha256": "6a7c8f0d703e3682108f9662f813302236240d3f8f638bb391e32bfb96055fef"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+    "size": 442,
+    "sha256": "c7c0c0189145e4e32a401c61c9bdc615754b0264e7afae24e834bb81049eaf81"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+    "size": 721,
+    "sha256": "e14aa40904929bf313fded22cf7e7ffcbf1d1aac4263b5ef1be8bfce650397aa"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+    "size": 1031,
+    "sha256": "4d470bf22d5c17d84edc5f82516d1ba8a1c09559cd761cefb792f86d9f52b540"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+    "size": 1443,
+    "sha256": "3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/values/styles.xml",
+    "size": 1014,
+    "sha256": "cca15a99b59380a548bf6a890f7ca5380ee509b1f9bbb2f5f9ec3589fa25c2f7"
+  },
+  {
+    "path": "software/android/android/app/src/main/res/values-night/styles.xml",
+    "size": 1013,
+    "sha256": "ea763597dc1a84c8034251caee98d7753e0fbf57340ffc94677427de4b537516"
+  },
+  {
+    "path": "software/android/android/app/src/profile/AndroidManifest.xml",
+    "size": 385,
+    "sha256": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c"
+  },
+  {
+    "path": "software/android/android/build.gradle.kts",
+    "size": 561,
+    "sha256": "218f400e3fff31c9c986a2535dfb974560e1b4d33cc27b7c1fee96a2b7e44454"
+  },
+  {
+    "path": "software/android/android/gradle/wrapper/gradle-wrapper.properties",
+    "size": 207,
+    "sha256": "594a00250ef7a36609a01f3263bf5ed63963afaf9ca9f82f2cd1de0f6f056383"
+  },
+  {
+    "path": "software/android/android/gradle.properties",
+    "size": 427,
+    "sha256": "047a47ec0f22b72e0d5ff986abc342bd960c7644193318b56e1510ad1ad38100"
+  },
+  {
+    "path": "software/android/android/settings.gradle.kts",
+    "size": 796,
+    "sha256": "092ba880c8d4a07591aafc082f45deedc9afcf60c113a4bb3d13cbe1a1fce9de"
+  },
+  {
+    "path": "software/android/lib/main.dart",
+    "size": 15818,
+    "sha256": "eea0c8388268cf3be4d9001c8a5475a9c5904552fdf15149f7388afcbcb1ac00"
+  },
+  {
+    "path": "software/android/lib/smb_service.dart",
+    "size": 2931,
+    "sha256": "06ba474aa2db80619955f18121e66454cb3fa7ec8a17a1481e643227b6ef037e"
+  },
+  {
+    "path": "software/android/pubspec.lock",
+    "size": 16975,
+    "sha256": "78083b0a7d09df60503dea822320ed3f048f8115d2683ce0d024a680b7f19eb3"
+  },
+  {
+    "path": "software/android/pubspec.yaml",
+    "size": 4032,
+    "sha256": "4ca5015a8ba0609c873fa3d714130d4eb960372804da4ba4f6e67646e81b8005"
+  },
+  {
+    "path": "software/android/README.md",
+    "size": 649,
+    "sha256": "0259d0a508d97026b32cc86aa8216c4c6b6b5f7dd9a1a54d1cf2189f3c2c3155"
+  },
+  {
+    "path": "software/android/test/widget_test.dart",
+    "size": 504,
+    "sha256": "4b6419bebfb06f1debfa5d2af5a73f4b8b88aecefa2c3c58b28e2f918c1f01f1"
+  },
+  {
+    "path": "software/android/windows/.gitignore",
+    "size": 308,
+    "sha256": "955e3110cb16494ee76e1cd5df47e2c212309eb94a49a123fe87f718de413cb8"
+  },
+  {
+    "path": "software/android/windows/CMakeLists.txt",
+    "size": 4264,
+    "sha256": "9234d3d2e1eb53c95c72827abe5f0ac5df00216496457bfe1a2aa3629b5e8108"
+  },
+  {
+    "path": "software/android/windows/flutter/CMakeLists.txt",
+    "size": 3851,
+    "sha256": "bd05e3268b2f246bcbafdb778165fe67a7bafdba04eb73599502563a67b8ae7e"
+  },
+  {
+    "path": "software/android/windows/flutter/generated_plugin_registrant.cc",
+    "size": 164,
+    "sha256": "82e02567f2faf5e732dc92a2fb0d01104f7ba8c48973f8cfd41a860b4fac3f3b"
+  },
+  {
+    "path": "software/android/windows/flutter/generated_plugin_registrant.h",
+    "size": 302,
+    "sha256": "dbc11635d7b1ba1887adf40df5b83d634e9c3ab0bee34510c71528bb4d73602a"
+  },
+  {
+    "path": "software/android/windows/flutter/generated_plugins.cmake",
+    "size": 743,
+    "sha256": "286346b0d5303dc6b41072f9582d4c52bca35255b85b27b310f858e264dfdc56"
+  },
+  {
+    "path": "software/android/windows/runner/CMakeLists.txt",
+    "size": 1836,
+    "sha256": "d765fdd05f63ad099e585a2cced0cbff13ec3229b7de68c8681b2107db850089"
+  },
+  {
+    "path": "software/android/windows/runner/flutter_window.cpp",
+    "size": 2193,
+    "sha256": "d615eedc06ae37321e59c2c00c7687d1887dcd97904eb7225fafd8dcb5b83da6"
+  },
+  {
+    "path": "software/android/windows/runner/flutter_window.h",
+    "size": 961,
+    "sha256": "0252b804f5da380c7709cbe1daff2b8d18daf6c49d7e6dd43e5af3c99c19f56c"
+  },
+  {
+    "path": "software/android/windows/runner/main.cpp",
+    "size": 1306,
+    "sha256": "38e649af1818329d720b209dcf6e77bbe1aeef0c624157d8775e363cf13bd6ec"
+  },
+  {
+    "path": "software/android/windows/runner/resource.h",
+    "size": 448,
+    "sha256": "d0e8bf7835468b4b6b1f8f0747f2e8f25c19841f2df2ac60aaa584ddae3aa7c6"
+  },
+  {
+    "path": "software/android/windows/runner/resources/app_icon.ico",
+    "size": 33772,
+    "sha256": "c098d3fc85cacff98b8e69811b48e9f0d852fcee278132d794411d978869cbf8"
+  },
+  {
+    "path": "software/android/windows/runner/runner.exe.manifest",
+    "size": 616,
+    "sha256": "639a56233fcd8cbcb8bbefcd93e4680ec2664f32d9acfb3d2ec1d8726a96e090"
+  },
+  {
+    "path": "software/android/windows/runner/Runner.rc",
+    "size": 3168,
+    "sha256": "1e7cdeb4be0c40022427273eea074ef770447ceb6ce607763f0353dc508bcc6a"
+  },
+  {
+    "path": "software/android/windows/runner/utils.cpp",
+    "size": 2237,
+    "sha256": "a128b67b9f3c2579e2ecef5b0dde2c33f222a097cdfe5da2a3067c73d1485b39"
+  },
+  {
+    "path": "software/android/windows/runner/utils.h",
+    "size": 691,
+    "sha256": "832e246b6758253f89016fb0374b30791242e97ad950d27fc678b3d9feacfdc4"
+  },
+  {
+    "path": "software/android/windows/runner/win32_window.cpp",
+    "size": 8822,
+    "sha256": "4e4f4dcf8e86ea6e097562cb3476039e693449bd8045367538afee579c017511"
+  },
+  {
+    "path": "software/android/windows/runner/win32_window.h",
+    "size": 3624,
+    "sha256": "d154cf89ba85f820631a9b5bedacbe64fc5815e428fe6bc5da579ce649f69841"
+  },
+  {
+    "path": "software/pc/khoa_nas_pc.py",
+    "size": 29103,
+    "sha256": "b2bc84fd64ef54e3e2fd8738b91d00eb94f26d89630a2b724d4d117f867b6e15"
+  },
+  {
+    "path": "software/pc/README.md",
+    "size": 292,
+    "sha256": "293cd06a2851db7711709909fca5faaf09d518b445e434ed91ad513040b9516e"
+  },
+  {
+    "path": "software/releases/Khoa-NAS-Android-v1.0.0.apk",
+    "size": 50370032,
+    "sha256": "bdbe2f1f3696f283dba47cf8d6491d7d7ec70c64f526f7ec2a9987107dc3f232"
+  },
+  {
+    "path": "software/releases/Khoa-NAS-PC.exe",
+    "size": 11500989,
+    "sha256": "e0aa3fa12fc5deaa9ef5e2439fcd4ecb92f2ea86cc8b424651a2831a49a66d19"
+  },
+  {
+    "path": "software/releases/README.md",
+    "size": 330,
+    "sha256": "1ef78ce82977614900ed64f17d6108ebe499c07da2a059bc31f4df0d8f9836b7"
+  }
+]

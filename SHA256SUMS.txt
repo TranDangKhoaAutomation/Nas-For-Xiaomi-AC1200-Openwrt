@@ -1,0 +1,3 @@
+2ea1b8406b91d7cc09ee50397f1f5e9b3e0f974d5dc077554434ef02cb323d79  OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
+e0aa3fa12fc5deaa9ef5e2439fcd4ecb92f2ea86cc8b424651a2831a49a66d19  Khoa-NAS-PC.exe
+bdbe2f1f3696f283dba47cf8d6491d7d7ec70c64f526f7ec2a9987107dc3f232  Khoa-NAS-Android-v1.0.0.apk

@@ -1,0 +1,14 @@
+backups/private/
+*.private.*
+*.secret
+.env
+**/ksmbdpwd.db
+**/shadow
+**/dropbear_*_host_key
+**/.nas-private-passphrase
+**/tailscaled.state
+**/build/
+**/.dart_tool/
+**/.idea/
+**/__pycache__/
+**/*.pyc

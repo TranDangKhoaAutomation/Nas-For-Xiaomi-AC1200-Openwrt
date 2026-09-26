@@ -1,0 +1,18 @@
+config globals 'globals'
+    option workgroup 'WORKGROUP'
+    option description 'OpenWrt NAS'
+    option interface 'lan tailscale'
+
+config share 'nas'
+    option name 'NAS1'
+    option path '/mnt/nas'
+    option read_only 'no'
+    option users 'nas'
+
+config share 'nas2'
+    option name 'NAS2'
+    option path '/mnt/nas2'
+    option read_only 'no'
+    option users 'nas'
+
+# PRIVATE chỉ add khi /dev/mapper/private đã mount.

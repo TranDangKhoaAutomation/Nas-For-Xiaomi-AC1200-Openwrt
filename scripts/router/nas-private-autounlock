@@ -1,0 +1,133 @@
+#!/bin/sh
+# VeraCrypt PRIVATE auto-unlock helper for OpenWrt.
+# The passphrase is stored only in KEYFILE with mode 0600.
+# It is never placed on the command line or written to logs.
+
+NAS1_UUID="01DC8764756E6240"
+NAS2_UUID="78F6F2BBF6F278A8"
+KEYFILE="/root/.nas-private-passphrase"
+MAPPER="private"
+MARK="/tmp/nas-private-autounlock-attempted"
+LOCKDIR="/var/lock/nas-private-autounlock.lock"
+TAG="nas-private-autounlock"
+
+log() { logger -t "$TAG" "$*"; }
+
+find_by_uuid() {
+    uuid="$1"
+    /sbin/block info 2>/dev/null | awk -v u="$uuid" '
+        index($0, u) {
+            sub(/:.*/, "", $0);
+            print $0;
+            exit
+        }'
+}
+
+part_base() {
+    part="$1"
+    case "$part" in
+        /dev/sd*[0-9]*) printf '%s\n' "${part%%[0-9]*}" ;;
+        *) return 1 ;;
+    esac
+}
+
+private_device() {
+    p1="$(find_by_uuid "$NAS1_UUID")"
+    p2="$(find_by_uuid "$NAS2_UUID")"
+    [ -n "$p1" ] && [ -n "$p2" ] || return 1
+
+    b1="$(part_base "$p1")" || return 1
+    b2="$(part_base "$p2")" || return 1
+    [ "$b1" = "$b2" ] || return 1
+
+    dev="${b1}3"
+    [ -b "$dev" ] || return 1
+    printf '%s\n' "$dev"
+}
+
+mapper_active() {
+    cryptsetup status "$MAPPER" >/dev/null 2>&1
+}
+
+lock_run() {
+    mkdir -p /var/lock
+    if ! mkdir "$LOCKDIR" 2>/dev/null; then
+        return 1
+    fi
+    trap 'rmdir "$LOCKDIR" >/dev/null 2>&1' EXIT INT TERM HUP
+    return 0
+}
+
+attempt() {
+    [ -r "$KEYFILE" ] || return 0
+    mapper_active && return 0
+    [ ! -e "$MARK" ] || return 0
+
+    dev="$(private_device 2>/dev/null || true)"
+    [ -n "$dev" ] || return 1
+
+    lock_run || return 0
+    mapper_active && return 0
+    [ ! -e "$MARK" ] || return 0
+
+    touch "$MARK"
+    chmod 600 "$KEYFILE" >/dev/null 2>&1 || true
+    log "attempting PRIVATE auto-unlock on $dev"
+
+    if cryptsetup tcryptOpen --veracrypt --key-file=- "$dev" "$MAPPER" < "$KEYFILE" >/dev/null 2>&1; then
+        log "PRIVATE auto-unlock succeeded"
+        /usr/sbin/nas-storage-manager reconcile >/dev/null 2>&1 || true
+        return 0
+    fi
+
+    log "PRIVATE auto-unlock failed; no automatic retry until next boot/reinsert/reset"
+    return 1
+}
+
+wait_and_attempt() {
+    i=0
+    while [ "$i" -lt 45 ]; do
+        [ -r "$KEYFILE" ] || return 0
+        mapper_active && return 0
+        if private_device >/dev/null 2>&1; then
+            attempt
+            return $?
+        fi
+        sleep 2
+        i=$((i + 1))
+    done
+    log "PRIVATE disk not found during boot wait"
+    return 0
+}
+
+case "$1" in
+    wait)
+        wait_and_attempt
+        ;;
+    attempt|"")
+        attempt
+        ;;
+    reset)
+        rm -f "$MARK"
+        attempt
+        ;;
+    clear)
+        rm -f "$MARK"
+        ;;
+    status)
+        if [ -r "$KEYFILE" ]; then
+            echo "Auto-unlock: ENABLED"
+        else
+            echo "Auto-unlock: DISABLED"
+        fi
+        if mapper_active; then
+            echo "PRIVATE: unlocked"
+        else
+            echo "PRIVATE: locked"
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {wait|attempt|reset|clear|status}" >&2
+        exit 2
+        ;;
+esac
