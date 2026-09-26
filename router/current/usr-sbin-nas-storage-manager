@@ -1,0 +1,528 @@
+#!/bin/sh
+# Multi-partition NAS storage manager for OpenWrt.
+# Managed layout:
+#   NAS1    -> NTFS UUID 01DC8764756E6240 -> /mnt/nas
+#   NAS2    -> NTFS UUID 78F6F2BBF6F278A8 -> /mnt/nas2
+#   PRIVATE -> VeraCrypt partition 3 on the same disk -> /dev/mapper/private -> /mnt/private
+#
+# Safety:
+# - Never formats or repairs filesystems.
+# - Never forces dirty NTFS read/write; falls back to read-only.
+# - Never stores the VeraCrypt passphrase.
+# - PRIVATE SMB share exists only while the VeraCrypt mapper is active and mounted.
+
+NAS1_UUID="01DC8764756E6240"
+NAS2_UUID="78F6F2BBF6F278A8"
+
+NAS1_MP="/mnt/nas"
+NAS2_MP="/mnt/nas2"
+PRIVATE_MP="/mnt/private"
+PRIVATE_MAPPER="private"
+PRIVATE_MAP="/dev/mapper/$PRIVATE_MAPPER"
+
+LOCKDIR="/var/lock/nas-storage.lock"
+TAG="nas-storage"
+CONFIG_CHANGED=0
+
+log() {
+    logger -t "$TAG" "$*"
+}
+
+lock() {
+    mkdir -p /var/lock
+    if ! mkdir "$LOCKDIR" 2>/dev/null; then
+        exit 0
+    fi
+    trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT INT TERM
+}
+
+mounted_source() {
+    mp="$1"
+    awk -v mp="$mp" '$2 == mp { print $1; exit }' /proc/mounts
+}
+
+mount_mode() {
+    mp="$1"
+    awk -v mp="$mp" '
+        $2 == mp {
+            n=split($4,a,",");
+            for (i=1;i<=n;i++) {
+                if (a[i] == "ro" || a[i] == "rw") {
+                    print a[i];
+                    exit
+                }
+            }
+        }' /proc/mounts
+}
+
+find_by_uuid() {
+    uuid="$1"
+    /sbin/block info 2>/dev/null | awk -v u="$uuid" '
+        index($0, u) {
+            sub(/:.*/, "", $0);
+            print $0;
+            exit
+        }'
+}
+
+part_base() {
+    part="$1"
+    case "$part" in
+        /dev/sd*[0-9]*) printf '%s\n' "${part%%[0-9]*}" ;;
+        *) return 1 ;;
+    esac
+}
+
+private_device() {
+    p1="$(find_by_uuid "$NAS1_UUID")"
+    p2="$(find_by_uuid "$NAS2_UUID")"
+    [ -n "$p1" ] && [ -n "$p2" ] || return 1
+
+    b1="$(part_base "$p1")" || return 1
+    b2="$(part_base "$p2")" || return 1
+    [ "$b1" = "$b2" ] || return 1
+
+    dev="${b1}3"
+    [ -b "$dev" ] || return 1
+    printf '%s\n' "$dev"
+}
+
+device_is_mounted_elsewhere() {
+    dev="$1"
+    expected_mp="$2"
+    awk -v d="$dev" -v mp="$expected_mp" '
+        $1 == d && $2 != mp { found=1 }
+        END { exit !found }
+    ' /proc/mounts
+}
+
+uci_set_if_changed() {
+    key="$1"
+    value="$2"
+    current="$(uci -q get "$key" 2>/dev/null || true)"
+    if [ "$current" != "$value" ]; then
+        uci set "$key=$value"
+        CONFIG_CHANGED=1
+    fi
+}
+
+share_set() {
+    section="$1"
+    name="$2"
+    path="$3"
+    readonly="$4"
+
+    if [ "$(uci -q get "ksmbd.$section" 2>/dev/null || true)" != "share" ]; then
+        uci set "ksmbd.$section=share"
+        CONFIG_CHANGED=1
+    fi
+
+    uci_set_if_changed "ksmbd.$section.name" "$name"
+    uci_set_if_changed "ksmbd.$section.path" "$path"
+    uci_set_if_changed "ksmbd.$section.browseable" "yes"
+    uci_set_if_changed "ksmbd.$section.read_only" "$readonly"
+    uci_set_if_changed "ksmbd.$section.users" "nas"
+    uci_set_if_changed "ksmbd.$section.guest_ok" "no"
+    uci_set_if_changed "ksmbd.$section.create_mask" "0600"
+    uci_set_if_changed "ksmbd.$section.dir_mask" "0700"
+}
+
+share_remove() {
+    section="$1"
+    if uci -q get "ksmbd.$section" >/dev/null 2>&1; then
+        uci -q delete "ksmbd.$section"
+        CONFIG_CHANGED=1
+    fi
+}
+
+start_ksmbd() {
+    [ -x /etc/init.d/ksmbd ] || return 0
+    if /etc/init.d/ksmbd status >/dev/null 2>&1; then
+        return 0
+    fi
+    /etc/init.d/ksmbd start >/dev/null 2>&1
+}
+
+stop_ksmbd() {
+    [ -x /etc/init.d/ksmbd ] || return 0
+    /etc/init.d/ksmbd stop >/dev/null 2>&1
+}
+
+have_any_share_mount() {
+    [ -n "$(mounted_source "$NAS1_MP")" ] && return 0
+    [ -n "$(mounted_source "$NAS2_MP")" ] && return 0
+    [ -n "$(mounted_source "$PRIVATE_MP")" ] && return 0
+    return 1
+}
+
+apply_ksmbd() {
+    changed="$CONFIG_CHANGED"
+
+    if [ "$changed" = "1" ]; then
+        uci commit ksmbd
+    fi
+
+    if have_any_share_mount; then
+        if [ "$changed" = "1" ]; then
+            /etc/init.d/ksmbd restart >/dev/null 2>&1 || /etc/init.d/ksmbd start >/dev/null 2>&1
+        else
+            start_ksmbd
+        fi
+    else
+        stop_ksmbd
+    fi
+
+    CONFIG_CHANGED=0
+}
+
+safe_unmount_stale() {
+    mp="$1"
+    src="$(mounted_source "$mp")"
+    [ -n "$src" ] || return 0
+
+    stop_ksmbd
+    umount "$mp" >/dev/null 2>&1 || umount -l "$mp" >/dev/null 2>&1 || true
+}
+
+mount_ntfs_partition() {
+    dev="$1"
+    mp="$2"
+    section="$3"
+    name="$4"
+
+    mkdir -p "$mp"
+
+    if mount -t ntfs3 -o rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "$dev" "$mp" >/tmp/nas-mount.err 2>&1; then
+        rm -f /tmp/nas-mount.err
+        share_set "$section" "$name" "$mp" "no"
+        log "$name mounted RW: $dev -> $mp"
+        return 0
+    fi
+
+    # Never force a dirty NTFS volume. Safe fallback is read-only.
+    if mount -t ntfs3 -o ro,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "$dev" "$mp" >/dev/null 2>&1; then
+        share_set "$section" "$name" "$mp" "yes"
+        log "$name mounted READ-ONLY because RW failed: $dev; run Windows chkdsk /f before RW use"
+        return 0
+    fi
+
+    log "$name mount failed: $dev"
+    return 1
+}
+
+ensure_normal_share() {
+    uuid="$1"
+    mp="$2"
+    section="$3"
+    name="$4"
+
+    dev="$(find_by_uuid "$uuid")"
+    src="$(mounted_source "$mp")"
+
+    if [ -z "$dev" ]; then
+        if [ -n "$src" ]; then
+            safe_unmount_stale "$mp"
+        fi
+        share_remove "$section"
+        return 1
+    fi
+
+    if [ "$src" = "$dev" ]; then
+        mode="$(mount_mode "$mp")"
+        if [ "$mode" = "ro" ]; then
+            share_set "$section" "$name" "$mp" "yes"
+        else
+            share_set "$section" "$name" "$mp" "no"
+        fi
+        return 0
+    fi
+
+    if [ -n "$src" ]; then
+        safe_unmount_stale "$mp"
+    fi
+
+    if device_is_mounted_elsewhere "$dev" "$mp"; then
+        log "$name skipped because $dev is mounted elsewhere"
+        share_remove "$section"
+        return 1
+    fi
+
+    mount_ntfs_partition "$dev" "$mp" "$section" "$name"
+}
+
+private_active() {
+    cryptsetup status "$PRIVATE_MAPPER" >/dev/null 2>&1
+}
+
+private_raw_source() {
+    cryptsetup status "$PRIVATE_MAPPER" 2>/dev/null | awk '$1 == "device:" { print $2; exit }'
+}
+
+mount_private_mapper() {
+    mkdir -p "$PRIVATE_MP"
+
+    if mount -t ntfs3 -o rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "$PRIVATE_MAP" "$PRIVATE_MP" >/tmp/nas-private-mount.err 2>&1; then
+        rm -f /tmp/nas-private-mount.err
+        share_set private PRIVATE "$PRIVATE_MP" "no"
+        log "PRIVATE mounted RW: $PRIVATE_MAP -> $PRIVATE_MP"
+        return 0
+    fi
+
+    if mount -t ntfs3 -o ro,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "$PRIVATE_MAP" "$PRIVATE_MP" >/dev/null 2>&1; then
+        share_set private PRIVATE "$PRIVATE_MP" "yes"
+        log "PRIVATE mounted READ-ONLY because RW failed"
+        return 0
+    fi
+
+    log "PRIVATE mount failed"
+    return 1
+}
+
+reconcile_private() {
+    src="$(mounted_source "$PRIVATE_MP")"
+
+    if ! private_active; then
+        if [ -n "$src" ]; then
+            safe_unmount_stale "$PRIVATE_MP"
+        fi
+        share_remove private
+        rmdir "$PRIVATE_MP" >/dev/null 2>&1 || true
+        return 0
+    fi
+
+    expected="$(private_device 2>/dev/null || true)"
+    actual="$(private_raw_source 2>/dev/null || true)"
+
+    if [ -n "$expected" ] && [ -n "$actual" ] && [ "$expected" != "$actual" ]; then
+        log "PRIVATE mapper source mismatch: expected=$expected actual=$actual"
+        share_remove private
+        return 1
+    fi
+
+    if [ "$src" = "$PRIVATE_MAP" ]; then
+        mode="$(mount_mode "$PRIVATE_MP")"
+        if [ "$mode" = "ro" ]; then
+            share_set private PRIVATE "$PRIVATE_MP" "yes"
+        else
+            share_set private PRIVATE "$PRIVATE_MP" "no"
+        fi
+        return 0
+    fi
+
+    if [ -n "$src" ]; then
+        safe_unmount_stale "$PRIVATE_MP"
+    fi
+
+    mount_private_mapper
+}
+
+reconcile_all() {
+    ensure_normal_share "$NAS1_UUID" "$NAS1_MP" nas NAS1 >/dev/null 2>&1 || true
+    ensure_normal_share "$NAS2_UUID" "$NAS2_MP" nas2 NAS2 >/dev/null 2>&1 || true
+    reconcile_private >/dev/null 2>&1 || true
+    apply_ksmbd
+}
+
+unlock_private() {
+    dev="$(private_device 2>/dev/null || true)"
+    [ -n "$dev" ] || {
+        echo "PRIVATE device not found. NAS1/NAS2 disk must be connected." >&2
+        return 1
+    }
+
+    if private_active; then
+        current="$(private_raw_source 2>/dev/null || true)"
+        if [ -n "$current" ] && [ "$current" != "$dev" ]; then
+            echo "PRIVATE mapper is active on unexpected device: $current" >&2
+            return 1
+        fi
+        echo "PRIVATE is already unlocked."
+    else
+        echo "Unlocking VeraCrypt PRIVATE on $dev..."
+        echo "The passphrase is entered directly into cryptsetup and is not stored."
+        cryptsetup tcryptOpen --veracrypt "$dev" "$PRIVATE_MAPPER" || return 1
+    fi
+
+    reconcile_private || return 1
+    apply_ksmbd
+
+    if [ "$(mounted_source "$PRIVATE_MP")" = "$PRIVATE_MAP" ]; then
+        echo "PRIVATE ready: $PRIVATE_MAP -> $PRIVATE_MP ($(mount_mode "$PRIVATE_MP"))"
+        return 0
+    fi
+
+    echo "PRIVATE unlocked but mount failed." >&2
+    return 1
+}
+
+lock_private() {
+    if ! private_active; then
+        share_remove private
+        apply_ksmbd
+        rmdir "$PRIVATE_MP" >/dev/null 2>&1 || true
+        echo "PRIVATE is already locked."
+        return 0
+    fi
+
+    stop_ksmbd
+    sync
+
+    if [ -n "$(mounted_source "$PRIVATE_MP")" ]; then
+        if ! umount "$PRIVATE_MP"; then
+            echo "PRIVATE is busy; lock cancelled." >&2
+            reconcile_all
+            return 1
+        fi
+    fi
+
+    if ! cryptsetup close "$PRIVATE_MAPPER"; then
+        echo "Could not close PRIVATE mapper." >&2
+        reconcile_all
+        return 1
+    fi
+
+    share_remove private
+    rmdir "$PRIVATE_MP" >/dev/null 2>&1 || true
+    apply_ksmbd
+    echo "PRIVATE locked."
+}
+
+handle_remove() {
+    # A physical USB removal/reset can invalidate all partitions on this disk.
+    stop_ksmbd
+
+    for mp in "$PRIVATE_MP" "$NAS2_MP" "$NAS1_MP"; do
+        if [ -n "$(mounted_source "$mp")" ]; then
+            umount "$mp" >/dev/null 2>&1 || umount -l "$mp" >/dev/null 2>&1 || true
+        fi
+    done
+
+    if private_active; then
+        cryptsetup close "$PRIVATE_MAPPER" >/dev/null 2>&1 || true
+    fi
+
+    share_remove private
+    share_remove nas2
+    share_remove nas
+    apply_ksmbd
+
+    rmdir "$PRIVATE_MP" >/dev/null 2>&1 || true
+    log "storage remove/reset handled: $1"
+}
+
+eject_all() {
+    stop_ksmbd
+    sync
+
+    failed=0
+    for mp in "$PRIVATE_MP" "$NAS2_MP" "$NAS1_MP"; do
+        if [ -n "$(mounted_source "$mp")" ]; then
+            if ! umount "$mp"; then
+                echo "Eject failed: $mp is busy." >&2
+                failed=1
+                break
+            fi
+        fi
+    done
+
+    if [ "$failed" = "1" ]; then
+        reconcile_all
+        return 1
+    fi
+
+    if private_active; then
+        if ! cryptsetup close "$PRIVATE_MAPPER"; then
+            echo "Eject failed: could not close PRIVATE mapper." >&2
+            reconcile_all
+            return 1
+        fi
+    fi
+
+    share_remove private
+    share_remove nas2
+    share_remove nas
+    apply_ksmbd
+    rmdir "$PRIVATE_MP" >/dev/null 2>&1 || true
+
+    echo "All NAS volumes unmounted. Safe to unplug the managed HDD."
+}
+
+status() {
+    tsip="$(tailscale ip -4 2>/dev/null | head -n 1)"
+
+    echo "=== NAS storage status ==="
+
+    for item in "NAS1|$NAS1_MP|nas" "NAS2|$NAS2_MP|nas2" "PRIVATE|$PRIVATE_MP|private"; do
+        name="${item%%|*}"
+        rest="${item#*|}"
+        mp="${rest%%|*}"
+        src="$(mounted_source "$mp")"
+        if [ -n "$src" ]; then
+            echo "$name: $src -> $mp ($(mount_mode "$mp"))"
+        else
+            echo "$name: not mounted"
+        fi
+    done
+
+    if private_active; then
+        echo "PRIVATE VeraCrypt: unlocked ($(private_raw_source))"
+    else
+        echo "PRIVATE VeraCrypt: LOCKED"
+    fi
+
+    echo -n "KSMBD: "
+    /etc/init.d/ksmbd status 2>/dev/null || true
+
+    if [ -n "$tsip" ]; then
+        echo "Remote SMB via Tailscale:"
+        [ -n "$(mounted_source "$NAS1_MP")" ] && echo "  \\$tsip\NAS1"
+        [ -n "$(mounted_source "$NAS2_MP")" ] && echo "  \\$tsip\NAS2"
+        [ -n "$(mounted_source "$PRIVATE_MP")" ] && echo "  \\$tsip\PRIVATE"
+    fi
+    return 0
+}
+
+watch() {
+    log "multi-volume watchdog started"
+    while true; do
+        "$0" reconcile >/dev/null 2>&1
+        sleep 5
+    done
+}
+
+case "$1" in
+    watch)
+        watch
+        ;;
+    scan|start|"")
+        lock
+        reconcile_all
+        ;;
+    reconcile)
+        lock
+        reconcile_all
+        ;;
+    unlock-private|unlock)
+        lock
+        unlock_private
+        ;;
+    lock-private|lock)
+        lock
+        lock_private
+        ;;
+    remove)
+        lock
+        handle_remove "$2"
+        ;;
+    eject|unmount)
+        lock
+        eject_all
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {watch|scan|reconcile|unlock-private|lock-private|remove /dev/sdX[N]|eject|status}" >&2
+        exit 2
+        ;;
+esac

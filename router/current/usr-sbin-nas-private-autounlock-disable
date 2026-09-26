@@ -1,0 +1,4 @@
+#!/bin/sh
+KEYFILE="/root/.nas-private-passphrase"
+rm -f "$KEYFILE" /tmp/nas-private-autounlock-attempted
+echo "PRIVATE auto-unlock disabled. Current mapper state was not changed."

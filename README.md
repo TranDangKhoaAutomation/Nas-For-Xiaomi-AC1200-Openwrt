@@ -1,283 +1,360 @@
-# NAS for Xiaomi AC1200 / Mi Router 3G on OpenWrt
+# NAS for Xiaomi Mi Router 3G / OpenWrt
 
-Repo này là bộ triển khai NAS hoàn chỉnh cho Xiaomi Mi Router 3G / AC1200 chạy OpenWrt, được tổng hợp từ hệ thống đã cấu hình và kiểm thử thực tế.
+Bộ repo này ghi lại đầy đủ hệ thống NAS đã triển khai và kiểm thử trên Xiaomi Mi Router 3G chạy OpenWrt 25.12.5: USB storage, NTFS, KSMBD, Tailscale remote SMB, PRIVATE VeraCrypt, watchdog/self-heal, backup/recovery, app Windows + Android và các lỗi thực tế đã gặp.
 
-Nó bao gồm:
-- firmware/recovery backup đã làm sạch secret;
-- multi-volume storage manager;
-- KSMBD/SMB;
-- Tailscale remote access;
-- PRIVATE VeraCrypt;
-- auto-mount/watchdog/self-heal;
-- hướng dẫn backup/restore;
-- hướng dẫn khắc phục toàn bộ lỗi đã gặp;
-- source + release app Windows;
-- source + APK Android;
-- config snapshot, script vận hành, report và checksum.
+> Quan trọng: tên repo có “Xiaomi AC1200”, nhưng phần cứng đã xác minh của bộ backup này là Xiaomi Mi Router 3G, board xiaomi,mi-router-3g, SoC MT7621. Không flash firmware này cho model khác chỉ vì cùng nhãn AC1200.
 
-> Repo là PUBLIC. Backup gốc có mật khẩu, /etc/shadow, Dropbear host key và Wi-Fi key không được đưa lên. File trong backups/public là bản SANITIZED.
+## 1. Trạng thái hiện tại đã xác minh
 
-## 1. Hệ thống tham chiếu
-
-| Thành phần | Giá trị |
+| Hạng mục | Trạng thái |
 |---|---|
-| Router | Xiaomi Mi Router 3G / AC1200 |
+| Router | Xiaomi Mi Router 3G |
+| Board | xiaomi,mi-router-3g |
 | SoC | MediaTek MT7621 |
 | OpenWrt | 25.12.5 r33051-f5dae5ece4 |
 | Kernel | 6.12.94 |
 | Target | ramips/mt7621 |
-| Board | xiaomi,mi-router-3g |
-| HDD | HGST HTS721010A9E630, 1 TB, 7200 RPM |
-| Partition table | MBR/DOS |
 | SMB server | KSMBD |
+| Tailscale | running |
+| Tailscale IPv4 snapshot | 100.91.1.101 |
+| NAS1 | /dev/sda1 -> /mnt/nas, NTFS3 RW |
+| NAS2 | /dev/sda2 -> /mnt/nas2, NTFS3 RW |
+| PRIVATE | /dev/sda3 -> /dev/mapper/private -> /mnt/private, VeraCrypt/TCRYPT + NTFS3 RW |
+| SMB shares | NAS1, NAS2, PRIVATE |
 | SMB user | nas |
-| Remote access | Tailscale |
-| PRIVATE encryption | VeraCrypt/TCRYPT + NTFS |
-| Windows client | Khoa-NAS-PC |
-| Android client | Flutter Khoa NAS |
+| WAN TCP/445 | REJECT |
+| Tailscale TCP/445 | ACCEPT |
+| PRIVATE auto-unlock | enabled trong snapshot hiện tại; keyfile không có trong repo |
 
-Địa chỉ Tailscale cá nhân được thay bằng <TAILSCALE_IP> trong tài liệu public.
+Remote SMB hiện dùng:
 
-## 2. Layout storage
+    \\100.91.1.101\NAS1
+    \\100.91.1.101\NAS2
+    \\100.91.1.101\PRIVATE
 
-~~~text
-HGST 1 TB
-├─ /dev/sda1  NAS1     ~831.5 GiB NTFS  -> /mnt/nas
-├─ /dev/sda2  NAS2     ~50 GiB    NTFS  -> /mnt/nas2
-└─ /dev/sda3  PRIVATE  ~50 GiB VeraCrypt
-      └─ /dev/mapper/private -> NTFS -> /mnt/private
-~~~
+Không expose SMB trực tiếp ra Internet. Remote access đi qua Tailscale.
 
-UUID của hệ thống tham chiếu:
-- NAS1: 01DC8764756E6240
-- NAS2: 78F6F2BBF6F278A8
+## 2. Cấu trúc repo
 
-Manager tìm NAS1/NAS2 bằng UUID và xác định PRIVATE là partition 3 trên đúng physical disk chứa cả hai UUID, vì vậy không phụ thuộc cố định vào tên sda/sdb.
+    .
+    ├─ README.md
+    ├─ docs/
+    │  ├─ CURRENT-STATE.md
+    │  ├─ QUICK-START.md
+    │  ├─ BACKUP-RESTORE.md
+    │  ├─ STORAGE-VERACRYPT.md
+    │  ├─ ROUTER-CONFIG.md
+    │  ├─ OPERATIONS.md
+    │  ├─ APPS.md
+    │  ├─ TROUBLESHOOTING.md
+    │  ├─ RECOVERY.md
+    │  ├─ SECURITY.md
+    │  └─ history/
+    ├─ router/
+    │  ├─ current/
+    │  └─ helpers/
+    ├─ apps/
+    │  ├─ windows/src/
+    │  └─ android/
+    ├─ releases/
+    │  ├─ Khoa-NAS-PC.exe
+    │  ├─ Khoa-NAS-Android-v1.0.0.apk
+    │  └─ SHA256SUMS.txt
+    ├─ backups/
+    │  └─ public/
+    │     └─ OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
+    └─ firmware/
+       └─ README.md
 
-## 3. Share SMB
+## 3. Kiến trúc storage
 
-~~~text
-NAS1     -> /mnt/nas
-NAS2     -> /mnt/nas2
-PRIVATE  -> /mnt/private
-~~~
+HDD 1 TB hiện được tổ chức:
 
-Remote qua Tailscale:
+- NAS1: khoảng 831.5 GiB, NTFS, mount /mnt/nas.
+- NAS2: khoảng 50 GiB, NTFS, mount /mnt/nas2.
+- PRIVATE: khoảng 50 GiB, VeraCrypt/TCRYPT trên partition 3; khi unlock mapper là /dev/mapper/private, NTFS mount /mnt/private.
 
-~~~text
-\\<TAILSCALE_IP>\NAS1
-\\<TAILSCALE_IP>\NAS2
-\\<TAILSCALE_IP>\PRIVATE
-~~~
+Storage manager hiện làm các việc:
 
-PRIVATE chỉ xuất hiện khi VeraCrypt mapper đang mở và filesystem đã mount thật.
-
-## 4. Kiến trúc remote
-
-~~~text
-PC / Android
-    |
-    +-- Tailscale encrypted tunnel
-            |
-            +-- OpenWrt router
-                  +-- firewall ACCEPT TCP/445 từ tailscale
-                  +-- firewall REJECT TCP/445 từ WAN
-                  +-- KSMBD
-                  +-- NAS1 / NAS2 / PRIVATE
-~~~
-
-Không port-forward SMB TCP/445 trực tiếp ra Internet.
-
-## 5. Package đang dùng
-
-~~~sh
-apk update
-apk add \
-  block-mount cryptsetup \
-  kmod-fs-ksmbd kmod-fs-ntfs3 \
-  kmod-usb-storage kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-usb3 \
-  ksmbd-server ntfs-3g ntfs-3g-utils smartmontools tailscale
-~~~
-
-## 6. Storage manager
-
-File chính: scripts/router/nas-storage-manager
-
-Chức năng:
-- auto-detect NAS1/NAS2 bằng UUID;
-- xác định PRIVATE theo physical disk;
-- mount NTFS3;
+- tìm NAS1/NAS2 theo UUID và quan hệ physical disk, không tin tuyệt đối /dev/sdaX;
+- tự reconcile qua procd/watchdog;
+- xử lý hotplug;
 - không format;
-- không tự repair;
+- không tự repair filesystem;
 - không force dirty NTFS RW;
-- fallback read-only nếu RW fail;
-- chỉ tạo KSMBD share khi mount thật tồn tại;
-- tự gỡ share khi disk mất;
-- PRIVATE chỉ share khi mapper active;
-- procd watchdog + reconcile;
-- safe eject.
+- khi storage mất thì cleanup mount/share;
+- chỉ bật/expose KSMBD khi có storage thật;
+- PRIVATE bị gỡ khỏi KSMBD khi locked và được thêm lại khi mapper xuất hiện.
 
-Lệnh:
+## 4. Kiến trúc network
 
-~~~sh
-/usr/sbin/nas-storage-manager status
-/usr/sbin/nas-storage-manager reconcile
-/usr/sbin/nas-storage-manager unlock-private
-/usr/sbin/nas-storage-manager lock-private
-/usr/sbin/nas-storage-manager eject
-~~~
+- LAN có thể truy cập SMB khi KSMBD interface phù hợp.
+- Remote SMB đi qua Tailscale.
+- Firewall ACCEPT TCP/445 từ zone Tailscale.
+- Firewall REJECT TCP/445 từ WAN.
+- Không port-forward SMB 445 ra Internet.
 
-## 7. PRIVATE VeraCrypt
+## 5. PRIVATE VeraCrypt
 
-Manual unlock:
+PRIVATE dùng /dev/sda3 và được mở thành /dev/mapper/private.
 
-~~~sh
-/usr/sbin/nas-storage-manager unlock-private
-~~~
+Có hai cách vận hành:
 
-Auto-unlock:
+1. Manual unlock: bảo mật vật lý tốt hơn; reboot xong phải nhập passphrase.
+2. Auto-unlock: tiện hơn; secret root-only được lưu trên router flash.
 
-~~~sh
-/usr/sbin/nas-private-autounlock-setup
-~~~
+Snapshot hiện tại đang bật auto-unlock. Nội dung /root/.nas-private-passphrase không được export vào repo.
 
-Tắt auto-unlock:
+Đây là trade-off rõ ràng: nếu ai đó có quyền root hoặc lấy được flash router thì secret auto-unlock có thể bị lộ.
 
-~~~sh
-/usr/sbin/nas-private-autounlock-disable
-~~~
+## 6. Cài nhanh từ OpenWrt đang chạy
 
-Auto-unlock lưu passphrase tại /root/.nas-private-passphrase với mode 0600. Đây là lựa chọn tiện lợi nhưng giảm mức bảo vệ nếu attacker lấy được cả router + HDD hoặc có root trên router.
+Xem chi tiết tại docs/QUICK-START.md.
 
-Manager chính không chứa passphrase; auto-unlock là subsystem riêng.
+OpenWrt 25.12 sử dụng apk:
 
-## 8. Backup
+    apk update
+    apk add block-mount cryptsetup kmod-fs-ksmbd kmod-fs-ntfs3 \
+      kmod-usb-storage kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-usb3 \
+      ksmbd-server ntfs-3g ntfs-3g-utils smartmontools tailscale
 
-Bản public:
-backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
+Tailscale:
 
-Nó chứa:
-- sysupgrade image;
-- initramfs/kernel/rootfs recovery files;
+    /etc/init.d/tailscale enable
+    /etc/init.d/tailscale start
+    tailscale up
+
+KSMBD user:
+
+    ksmbd.adduser -a nas
+
+Đổi mật khẩu:
+
+    ksmbd.adduser -u nas
+    /etc/init.d/ksmbd restart
+
+Không ghi mật khẩu SMB vào script hoặc repo.
+
+## 7. Snapshot router
+
+Thư mục router/current chứa snapshot file đang vận hành, lấy trực tiếp từ router ngày 2026-09-26:
+
+- nas-storage-manager;
+- init service nas-storage;
+- block hotplug 95-nas-storage;
+- KSMBD config;
+- firewall config;
+- PRIVATE auto-unlock scripts;
+- status snapshot.
+
+Cố ý không có:
+
+- /etc/ksmbd/ksmbdpwd.db;
+- /root/.nas-private-passphrase;
+- Tailscale state/auth key;
+- /etc/shadow;
+- SSH private keys.
+
+Xem docs/ROUTER-CONFIG.md.
+
+## 8. Backup đầy đủ nhưng an toàn cho repo public
+
+Backup gốc riêng tư có /etc/shadow, SSH host private key và Wi-Fi key/password nên không được đẩy nguyên xi lên GitHub public.
+
+Repo thay bằng:
+
+    backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
+
+Bản public sanitized vẫn có:
+
+- sysupgrade firmware chính;
+- initramfs, kernel1, rootfs0 recovery images;
 - build metadata;
-- package list;
-- partition/MTD metadata;
-- config archive đã loại /etc/shadow + Dropbear host keys;
-- UCI key/password đã REDACTED;
-- checksum.
+- package inventory;
+- MTD/partition metadata;
+- screenshots;
+- UCI export đã redacted;
+- restore template đã loại shadow và SSH host private keys.
 
-Backup gốc private không upload. SHA-256 lịch sử:
-006b2b8a4a36236558a7db954d43c772bebf43e7794bc467a4468d0e6ba0a143
+Muốn tạo full private backup của chính router:
 
-Chi tiết: docs/BACKUP-RESTORE.md
+    umask 077
+    sysupgrade -b /tmp/openwrt-private-backup.tar.gz
+    chmod 600 /tmp/openwrt-private-backup.tar.gz
+    sha256sum /tmp/openwrt-private-backup.tar.gz
 
-## 9. Windows app
+Sau đó SCP về máy cá nhân và cất offline hoặc encrypted. Không commit file private backup.
+
+Xem docs/BACKUP-RESTORE.md.
+
+## 9. Firmware và recovery
+
+Firmware chính khi router đang chạy OpenWrt và layout vẫn tương thích:
+
+    01_NAP_FILE_NAY_KHI_DANG_O_OPENWRT.bin
+
+SHA-256:
+
+    cdde5ceea7b4c5c044b23b34f1d93c332697fbafc7aac1c7eee8323904b12c21
+
+Không upload file ZIP vào ô flash firmware.
+
+Nếu đã cài Breed, Padavan hoặc firmware khác thì bootloader/partition layout có thể đã thay đổi. Không thử lần lượt kernel1/rootfs0. Xem docs/RECOVERY.md và firmware/README.md.
+
+## 10. App Windows
 
 Source:
-software/pc/khoa_nas_pc.py
+
+    apps/windows/src/khoa_nas_pc.py
 
 Release:
-software/releases/Khoa-NAS-PC.exe
 
-Tính năng:
-- đăng nhập SMB;
-- map persistent thành Network Drive trong This PC;
-- tự nhận mapping cũ;
-- chỉ unmap khi người dùng nhấn Xóa khỏi This PC;
-- browse/upload/download/create/rename/delete;
-- timeout/watchdog;
-- Windows WNet API để truyền credential trực tiếp.
+    releases/Khoa-NAS-PC.exe
 
-Bản cũ từng dùng net use với dấu * và gây lỗi interactive/cancel dù password nhập đúng. Bản mới đã bỏ cách đó.
+App hiện:
 
-Lưu ý: PyInstaller EXE unsigned có thể bị Windows Smart App Control chặn. Xem docs/CLIENT-APPS.md.
+- kết nối SMB qua Windows WNet API;
+- map share thành ổ mạng trong This PC;
+- tự chọn drive letter trống từ Z: trở xuống;
+- mapping persistent;
+- mở app lại tự nhận mapping cũ;
+- đóng app không xóa mapping;
+- chỉ nút Xóa khỏi This PC mới remove mapping;
+- browse, upload, download, create folder, rename, delete;
+- timeout/watchdog để không treo vô hạn.
 
-## 10. Android app
+Các lỗi đã sửa:
 
-Source:
-software/android/
+- busy=True khiến nút Connect xám hàng giờ khi thao tác SMB treo;
+- net use với dấu sao tạo password prompt tương tác ngầm;
+- Windows Error 86/1326 cho credential sai;
+- Error 1219 do session tới cùng server bằng credential khác;
+- stale SMB sessions.
+
+### Smart App Control
+
+EXE PyInstaller là unsigned. Windows Smart App Control có thể chặn executable unsigned. Repo không khuyến nghị tắt Smart App Control để né bảo mật.
+
+Có thể:
+
+- chạy source Python;
+- hoặc tự code-sign EXE bằng certificate phù hợp.
+
+## 11. App Android
+
+Source Flutter:
+
+    apps/android/
 
 APK:
-software/releases/Khoa-NAS-Android-v1.0.0.apk
 
-Đã kiểm:
-- flutter analyze --no-pub: No issues found.
-- flutter test --no-pub: All tests passed.
+    releases/Khoa-NAS-Android-v1.0.0.apk
 
-Android cần Tailscale đang kết nối tailnet nếu dùng SMB remote.
+Regression trước khi publish:
 
-## 11. Các lỗi đã gặp
+- flutter analyze --no-pub: PASS
+- flutter test --no-pub: PASS
+- flutter build apk --release --no-pub: PASS
 
-Đã có hướng dẫn xử lý:
-- HDD không nhận sau reboot;
-- disk nhận nhưng thư mục/share không mở;
-- share path thừa /sd;
-- dirty NTFS;
-- ntfsfix / chkdsk;
-- USB reset / Buffer I/O error / device offlined;
-- nguồn HDD 2.5" 7200 RPM;
-- tên file tiếng Việt;
-- KSMBD không chạy/share rỗng;
-- PRIVATE không xuất hiện;
-- Tailscale ping được nhưng SMB không được;
-- Error 86 / 1326;
-- Error 1219 credential conflict;
-- Error 1223 operation canceled;
-- Windows cached SMB credential;
-- app Windows treo nút Kết nối;
-- Smart App Control chặn EXE;
-- Flutter Windows cần symlink/Developer Mode;
-- Kotlin cross-drive incremental cache;
-- tốc độ SMB thấp;
-- phục hồi firmware.
+Android cần Tailscale hoạt động trên client để truy cập tailnet của router.
 
-Xem docs/TROUBLESHOOTING.md.
+## 12. Lệnh vận hành
 
-## 12. Cấu trúc repo
+Status:
 
-~~~text
-.
-├─ README.md
-├─ SECURITY.md
-├─ CHANGELOG.md
-├─ docs/
-├─ scripts/
-│  ├─ router/
-│  └─ windows/
-├─ config/
-│  ├─ snapshots/
-│  └─ templates/
-├─ backups/
-│  └─ public/
-├─ reports/
-├─ software/
-│  ├─ pc/
-│  ├─ android/
-│  └─ releases/
-└─ SHA256SUMS.txt
-~~~
+    /usr/sbin/nas-storage-manager status
 
-## 13. Tài liệu
+Reconcile:
 
-- docs/QUICK-START.md — cấu hình nhanh
-- docs/BACKUP-RESTORE.md — backup/download/restore
-- docs/TROUBLESHOOTING.md — tất cả lỗi/fix
-- docs/SECURITY.md — security model
-- docs/CLIENT-APPS.md — Windows/Android
-- docs/RECOVERY.md — firmware/recovery
-- docs/OPERATIONS.md — vận hành hằng ngày
-- docs/SMB-PASSWORD.md — đổi password và credential Windows
+    /usr/sbin/nas-storage-manager reconcile
 
-## 14. Trạng thái kiểm thử
+Unlock PRIVATE:
 
-Đã PASS:
-- NAS1 SMB RW
-- NAS2 SMB RW
-- PRIVATE SMB RW khi unlock
-- TCP/445 qua Tailscale
-- WAN 445 REJECT theo firewall
-- watchdog self-heal share
-- PC app error handling + WNet mapping logic
-- Android analyze/test
+    /usr/sbin/nas-storage-manager unlock-private
 
-Báo cáo lịch sử sanitized: reports/Bao-Cao-Hoan-Tat-Router-NAS.md
+Lock PRIVATE:
+
+    /usr/sbin/nas-storage-manager lock-private
+
+Safe eject:
+
+    /usr/sbin/nas-storage-manager eject
+
+Xem docs/OPERATIONS.md.
+
+## 13. Các lỗi thực tế đã gặp
+
+docs/TROUBLESHOOTING.md tổng hợp:
+
+- disk không nhận sau reboot;
+- mount thấy folder nhưng không mở được;
+- NTFS dirty;
+- chkdsk /f;
+- USB reset, I/O error, device offlined;
+- HDD 2.5 inch 7200 RPM và vấn đề nguồn/bridge/cable;
+- KSMBD share sai hoặc không reload;
+- PRIVATE lock/unlock;
+- Tailscale remote SMB;
+- credential SMB Windows;
+- app PC treo;
+- Smart App Control;
+- firmware/backup flash nhầm.
+
+## 14. Độ an toàn dữ liệu
+
+Hệ thống từng ghi nhận USB reset và I/O error. Vì vậy:
+
+- SMART PASS không thay thế backup;
+- dữ liệu quan trọng phải có bản sao khác;
+- NTFS dirty thì ưu tiên Windows chkdsk /f;
+- không force RW trên filesystem nghi lỗi;
+- nếu USB reset quay lại, kiểm tra nguồn, hub có nguồn, bridge và cable trước khi benchmark nặng.
+
+Historical report và log CHKDSK nằm trong docs/history.
+
+## 15. Security checklist
+
+Xem docs/SECURITY.md.
+
+Tóm tắt:
+
+- WAN 445 không mở;
+- remote dùng Tailscale;
+- không commit secret;
+- auto-unlock PRIVATE có trade-off;
+- password SMB nhập và đổi trực tiếp;
+- private backup cất offline;
+- firmware phải đúng model/layout.
+
+## 16. Bắt đầu từ đâu
+
+- Dựng nhanh: docs/QUICK-START.md
+- Restore: docs/BACKUP-RESTORE.md
+- Storage/SMB lỗi: docs/TROUBLESHOOTING.md
+- PRIVATE VeraCrypt: docs/STORAGE-VERACRYPT.md
+- App: docs/APPS.md
+- Recovery firmware: docs/RECOVERY.md
+- Snapshot hiện tại: docs/CURRENT-STATE.md
+- Security: docs/SECURITY.md
+
+## 17. Phạm vi đã verify
+
+Đã verify trên hệ thống thực:
+
+- NAS1/NAS2/PRIVATE mount RW;
+- KSMBD running;
+- SMB qua Tailscale;
+- TCP/445 tailnet;
+- create/read/delete SMB nhỏ;
+- storage manager self-heal;
+- PRIVATE unlock;
+- Android analyze/test/build;
+- Windows app compile và WNet credential error handling;
+- release artifacts được rebuild trước khi publish.
+
+Không tuyên bố:
+
+- raw NAND/OOB clone bit-for-bit;
+- recovery bootloader cho mọi trạng thái brick;
+- EXE Windows đã code-sign;
+- USB/HDD hoàn toàn miễn lỗi phần cứng lâu dài.

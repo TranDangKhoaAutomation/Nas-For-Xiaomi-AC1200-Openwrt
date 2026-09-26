@@ -1,0 +1,44 @@
+=== OpenWrt ===
+DISTRIB_ID='OpenWrt'
+DISTRIB_RELEASE='25.12.5'
+DISTRIB_REVISION='r33051-f5dae5ece4'
+DISTRIB_TARGET='ramips/mt7621'
+DISTRIB_ARCH='mipsel_24kc'
+DISTRIB_DESCRIPTION='OpenWrt 25.12.5 r33051-f5dae5ece4'
+DISTRIB_TAINTS=''
+=== Board ===
+{
+	"kernel": "6.12.94",
+	"hostname": "OpenWrt",
+	"system": "MediaTek MT7621 ver:1 eco:3",
+	"model": "Xiaomi Mi Router 3G",
+	"board_name": "xiaomi,mi-router-3g",
+	"rootfs_type": "squashfs",
+	"release": {
+		"distribution": "OpenWrt",
+		"version": "25.12.5",
+		"firmware_url": "https://downloads.openwrt.org/",
+		"revision": "r33051-f5dae5ece4",
+		"target": "ramips/mt7621",
+		"description": "OpenWrt 25.12.5 r33051-f5dae5ece4",
+		"builddate": "1782737960"
+	}
+}
+=== NAS ===
+=== NAS storage status ===
+NAS1: /dev/sda1 -> /mnt/nas (rw)
+NAS2: /dev/sda2 -> /mnt/nas2 (rw)
+PRIVATE: /dev/mapper/private -> /mnt/private (rw)
+PRIVATE VeraCrypt: unlocked (/dev/sda3)
+KSMBD: running
+Remote SMB via Tailscale:
+  \100.91.1.101\NAS1
+  \100.91.1.101\NAS2
+  \100.91.1.101\PRIVATE
+=== Mounts ===
+/dev/sda1 on /mnt/nas type ntfs3 (rw,nosuid,nodev,noexec,relatime,uid=1000,gid=1000,dmask=0077,fmask=0077,iocharset=utf8)
+/dev/sda2 on /mnt/nas2 type ntfs3 (rw,nosuid,nodev,noexec,relatime,uid=1000,gid=1000,dmask=0077,fmask=0077,iocharset=utf8)
+/dev/mapper/private on /mnt/private type ntfs3 (rw,nosuid,nodev,noexec,relatime,uid=1000,gid=1000,dmask=0077,fmask=0077,iocharset=utf8)
+=== Auto-unlock ===
+keyfile: present; content not exported
+autounlock: enabled

@@ -1,36 +1,25 @@
-# Firmware / Recovery
+# Recovery và firmware
 
-Backup public chứa OpenWrt 25.12.5 cho xiaomi_mi-router-3g.
+Model đã xác minh:
 
-## Image chính
+- Xiaomi Mi Router 3G
+- board xiaomi,mi-router-3g
+- target ramips/mt7621
 
-01_NAP_FILE_NAY_KHI_DANG_O_OPENWRT.bin
+Firmware chính khi router đang chạy OpenWrt và partition layout tương thích:
 
-Chỉ dùng khi đang ở OpenWrt và đã xác minh:
+    01_NAP_FILE_NAY_KHI_DANG_O_OPENWRT.bin
 
-~~~sh
-ubus call system board
-sha256sum <image>
-~~~
+SHA-256:
 
-## Recovery nâng cao
+    cdde5ceea7b4c5c044b23b34f1d93c332697fbafc7aac1c7eee8323904b12c21
 
-- initramfs-kernel.bin
-- squashfs-kernel1.bin
-- squashfs-rootfs0.bin
+Nếu router không boot hoặc đã thay bootloader/layout:
+- không flash ngẫu nhiên;
+- kiểm tra /proc/mtd;
+- xác minh bootloader;
+- có thể cần initramfs, TFTP, UART, Breed hoặc programmer.
 
-Các file này không phải lựa chọn mặc định cho LuCI. Chỉ dùng khi hiểu boot/MTD flow của Mi Router 3G.
+Bộ backup có initramfs-kernel, kernel1 và rootfs0 để recovery tham chiếu.
 
-## Sau flash
-
-1. boot OpenWrt;
-2. restore config;
-3. reinstall package;
-4. copy NAS scripts;
-5. set KSMBD password;
-6. login Tailscale;
-7. kiểm tra mount;
-8. unlock PRIVATE;
-9. test firewall + SMB.
-
-Không flash image cho model khác.
+Bộ này không tuyên bố là raw NAND/OOB clone bit-for-bit.

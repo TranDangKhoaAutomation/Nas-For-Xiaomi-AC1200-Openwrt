@@ -1,52 +1,53 @@
-# Operations
+# Vận hành hàng ngày
 
 Status:
 
-~~~sh
-/usr/sbin/nas-storage-manager status
-~~~
+    /usr/sbin/nas-storage-manager status
 
 Reconcile:
 
-~~~sh
-/usr/sbin/nas-storage-manager reconcile
-~~~
+    /usr/sbin/nas-storage-manager reconcile
 
-Unlock/lock PRIVATE:
+Unlock PRIVATE:
 
-~~~sh
-/usr/sbin/nas-storage-manager unlock-private
-/usr/sbin/nas-storage-manager lock-private
-~~~
+    /usr/sbin/nas-storage-manager unlock-private
+
+Lock PRIVATE:
+
+    /usr/sbin/nas-storage-manager lock-private
 
 Safe eject:
 
-~~~sh
-/usr/sbin/nas-storage-manager eject
-~~~
+    /usr/sbin/nas-storage-manager eject
 
 KSMBD:
 
-~~~sh
-/etc/init.d/ksmbd status
-/etc/init.d/ksmbd restart
-uci show ksmbd
-~~~
+    /etc/init.d/ksmbd status
+    /etc/init.d/ksmbd restart
+
+Đổi SMB password:
+
+    ksmbd.adduser -u nas
+    /etc/init.d/ksmbd restart
 
 Tailscale:
 
-~~~sh
-/etc/init.d/tailscale status
-tailscale status
-tailscale ip -4
-~~~
+    tailscale status
+    tailscale ip -4
 
-Disk:
+Mount:
 
-~~~sh
-block info
-lsblk -f
-mount
-dmesg | grep -Ei 'usb|sda|I/O|reset|ntfs'
-smartctl -a -d sat /dev/sda
-~~~
+    mount | grep -E '/mnt/(nas|nas2|private)'
+    block info
+
+Log:
+
+    logread | tail -100
+    dmesg | tail -100
+
+Sau khi thay đổi config:
+- chạy status;
+- kiểm tra UNC;
+- tạo file test nhỏ;
+- đọc lại;
+- xóa file test.

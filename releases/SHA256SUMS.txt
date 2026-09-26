@@ -1,0 +1,2 @@
+62c627db4abebc853a19b48d4750b7023fa8dee959e72e9a35e0a81e904040a3  Khoa-NAS-PC.exe
+21ae7e50a677a99f14de731063e3d681bb8d08ec49e0d0972d4c3cda70dbd747  Khoa-NAS-Android-v1.0.0.apk

@@ -1,79 +1,84 @@
-# Quick Start
+# Cấu hình nhanh
 
-## 1. Cài package
+## 1. Điều kiện
 
-~~~sh
-apk update
-apk add \
-  block-mount cryptsetup \
-  kmod-fs-ksmbd kmod-fs-ntfs3 \
-  kmod-usb-storage kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-usb3 \
-  ksmbd-server ntfs-3g ntfs-3g-utils smartmontools tailscale
-~~~
+- Router đúng model Xiaomi Mi Router 3G.
+- OpenWrt đã boot được.
+- HDD/SSD USB ổn định.
+- Không format ổ có dữ liệu.
+- Client cài Tailscale nếu cần remote access.
 
-## 2. Copy script
+## 2. Cài package
 
-~~~text
-scripts/router/nas-storage-manager -> /usr/sbin/nas-storage-manager
-scripts/router/nas-storage.init -> /etc/init.d/nas-storage
-scripts/router/95-nas-storage -> /etc/hotplug.d/block/95-nas-storage
-~~~
+OpenWrt 25.12 dùng apk:
 
-~~~sh
-chmod 755 /usr/sbin/nas-storage-manager
-chmod 755 /etc/init.d/nas-storage
-chmod 755 /etc/hotplug.d/block/95-nas-storage
-/etc/init.d/nas-storage enable
-/etc/init.d/nas-storage start
-~~~
+    apk update
+    apk add block-mount cryptsetup kmod-fs-ksmbd kmod-fs-ntfs3 \
+      kmod-usb-storage kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-usb3 \
+      ksmbd-server ntfs-3g ntfs-3g-utils smartmontools tailscale
 
-## 3. UUID
+## 3. Bật Tailscale
 
-~~~sh
-block info
-lsblk -f
-~~~
+    /etc/init.d/tailscale enable
+    /etc/init.d/tailscale start
+    tailscale up
+    tailscale ip -4
 
-Sửa NAS1_UUID và NAS2_UUID trong manager nếu dùng disk khác.
+Hoàn thành login theo flow của Tailscale. Không lưu auth key trong repo.
 
-## 4. KSMBD
+## 4. Deploy storage manager
 
-~~~sh
-ksmbd.adduser -a nas
-~~~
+Snapshot đã xác minh nằm trong router/current.
 
-Không ghi password vào script.
+Mapping file:
 
-## 5. Tailscale
+- usr-sbin-nas-storage-manager -> /usr/sbin/nas-storage-manager
+- etc-init.d-nas-storage -> /etc/init.d/nas-storage
+- etc-hotplug.d-block-95-nas-storage -> /etc/hotplug.d/block/95-nas-storage
 
-~~~sh
-/etc/init.d/tailscale enable
-/etc/init.d/tailscale start
-tailscale up
-tailscale ip -4
-~~~
+Sau khi copy:
+
+    chmod 755 /usr/sbin/nas-storage-manager
+    chmod 755 /etc/init.d/nas-storage
+    chmod 755 /etc/hotplug.d/block/95-nas-storage
+    /etc/init.d/nas-storage enable
+    /etc/init.d/nas-storage restart
+    /usr/sbin/nas-storage-manager status
+
+## 5. Cấu hình KSMBD
+
+Snapshot UCI tham chiếu: router/current/etc-config-ksmbd
+
+Tạo user:
+
+    ksmbd.adduser -a nas
+
+Đổi password:
+
+    ksmbd.adduser -u nas
+    /etc/init.d/ksmbd restart
+
+Không ghi password trực tiếp vào file script.
 
 ## 6. Firewall
 
-Allow TCP/445 từ zone tailscale, reject từ WAN. Không port-forward SMB.
+Snapshot tham chiếu: router/current/etc-config-firewall
+
+Nguyên tắc:
+- tailscale -> TCP 445 -> ACCEPT;
+- wan -> TCP 445 -> REJECT.
+
+Không mở SMB trực tiếp ra Internet.
 
 ## 7. Kiểm tra
 
-~~~sh
-/usr/sbin/nas-storage-manager status
-mount | grep '/mnt/'
-uci show ksmbd
-/etc/init.d/ksmbd status
-~~~
+    /usr/sbin/nas-storage-manager status
+    mount | grep -E '/mnt/(nas|nas2|private)'
+    /etc/init.d/ksmbd status
+    tailscale status
 
-Windows:
+Từ Windows:
 
-~~~powershell
-Test-NetConnection <TAILSCALE_IP> -Port 445
-~~~
+    \\100.91.1.101\NAS1
 
-Mở:
-
-~~~text
-\\<TAILSCALE_IP>\NAS1
-~~~
+PRIVATE chỉ hoạt động khi volume đã unlock.

@@ -1,64 +1,85 @@
-# Backup / Download / Restore
+# Backup và restore
 
-## Public sanitized backup
+## 1. Hai loại backup
 
-File:
-backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
+### Public sanitized
 
-Bản này giữ firmware/recovery và metadata nhưng loại/redact secret.
+Repo chứa:
 
-## Tạo private backup đầy đủ
+    backups/public/OpenWrt_Backup_Xiaomi_Mi_Router_3G_2026-09-24_SANITIZED.zip
 
-Trên router:
+Gói này giữ firmware, recovery image, metadata và template cấu hình nhưng đã loại hoặc redacted:
 
-~~~sh
-sysupgrade -b /tmp/openwrt-private-backup.tar.gz
-sha256sum /tmp/openwrt-private-backup.tar.gz
-~~~
-
-Tải xuống PC:
-
-~~~powershell
-scp root@<ROUTER_IP>:/tmp/openwrt-private-backup.tar.gz .
-~~~
-
-Hoặc dùng scripts/windows/Create-Private-Backup.ps1.
-
-Private backup có thể chứa:
 - /etc/shadow;
-- Wi-Fi key;
-- SSH host key;
-- credential cấu hình.
+- SSH host private keys;
+- Wi-Fi key/password;
+- SMB password database;
+- Tailscale state/auth key;
+- VeraCrypt secret/keyfile.
 
-Không upload lên repo public.
+### Private full backup
 
-## Restore config archive
+Tạo trực tiếp trên router:
 
-~~~sh
-sysupgrade -r /tmp/backup.tar.gz
-reboot
-~~~
+    umask 077
+    sysupgrade -b /tmp/openwrt-private-backup.tar.gz
+    chmod 600 /tmp/openwrt-private-backup.tar.gz
+    sha256sum /tmp/openwrt-private-backup.tar.gz
 
-Với sanitized backup, sau restore phải cấu hình lại:
-- root password;
-- Wi-Fi password;
-- KSMBD password;
-- Tailscale login;
-- VeraCrypt passphrase/auto-unlock key.
+Sau đó SCP về máy cá nhân và cất offline hoặc encrypted.
 
-## Firmware
+Không commit private backup lên repo public.
 
-Trong backup:
-- 01_NAP_FILE_NAY_KHI_DANG_O_OPENWRT.bin: image chính khi đang ở OpenWrt.
-- initramfs-kernel.bin: recovery nâng cao.
-- squashfs-kernel1.bin: recovery nâng cao.
-- squashfs-rootfs0.bin: recovery nâng cao.
+## 2. Tải backup public
 
-Không flash file recovery nếu chưa hiểu boot/MTD layout.
+Cách clone repo:
 
-## Backup gốc local
+    git clone https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt.git
 
-SHA-256:
-006b2b8a4a36236558a7db954d43c772bebf43e7794bc467a4468d0e6ba0a143
+Sau đó mở thư mục:
 
-Backup gốc không được upload vì chứa secret.
+    backups/public
+
+Hoặc trên GitHub mở file ZIP trong thư mục đó và tải raw/download.
+
+## 3. Restore khi router vẫn chạy OpenWrt
+
+1. Giải nén ZIP.
+2. Xác minh model là Xiaomi Mi Router 3G.
+3. Vào LuCI -> System -> Backup / Flash Firmware.
+4. Chọn file:
+
+       01_NAP_FILE_NAY_KHI_DANG_O_OPENWRT.bin
+
+5. SHA-256 phải là:
+
+       cdde5ceea7b4c5c044b23b34f1d93c332697fbafc7aac1c7eee8323904b12c21
+
+6. Sau khi router boot lại, có thể restore template public sanitized.
+7. Đặt lại:
+   - root password;
+   - Wi-Fi key;
+   - SMB password;
+   - Tailscale login;
+   - VeraCrypt passphrase/auto-unlock policy.
+
+## 4. Nếu đã cài Breed, Padavan hoặc firmware khác
+
+Không flash sysupgrade một cách mù quáng.
+
+Bootloader hoặc partition layout có thể đã thay đổi. Khi đó có thể cần:
+- initramfs;
+- TFTP;
+- UART;
+- Breed recovery;
+- programmer.
+
+Không thử lần lượt kernel1/rootfs0.
+
+## 5. Backup gốc riêng tư
+
+Backup gốc dùng làm nguồn tạo bản sanitized có SHA-256:
+
+    006b2b8a4a36236558a7db954d43c772bebf43e7794bc467a4468d0e6ba0a143
+
+File gốc cố ý không được commit vì chứa cấu hình nhạy cảm.

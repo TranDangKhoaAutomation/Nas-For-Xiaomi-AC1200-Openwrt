@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+START=98
+STOP=03
+
+start() {
+    /usr/sbin/nas-private-autounlock wait >/dev/null 2>&1 &
+}
+
+stop() {
+    return 0
+}
