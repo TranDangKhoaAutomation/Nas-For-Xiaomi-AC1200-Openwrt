@@ -12,11 +12,11 @@ Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứn
 | `sdb2` — DANGKHOA | **PASS:** mount NTFS3 đọc/ghi tại `/mnt/dangkhoa` theo UUID `A8E46416E463E4D2`; KSMBD chỉ cho user `nas`, không guest. Windows ngoài LAN OpenWrt map `P:` tới `\\100.114.53.95\DANGKHOA`; tạo, đọc, xóa tệp thử thành công **trước reboot**. Sau reboot mới nhất, UUID tự mount lại và `P:` trở về trạng thái OK, mở được thư mục; phép thử ghi mới sau reboot chưa thực hiện |
 | NAS1/NAS2/DATA3 cũ | **ĐÃ NGƯNG:** ổ mang ba UUID cũ không còn hiện diện; ba mục fstab cũ đã tắt và các share cũ được thay bằng `DANGKHOA`. Bản sao cấu hình cũ còn trên router tại `/root/*before-newdisk-20261012` |
 | Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB; sau reboot tên kernel đổi từ `/dev/sdb` sang `/dev/sda`, vì vậy cấu hình dùng UUID. `/dev/sda2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `/dev/sda3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
-| BitLocker UUID `1a518101-853b-45d0-ae99-beac1d47c63a` | **PASS sau reboot 18:46:** gói `kmod-dm-zero` tự dựng đã cài; module tự nạp, `cryptsetup` tự mở mapper `nas_bitlocker`, NTFS3 mount đọc/ghi tại `/mnt/bitlocker`. SMB `BITLOCKER` chỉ cho user `nas`, không guest; Windows map `Q:` và mở được thư mục. Chưa xác minh thao tác ghi/đọc/xóa qua SMB sau reboot |
+| BitLocker UUID `1a518101-853b-45d0-ae99-beac1d47c63a` | **CHỈ ĐỌC ở lần kiểm tra mới nhất 19:25:** module và khóa tự mở volume, nhưng NTFS3 từ chối mount đọc/ghi vì volume **dirty**. Script tự chuyển sang mount `ro`; share `BITLOCKER` được đặt `read_only=yes`. Windows mở được `Q:` nhưng chưa thể ghi an toàn. Phép tạo/đọc/xóa tệp lúc 19:14 là kết quả lịch sử trước trạng thái dirty |
 | Lỗi khi ổ cũ rời router | Chủ thiết bị xác nhận **chủ ý thay ổ**. Kernel ghi `USB disconnect` khi còn ghi, mất ghi đồng bộ, `Buffer I/O error` trên `sda2`–`sda4`; `ntfs3` đánh dấu các volume dirty. Khi cắm lại ổ cũ, cần kiểm tra filesystem trước khi cho ghi |
 | Tailscale và quản trị | **PASS sau reboot mới nhất:** Tailscale tự chạy tại `100.114.53.95`; `rpcd`, `uhttpd`, `ksmbd` chạy, SSH qua tailnet và TCP 22/80/445 từ Windows ngoài LAN OpenWrt đều phản hồi; `fw4 check` đạt. WAN công cộng không mở SMB |
 
-Chủ thiết bị xác nhận đã **thay ổ có chủ ý**. Nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Các bước 1–8 bên dưới là nhật ký triển khai ổ cũ; **dùng bảng hiện tại để truy cập ổ mới**. Ba map Windows cũ `N:`, `M:`, `Z:` không còn truy cập được; ổ mới đang hoạt động là `P:` và `Q:`.
+Chủ thiết bị xác nhận đã **thay ổ có chủ ý**. Nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Các bước 1–8 bên dưới là nhật ký triển khai ổ cũ; **dùng bảng hiện tại để truy cập ổ mới**. Ba map Windows cũ `N:`, `M:`, `Z:` không còn truy cập được; ổ mới là `P:` **đọc/ghi** và `Q:` **chỉ đọc tạm thời**.
 
 ## Sơ đồ và địa chỉ đang dùng
 
@@ -24,7 +24,7 @@ Chủ thiết bị xác nhận đã **thay ổ có chủ ý**. Nhật ký NAS tr
 |---|---|
 | Router OpenWrt | LAN `192.168.1.1/24`; Tailscale `100.114.53.95`; MagicDNS ngắn `openwrt` trong tailnet `tail7e45a2.ts.net` |
 | Quản trị | LuCI `http://100.114.53.95` hoặc `http://openwrt` khi Tailscale hoạt động; SSH qua tailnet bằng khóa |
-| NAS từ máy Windows này | **Hiện tại:** `P:` → `DANGKHOA` (`\\100.114.53.95\DANGKHOA`); `Q:` → `BITLOCKER` (`\\100.114.53.95\BITLOCKER`). Cả hai `Get-SmbMapping=OK` và `Test-Path=True` sau reboot. Các map `N:`, `M:`, `Z:` là lịch sử của ổ cũ |
+| NAS từ máy Windows này | **Hiện tại:** `P:` → `DANGKHOA` (`\\100.114.53.95\DANGKHOA`) đọc/ghi; `Q:` → `BITLOCKER` (`\\100.114.53.95\BITLOCKER`) chỉ đọc. Cả hai `Get-SmbMapping=OK` và `Test-Path=True` sau reboot. Các map `N:`, `M:`, `Z:` là lịch sử của ổ cũ |
 | Bảo vệ | WAN từ chối kết nối vào; firewall chỉ cho TCP 22, 80, 445 và ICMP echo từ Tailscale; SMB yêu cầu user `nas`, không guest |
 
 ## Bước 1 — Xác nhận đúng router và kho gói
@@ -154,14 +154,14 @@ Hook đã đặt tại `/etc/hotplug.d/block/95-nas-bitlocker`, init được en
 
 ![This PC hiện đồng thời DANGKHOA P và BITLOCKER Q sau reboot](reports/2026-10-11-clean-rebuild/screenshots/33-current-p-q-after-bitlocker-reboot.png)
 
-**Cách dùng hằng ngày:** trên máy Windows này, bật Tailscale rồi mở **File Explorer → This PC → BITLOCKER (Q:)**; ổ NTFS còn lại là **DANGKHOA (P:)**. Nếu biểu tượng ổ mạng có dấu X sau khi vừa mở máy, mở ổ hoặc làm mới This PC; đối chiếu `Get-SmbMapping` và `Test-Path Q:\`. Router tự xử lý mở khóa khi boot hoặc cắm đúng ổ; không cần chạy script cấp khóa lần nữa. Muốn kiểm tra từ SSH: `/usr/sbin/nas-bitlocker-manager status`, `cryptsetup status nas_bitlocker` và `mount | grep /mnt/bitlocker`. Tệp khóa chỉ nằm trên router; giữ bản sao khôi phục BitLocker ở nơi riêng. **Không đưa thư mục `/etc/nas-bitlocker` vào bản sao cấu hình công khai.**
+**Cách dùng hằng ngày:** trên máy Windows này, bật Tailscale rồi mở **File Explorer → This PC → BITLOCKER (Q:)**; ổ NTFS còn lại là **DANGKHOA (P:)**. **Trạng thái mới nhất của `Q:` là chỉ đọc; xem Bước 12 trước khi chép dữ liệu vào.** Nếu biểu tượng ổ mạng có dấu X sau khi vừa mở máy, mở ổ hoặc làm mới This PC; đối chiếu `Get-SmbMapping` và `Test-Path Q:\`. Router tự xử lý mở khóa khi boot hoặc cắm đúng ổ; không cần chạy script cấp khóa lần nữa. Muốn kiểm tra từ SSH: `/usr/sbin/nas-bitlocker-manager status`, `cryptsetup status nas_bitlocker` và `mount | grep /mnt/bitlocker`. Tệp khóa chỉ nằm trên router; giữ bản sao khôi phục BitLocker ở nơi riêng. **Không đưa thư mục `/etc/nas-bitlocker` vào bản sao cấu hình công khai.**
 
 | Kiểm tra sau reboot ổ thay thế | Kết quả |
 |---|---|
 | Tailscale IP `100.114.53.95`, SSH, LuCI HTTP, SMB TCP 445 qua Wi-Fi ngoài LAN OpenWrt | **PASS** qua CLI/kết nối; chưa đăng nhập lại LuCI UI |
 | `rpcd`, `uhttpd`, `tailscale`, `ksmbd`, `fw4 check` | **PASS** |
 | NTFS UUID `A8E46416E463E4D2` tự mount `ntfs3 rw`; Windows `P:` OK và mở thư mục | **PASS**; ghi/đọc/xóa tệp chỉ được kiểm chứng trước reboot |
-| BitLocker UUID `1a518101-853b-45d0-ae99-beac1d47c63a` tự mở, mount, SMB | **PASS sau reboot:** module tự nạp, mapper active, NTFS3 đọc/ghi, share `BITLOCKER` và Windows `Q:` mở được; ghi/đọc/xóa qua SMB sau reboot chưa kiểm chứng |
+| BitLocker UUID `1a518101-853b-45d0-ae99-beac1d47c63a` tự mở, mount, SMB | **PASS sau reboot 19:14:** module tự nạp, mapper active, NTFS3 đọc/ghi, share `BITLOCKER`; Windows `Q:` tạo/đọc/xóa tệp thử thành công |
 
 ### Nếu mã hóa hoặc giải mã phân vùng khác sau này
 
@@ -169,7 +169,31 @@ Router hiện đã tự mở BitLocker của UUID nêu trên. Nếu sau này mã
 
 Để **mở khóa** volume trên Windows, dùng giao diện BitLocker hoặc `manage-bde -unlock E: -password` với đúng ký tự volume thực tế. Để **giải mã vĩnh viễn**, sau khi mở khóa dùng `manage-bde -off E:` và chờ `manage-bde -status E:` báo hoàn tất. Không ghi mật khẩu hoặc recovery key vào lệnh, ảnh hay repo. Xem [Microsoft: mở khóa](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/manage-bde-unlock), [giải mã](https://learn.microsoft.com/en-us/windows-security/operating-system-security/data-protection/bitlocker/operations-guide), [tìm recovery key](https://support.microsoft.com/en-us/windows/security/encryption/find-your-bitlocker-recovery-key).
 
-`cryptsetup --type bitlk` đã mở được volume, NTFS3 mount đọc/ghi và Windows mở được share sau reboot. **Chưa có số đo tốc độ hoặc phép thử ghi/đọc/xóa qua SMB mới sau reboot**; không suy ra hiệu năng từ trạng thái mount. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads) và [OpenWrt ksmbd](https://openwrt.org/docs/guide-user/services/nas/ksmbd).
+`cryptsetup --type bitlk` đã mở được volume, NTFS3 mount đọc/ghi và Windows ghi/đọc/xóa qua SMB sau reboot. Chưa đo tốc độ truyền tệp lớn; phép thử tệp nhỏ xác nhận quyền ghi, không đại diện hiệu năng. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads) và [OpenWrt ksmbd](https://openwrt.org/docs/guide-user/services/nas/ksmbd).
+
+## Bước 11 — Sửa lỗi Q: xem được nhưng không ghi được
+
+Ban đầu Windows vào được `Q:` nhưng báo **Destination Folder Access Denied** khi tạo tệp. Ảnh lỗi thực tế:
+
+![Windows báo từ chối ghi trên ổ Q trước khi sửa](reports/2026-10-11-clean-rebuild/screenshots/34-bitlocker-smb-write-denied-before-fix.png)
+
+Đã đối chiếu `/mnt/bitlocker` là `ntfs3 rw`, owner `nas` UID/GID 1000; chính user `nas` tạo tệp trực tiếp trên filesystem được. Windows tạo tệp trên `P:` thành công nhưng `Q:` bị `Access denied`. Log boot cho thấy KSMBD chạy **trước** khi BitLocker mount xong. Khởi động lại KSMBD khi mount đã có làm phép thử `Q:` thành công. Do đó script `nas-bitlocker-manager` nay chỉ **restart KSMBD sau lần mount BitLocker mới** nếu KSMBD đang chạy; các lần gọi khi ổ đã mount không restart. Điều này xử lý cả trường hợp hotplug hoàn tất muộn hơn trình tự boot. Không thay đổi ACL/dữ liệu trên ổ và không mở thêm cổng firewall.
+
+Sau reboot xác minh bản sửa lúc 19:14, log có `encrypted volume mounted` rồi `ksmbd refreshed after encrypted mount`; `Q:` tạo, đọc lại và xóa tệp nhỏ thành công từ Windows. `P:`/`Q:` đều trở về trạng thái `OK`; `fw4 check` đạt. Ảnh dưới chụp tệp thử hiện trong File Explorer **trước khi đã xóa sạch tệp thử**:
+
+![Tệp thử ghi thành công trong ổ Q sau reboot](reports/2026-10-11-clean-rebuild/screenshots/35-bitlocker-q-write-verified-after-reboot.png)
+
+Nếu gặp lại lỗi sau lần boot khác, kiểm tra `logread | grep nas-bitlocker` phải có `ksmbd refreshed after encrypted mount`, rồi thử tạo một tệp nhỏ trong `Q:`. Không sửa quyền hàng loạt hoặc format NTFS để xử lý lỗi này.
+
+## Bước 12 — Trạng thái an toàn khi NTFS BitLocker báo dirty
+
+Phép thử mở rộng sau Bước 11 phát hiện: tạo **tệp** trên `Q:` thành công nhưng tạo **thư mục** bị `Access denied`. Cùng thao tác dưới UID `nas` ngay trên router cũng bị từ chối, trong khi root tạo thư mục được; chưa xác định đây là ACL NTFS hay hành vi của driver. Trong lúc chẩn đoán, NTFS3 ghi `volume is dirty and "force" flag is not set!`, từ chối mount đọc/ghi. Tùy chọn `noacsrules` được tài liệu kernel cũ nhắc đến nhưng kernel **6.12.94 của router báo `Unknown parameter`**; đã bỏ ngay, không dùng `force`, không chạy `ntfsfix`, không format hoặc xóa dữ liệu.
+
+Script hiện thử mount đọc/ghi bình thường; nếu NTFS3 từ chối thì tự mount **chỉ đọc** và đổi share `BITLOCKER` sang `read_only=yes`. Reboot kiểm chứng lúc 19:25: log có `read-write mount refused; trying read-only without force`, `encrypted volume mounted read-only`, rồi `ksmbd refreshed after encrypted mount`. `P:` vẫn `ntfs3 rw`; `Q:` đọc được từ Windows, cả hai map `OK` qua Tailscale; firewall kiểm tra đạt. Ảnh dưới chỉ chứng minh truy cập đọc thư mục `Q:`, **không chứng minh ghi được**:
+
+![Q vẫn đọc được qua Tailscale trong chế độ chỉ đọc](reports/2026-10-11-clean-rebuild/screenshots/36-bitlocker-q-readable-in-safe-mode.png)
+
+Để phục hồi khả năng ghi an toàn, trước hết sao lưu dữ liệu quan trọng trên phân vùng mã hóa. Cần **tháo ổ vật lý khỏi router một cách sạch**, cắm trực tiếp vào Windows, mở khóa BitLocker trên phân vùng vật lý bằng prompt kín, xác định đúng ký tự ổ rồi kiểm tra `fsutil dirty query X:` và `chkdsk X: /scan` (thay `X:` bằng ký tự **phân vùng vật lý**, không phải ổ mạng `Q:`). Nếu Windows xác nhận cần sửa, cân nhắc `chkdsk X: /f` **sau khi đã sao lưu** và đọc kết quả; thao tác sửa filesystem chưa được thực hiện trong lần này. Sau khi Windows báo ổ sạch, tháo an toàn, cắm lại router; script sẽ thử mount đọc/ghi và đổi share về `read_only=no` nếu thành công. Phải thử **tạo thư mục, tạo tệp bên trong, đọc lại và xóa** qua `Q:` trước khi đánh dấu hoàn tất. [Microsoft: dirty bit](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/fsutil-dirty), [chkdsk](https://learn.microsoft.com/windows-server/administration/windows-commands/chkdsk), [mở khóa BitLocker](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/manage-bde-unlock), [NTFS3 kernel 6.12](https://raw.githubusercontent.com/gregkh/linux/v6.12.94/Documentation/filesystems/ntfs3.rst).
 
 ## Tài liệu và ảnh lưu trữ
 

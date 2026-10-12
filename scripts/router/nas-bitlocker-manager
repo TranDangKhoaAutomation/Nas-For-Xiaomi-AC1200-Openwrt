@@ -9,9 +9,11 @@ TARGET='/mnt/bitlocker'
 LOCK='/tmp/nas-bitlocker-manager.lock'
 
 mounted() { grep -q " $TARGET " /proc/mounts; }
+mounted_ro() { grep -Eq " $TARGET [^ ]+ ro[, ]" /proc/mounts; }
 device() { blkid -U "$UUID" 2>/dev/null; }
 
 start_volume() {
+    new_mount=0
     [ -s "$KEY" ] || { logger -t nas-bitlocker 'unlock key is not provisioned'; return 1; }
     src="$(device)"
     [ -n "$src" ] || { logger -t nas-bitlocker 'expected BitLocker UUID is absent'; return 1; }
@@ -29,14 +31,39 @@ start_volume() {
             cryptsetup close "$MAPPER" >/dev/null 2>&1 || true
             return 1
         }
-        mount -t ntfs3 -o rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "/dev/mapper/$MAPPER" "$TARGET" || {
-            logger -t nas-bitlocker 'mount failed'
-            cryptsetup close "$MAPPER" >/dev/null 2>&1 || true
+        if ! mount -t ntfs3 -o rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "/dev/mapper/$MAPPER" "$TARGET"; then
+            logger -t nas-bitlocker 'read-write mount refused; trying read-only without force'
+            mount -t ntfs3 -o ro,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "/dev/mapper/$MAPPER" "$TARGET" || {
+                logger -t nas-bitlocker 'read-only mount failed'
+                cryptsetup close "$MAPPER" >/dev/null 2>&1 || true
+                return 1
+            }
+        fi
+        new_mount=1
+    fi
+    printf '%s\n' "${src##*/}" > /tmp/nas-bitlocker-device
+    if mounted_ro; then
+        share_readonly=yes
+        logger -t nas-bitlocker 'encrypted volume mounted read-only'
+    else
+        share_readonly=no
+        logger -t nas-bitlocker 'encrypted volume mounted read-write'
+    fi
+    if [ "$(uci -q get ksmbd.bitlocker.read_only)" != "$share_readonly" ]; then
+        uci set "ksmbd.bitlocker.read_only=$share_readonly" && uci commit ksmbd || {
+            logger -t nas-bitlocker 'failed to update SMB share access mode'
             return 1
         }
     fi
-    printf '%s\n' "${src##*/}" > /tmp/nas-bitlocker-device
-    logger -t nas-bitlocker 'encrypted volume mounted'
+    # Hotplug may finish after ksmbd starts. Reload its share path and access
+    # mode only after a new mount exists.
+    if [ "$new_mount" = 1 ] && /etc/init.d/ksmbd status >/dev/null 2>&1; then
+        /etc/init.d/ksmbd restart >/dev/null 2>&1 || {
+            logger -t nas-bitlocker 'ksmbd restart after mount failed'
+            return 1
+        }
+        logger -t nas-bitlocker 'ksmbd refreshed after encrypted mount'
+    fi
 }
 
 stop_volume() {
@@ -56,7 +83,7 @@ case "${1:-}" in
         ;;
     status)
         if mounted && cryptsetup status "$MAPPER" >/dev/null 2>&1; then
-            echo 'mounted'
+            if mounted_ro; then echo 'mounted read-only'; else echo 'mounted read-write'; fi
         else
             echo 'locked or unmounted'
             exit 1
