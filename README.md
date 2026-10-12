@@ -8,13 +8,14 @@ Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứn
 
 | Hạng mục | Kết quả mới nhất |
 |---|---|
+| Phạm vi chủ thiết bị chọn cho ổ mới | **CHỈ KIỂM TRA VÀ GHI TÀI LIỆU:** không mount `sdb2`, không mở khóa/mount `sdb3`, không tạo share hoặc thay cấu hình fstab cho ổ mới |
 | NAS1/NAS2/DATA3 | **TẠM NGỪNG:** ổ mang ba UUID cũ không còn hiện diện; ba điểm mount không tồn tại. KSMBD đã được dừng và tắt tự khởi động tạm thời để tránh chia sẻ thư mục không có ổ gắn. Cấu hình fstab và share vẫn được giữ nguyên |
 | Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB ở `/dev/sdb`; `sdb2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `sdb3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
 | Phân vùng BitLocker | **ĐÃ NHẬN DIỆN, CHƯA MỞ KHÓA:** không mount, không có mapper, `cryptsetup` chưa cài; chưa nhập hoặc lưu khóa. `sdb2` cũng chưa mount |
 | Lỗi khi ổ cũ rời router | Chủ thiết bị xác nhận **chủ ý thay ổ**. Kernel ghi `USB disconnect` khi còn ghi, mất ghi đồng bộ, `Buffer I/O error` trên `sda2`–`sda4`; `ntfs3` đánh dấu các volume dirty. Khi cắm lại ổ cũ, cần kiểm tra filesystem trước khi cho ghi |
 | Tailscale và quản trị | Tailscale vẫn chạy tại `100.114.53.95`; SSH còn truy cập được. TCP 445 hiện đóng do KSMBD đã dừng |
 
-Chủ thiết bị xác nhận đã **thay ổ có chủ ý**; nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Đừng chạy các bước mount/SMB bên dưới trên `/dev/sdb` cho tới khi xác định mục tiêu sử dụng ổ mới. Ba ổ mạng Windows `N:`, `M:`, `Z:` hiện không truy cập được theo chủ ý bảo vệ dữ liệu.
+Chủ thiết bị xác nhận đã **thay ổ có chủ ý** và yêu cầu **chỉ kiểm tra, ghi tài liệu**. Nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Các bước mount/SMB bên dưới là nhật ký triển khai ổ cũ, **không áp dụng cho `/dev/sdb`**. Ba ổ mạng Windows `N:`, `M:`, `Z:` hiện không truy cập được theo chủ ý bảo vệ dữ liệu.
 
 ## Sơ đồ và địa chỉ đang dùng
 
