@@ -1,0 +1,10 @@
+#!/bin/sh
+# Cron fallback for a missed block hotplug event. The manager checks the UUID
+# again and holds its own lock before opening or mounting anything.
+UUID='1a518101-853b-45d0-ae99-beac1d47c63a'
+TARGET='/mnt/bitlocker'
+
+grep -q " $TARGET " /proc/mounts && exit 0
+[ -n "$(blkid -U "$UUID" 2>/dev/null)" ] || exit 0
+logger -t nas-bitlocker 'watchdog found encrypted volume not mounted'
+/usr/sbin/nas-bitlocker-manager start
