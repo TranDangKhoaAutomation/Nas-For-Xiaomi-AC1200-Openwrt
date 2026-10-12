@@ -1,0 +1,81 @@
+name: Build dm-zero for OpenWrt 25.12.5 MT7621
+
+on:
+  push:
+    paths:
+      - .github/workflows/build-dm-zero.yml
+      - scripts/kernel/dm-zero/**
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify exact official SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk='openwrt-sdk-25.12.5-ramips-mt7621_gcc-14.3.0_musl.Linux-x86_64.tar.zst'
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/$sdk" "https://downloads.openwrt.org/releases/25.12.5/targets/ramips/mt7621/$sdk"
+          printf '%s  %s\n' '9962084f4131610e90e48bc864c6ceade0b238f15f335de5f672910532b20e9c' "$RUNNER_TEMP/$sdk" | sha256sum --check
+          tar --zstd -xf "$RUNNER_TEMP/$sdk" -C "$RUNNER_TEMP"
+          printf '%s\n' "$RUNNER_TEMP/${sdk%.tar.zst}" > "$RUNNER_TEMP/sdk-path"
+      - name: Add pinned upstream Linux dm-zero source
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$(cat "$RUNNER_TEMP/sdk-path")"
+          mkdir -p "$sdk/package/dm-zero/src"
+          cp scripts/kernel/dm-zero/Makefile "$sdk/package/dm-zero/Makefile"
+          cp scripts/kernel/dm-zero/src/Makefile "$sdk/package/dm-zero/src/Makefile"
+          curl --fail --location --retry 3 --output "$sdk/package/dm-zero/src/dm-zero.c" 'https://raw.githubusercontent.com/gregkh/linux/v6.12.94/drivers/md/dm-zero.c'
+          printf '%s  %s\n' 'a9b63a5bd78eeeeb76651477bb234b819c2c573e9acbabcc61bda3bf55a04054' "$sdk/package/dm-zero/src/dm-zero.c" | sha256sum --check
+      - name: Compile only the external kernel module
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$(cat "$RUNNER_TEMP/sdk-path")"
+          cd "$sdk"
+          printf '\nCONFIG_PACKAGE_kmod-dm-zero=m\n' >> .config
+          make defconfig
+          make package/dm-zero/compile -j2 V=s
+          find build_dir -name dm-zero.ko -type f -print
+          find bin -name 'kmod-dm-zero*.apk' -type f -print
+      - name: Save module and build information
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$(cat "$RUNNER_TEMP/sdk-path")"
+          mkdir -p "$RUNNER_TEMP/dm-zero-output"
+          ko="$(find "$sdk/build_dir" -name dm-zero.ko -type f -print -quit)"
+          test -n "$ko"
+          cp "$ko" "$RUNNER_TEMP/dm-zero-output/dm-zero.ko"
+          find "$sdk/bin" -name 'kmod-dm-zero*.apk' -type f -exec cp '{}' "$RUNNER_TEMP/dm-zero-output/" ';'
+          file "$ko" > "$RUNNER_TEMP/dm-zero-output/build-info.txt"
+          sha256sum "$ko" >> "$RUNNER_TEMP/dm-zero-output/build-info.txt"
+          if command -v modinfo >/dev/null; then modinfo -F vermagic "$ko" >> "$RUNNER_TEMP/dm-zero-output/build-info.txt"; fi
+          cat "$RUNNER_TEMP/dm-zero-output/build-info.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dm-zero-openwrt-25.12.5-mt7621
+          path: ${{ runner.temp }}/dm-zero-output/
+      - name: Publish reviewable output branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="codex-dm-zero-build-${GITHUB_SHA:0:8}"
+          cd "$RUNNER_TEMP/dm-zero-output"
+          git init -b "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add .
+          git commit -m 'Build dm-zero module for OpenWrt 25.12.5 MT7621'
+          git push origin "HEAD:refs/heads/$branch"
+          echo "Review branch: $branch" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          GH_TOKEN: ${{ github.token }}
