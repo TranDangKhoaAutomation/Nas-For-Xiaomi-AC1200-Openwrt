@@ -9,12 +9,12 @@ Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứn
 | Hạng mục | Kết quả mới nhất |
 |---|---|
 | Phạm vi chủ thiết bị chọn cho ổ mới | Chủ thiết bị yêu cầu **truy cập từ xa cả `sdb2` và `sdb3`**, và chọn **lưu khóa mở BitLocker trên router** để tự mở khi cắm ổ. `sdb2` đã hoạt động; `sdb3` còn chờ chủ thiết bị nhập mật khẩu kín trên Windows để kiểm tra và nạp khóa |
-| `sdb2` — DANGKHOA | **PASS hiện tại:** mount NTFS3 đọc/ghi tại `/mnt/dangkhoa` theo UUID `A8E46416E463E4D2`; KSMBD chỉ cho user `nas`, không guest. Windows ngoài LAN OpenWrt đã map `P:` tới `\\100.114.53.95\DANGKHOA`; tạo, đọc, xóa tệp thử thành công qua Tailscale. KSMBD đã bật tự khởi động, **chưa kiểm chứng reboot cấu hình mới** |
+| `sdb2` — DANGKHOA | **PASS:** mount NTFS3 đọc/ghi tại `/mnt/dangkhoa` theo UUID `A8E46416E463E4D2`; KSMBD chỉ cho user `nas`, không guest. Windows ngoài LAN OpenWrt map `P:` tới `\\100.114.53.95\DANGKHOA`; tạo, đọc, xóa tệp thử thành công **trước reboot**. Sau reboot mới nhất, UUID tự mount lại và `P:` trở về trạng thái OK, mở được thư mục; phép thử ghi mới sau reboot chưa thực hiện |
 | NAS1/NAS2/DATA3 cũ | **ĐÃ NGƯNG:** ổ mang ba UUID cũ không còn hiện diện; ba mục fstab cũ đã tắt và các share cũ được thay bằng `DANGKHOA`. Bản sao cấu hình cũ còn trên router tại `/root/*before-newdisk-20261012` |
-| Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB ở `/dev/sdb`; `sdb2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `sdb3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
-| `sdb3` — BitLocker | **CHƯA XONG:** `cryptsetup 2.8.0-r1` và các module cần thiết đã cài; metadata BitLocker đọc được. Bộ mở khóa theo UUID đã cài trên router nhưng chưa bật khởi động, vì chưa có khóa thật. Phép thử khóa giả bị từ chối và không để lại tệp khóa. Chưa có mapper, mount hoặc share. Khóa thật sẽ chỉ lưu root đọc được trên router sau khi kiểm tra thành công; không đưa vào repo hoặc ảnh |
+| Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB; sau reboot tên kernel đổi từ `/dev/sdb` sang `/dev/sda`, vì vậy cấu hình dùng UUID. `/dev/sda2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `/dev/sda3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
+| `sdb3` — BitLocker | **FAIL trên kernel hiện tại:** mật khẩu thật đã được chủ thiết bị nhập kín, `cryptsetup --test-passphrase` xác minh đúng và lưu root-only trên router (`0700/0600`, ngoài Git). Khi tạo mapper, kernel báo `Cannot activate device, kernel dm-zero module is missing`; gói `kmod-dm` chính thức của bản firmware này không chứa `dm-zero.ko`. Hook hotplug đã tắt và init chưa enable. Chưa có mapper, mount hoặc share; không coi là tự mở được |
 | Lỗi khi ổ cũ rời router | Chủ thiết bị xác nhận **chủ ý thay ổ**. Kernel ghi `USB disconnect` khi còn ghi, mất ghi đồng bộ, `Buffer I/O error` trên `sda2`–`sda4`; `ntfs3` đánh dấu các volume dirty. Khi cắm lại ổ cũ, cần kiểm tra filesystem trước khi cho ghi |
-| Tailscale và quản trị | Tailscale vẫn chạy tại `100.114.53.95`; SSH còn truy cập được. TCP 445 chỉ mở từ zone Tailscale để phục vụ share `DANGKHOA`; WAN công cộng không mở SMB |
+| Tailscale và quản trị | **PASS sau reboot mới nhất:** Tailscale tự chạy tại `100.114.53.95`; `rpcd`, `uhttpd`, `ksmbd` chạy, SSH qua tailnet và TCP 22/80/445 từ Windows ngoài LAN OpenWrt đều phản hồi; `fw4 check` đạt. WAN công cộng không mở SMB |
 
 Chủ thiết bị xác nhận đã **thay ổ có chủ ý**. Nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Các bước 1–8 bên dưới là nhật ký triển khai ổ cũ; **dùng bảng hiện tại để truy cập ổ mới**. Ba map Windows cũ `N:`, `M:`, `Z:` không còn truy cập được; ổ mới đang hoạt động là `P:`. Không coi BitLocker đã dùng được từ xa trước khi có phép thử thực tế.
 
@@ -132,17 +132,28 @@ Các dòng PASS về mount và SMB trong bảng này là **kết quả lịch s�
 
 ## Bước 9 — Ổ thay thế và tự mở BitLocker khi cắm
 
-Ổ thay thế có `sdb2` NTFS nhãn `DangKhoa` và `sdb3` BitLocker. `sdb2` hiện được mount đọc/ghi và chia sẻ tên `DANGKHOA`; trên Windows ngoài LAN OpenWrt, `P:` nối tới `\\100.114.53.95\DANGKHOA` và đã qua phép thử tạo, đọc, xóa tệp. **Chưa có ảnh mới cho bước này; ảnh ở các bước 1–8 là ổ cũ.**
+Ổ thay thế có phân vùng NTFS nhãn `DangKhoa` và phân vùng BitLocker. Tên thiết bị đã đổi từ `sdb2`/`sdb3` sang `sda2`/`sda3` sau reboot; dùng UUID để xác định. NTFS được mount đọc/ghi và chia sẻ tên `DANGKHOA`; trên Windows ngoài LAN OpenWrt, `P:` nối tới `\\100.114.53.95\DANGKHOA`. Phép thử tạo, đọc, xóa tệp đạt **trước reboot**; sau reboot `P:` tự nối lại và mở được thư mục. Hai ảnh dưới là ảnh mới của ổ thay thế, không phải ba share lịch sử ở bước 8.
+
+![Ổ DANGKHOA P mở được trong File Explorer sau reboot](reports/2026-10-11-clean-rebuild/screenshots/31-current-dangkhoa-p-after-reboot.jpg)
+
+![This PC hiển thị ổ mạng DANGKHOA P sau reboot](reports/2026-10-11-clean-rebuild/screenshots/32-current-dangkhoa-p-this-pc.jpg)
 
 Để `sdb3` tự mở trên **router**, chủ thiết bị đã chọn lưu mật khẩu BitLocker trong `/etc/nas-bitlocker/passphrase` với quyền `0600`, thư mục quyền `0700`. Đây là sự đánh đổi: người có quyền root hoặc có bản sao flash router có thể lấy mật khẩu và mở ổ. Không để bản sao mật khẩu trong Git, ảnh, lệnh hoặc README; giữ recovery key riêng với router và ổ. Windows auto-unlock gắn với máy/tài khoản Windows, không tự chuyển sang OpenWrt. [Microsoft BitLocker FAQ](https://learn.microsoft.com/en-us/windows/security/information-protection/bitlocker/bitlocker-key-management-faq), [cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads).
 
-Bộ quản lý trên router đã cài tại `/usr/sbin/nas-bitlocker-manager`, chỉ nhận UUID `1a518101-853b-45d0-ae99-beac1d47c63a`. Hook hotplug đã cài; dịch vụ sau boot **chưa bật**, vì chưa nạp mật khẩu thật. Để nạp, mở PowerShell trên chính máy Windows và chạy lệnh dưới đây; prompt không hiện ký tự. Script kiểm tra fingerprint SSH đã ghim, truyền mật khẩu qua SSH stdin, thử `cryptsetup --test-passphrase`, rồi mới lưu tệp quyền root trên router. Nếu sai, tệp tạm bị xóa và khóa cũ không bị thay.
+Bộ quản lý trên router đã cài tại `/usr/sbin/nas-bitlocker-manager`, chỉ nhận UUID `1a518101-853b-45d0-ae99-beac1d47c63a`. Chủ thiết bị đã chạy script dưới đây: prompt kín kiểm tra fingerprint SSH đã ghim, truyền mật khẩu qua SSH stdin, thử `cryptsetup --test-passphrase` thành công, rồi lưu tệp quyền root trên router. Lệnh được giữ ở đây để dùng khi cần nạp lại khóa; **không cần chạy lại lúc này**.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Nas-Router\Nas-For-Xiaomi-AC1200-Openwrt\scripts\provision-bitlocker-passphrase.ps1"
 ```
 
-**Chưa chạy bước nạp khóa thật**, nên chưa thể kết luận `sdb3` đọc/ghi hay tự mở. Sau khi nạp, cần kiểm tra mapper, filesystem bên trong, mount, share SMB qua Tailscale, bật init, reboot và thử rút/cắm lại có tháo mount sạch. Không rút ổ khi đang ghi; dừng kết nối SMB và tháo mount trước.
+**Kết quả mở thật: FAIL do thiếu `dm-zero`.** Sau khi xác minh mật khẩu, `cryptsetup open --type bitlk` báo `device-mapper: reload ioctl ... Invalid argument` và `Cannot activate device, kernel dm-zero module is missing`. Gói `kmod-dm` chính thức trên kernel 6.12.94 chứa `dm-crypt`, `dm-log`, `dm-mirror`, `dm-mod`, `dm-region-hash`, nhưng không có `dm-zero.ko`; kho APK cũng không có gói `kmod-dm-zero` hoặc `dislocker`. OpenWrt hiện đặt `CONFIG_DM_ZERO=n` trong `package/kernel/linux/modules/block.mk`. Hook được chuyển ra `/root/95-nas-bitlocker.disabled`, init chưa enable; vì vậy cắm ổ sẽ **không tự mở** cho tới khi có module tương thích được kiểm thử. Chưa tạo share SMB cho phân vùng mã hóa để tránh trình bày một thư mục rỗng như dữ liệu thật. Không rút ổ khi đang ghi; dừng kết nối SMB và tháo mount trước. [Mã nguồn cryptsetup kiểm tra dm-zero](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/lib/bitlk/bitlk.c), [tài liệu OpenWrt về kernel module](https://openwrt.org/docs/guide-developer/packages).
+
+| Kiểm tra sau reboot ổ thay thế | Kết quả |
+|---|---|
+| Tailscale IP `100.114.53.95`, SSH, LuCI HTTP, SMB TCP 445 qua Wi-Fi ngoài LAN OpenWrt | **PASS** qua CLI/kết nối; chưa đăng nhập lại LuCI UI |
+| `rpcd`, `uhttpd`, `tailscale`, `ksmbd`, `fw4 check` | **PASS** |
+| NTFS UUID `A8E46416E463E4D2` tự mount `ntfs3 rw`; Windows `P:` OK và mở thư mục | **PASS**; ghi/đọc/xóa tệp chỉ được kiểm chứng trước reboot |
+| BitLocker UUID `1a518101-853b-45d0-ae99-beac1d47c63a` tự mở, mount, SMB | **FAIL**: thiếu kernel target `dm-zero`; chưa có mapper/share |
 
 ### Nếu mã hóa hoặc giải mã phân vùng khác sau này
 
