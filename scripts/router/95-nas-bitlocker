@@ -3,9 +3,22 @@
 case "$ACTION" in
     add)
         [ "$DEVTYPE" = partition ] || return 0
-        [ -e "/dev/$DEVNAME" ] || return 0
-        [ "$(blkid -s UUID -o value "/dev/$DEVNAME" 2>/dev/null)" = '1a518101-853b-45d0-ae99-beac1d47c63a' ] || return 0
-        (sleep 2; /usr/sbin/nas-bitlocker-manager start) >/dev/null 2>&1 &
+        [ -n "$DEVNAME" ] || return 0
+        # The partition event may arrive before blkid can read its UUID.
+        # Retry in the background so hotplug does not block other devices.
+        (
+            attempt=0
+            while [ "$attempt" -lt 10 ]; do
+                if [ -e "/dev/$DEVNAME" ] &&
+                   [ "$(blkid -s UUID -o value "/dev/$DEVNAME" 2>/dev/null)" = '1a518101-853b-45d0-ae99-beac1d47c63a' ]; then
+                    logger -t nas-bitlocker "hotplug matched encrypted partition $DEVNAME"
+                    /usr/sbin/nas-bitlocker-manager start
+                    exit $?
+                fi
+                attempt=$((attempt + 1))
+                sleep 2
+            done
+        ) >/dev/null 2>&1 &
         ;;
     remove)
         [ "$(cat /tmp/nas-bitlocker-device 2>/dev/null)" = "$DEVNAME" ] || return 0
