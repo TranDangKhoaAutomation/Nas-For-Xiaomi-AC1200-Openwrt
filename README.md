@@ -1,8 +1,20 @@
 # Dựng NAS trên Xiaomi Mi Router 3G với OpenWrt và Tailscale
 
-Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứng ngày 12/10/2026** trên Xiaomi Mi Router 3G (MT7621), OpenWrt 25.12.5, kernel 6.12.94. Đi theo các bước từ trên xuống; ảnh ngay dưới từng bước là ảnh chụp thực tế. [Nhật ký đầy đủ](reports/2026-10-11-clean-rebuild/2026-10-12-full-journal.md) giữ các mốc chẩn đoán và thay đổi trước đó.
+Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứng ngày 12/10/2026** trên Xiaomi Mi Router 3G (MT7621), OpenWrt 25.12.5, kernel 6.12.94. Đi theo các bước từ trên xuống; ảnh ngay dưới từng bước là ảnh chụp thực tế. **Đọc trạng thái hiện tại dưới đây trước khi dùng NAS:** ổ USB đã thay đổi sau các ảnh và phép thử ban đầu. [Nhật ký đầy đủ](reports/2026-10-11-clean-rebuild/2026-10-12-full-journal.md) giữ các mốc chẩn đoán và thay đổi trước đó.
 
-> **An toàn dữ liệu:** Ổ WDC 1 TB hiện được dùng làm **NAS mới** theo lựa chọn của chủ thiết bị. Trước khi cấu hình đọc/ghi, ba phân vùng đã được kiểm tra chỉ đọc; không thấy tệp NAS cũ, UUID cũng khác bản cấu hình trước reset. Không format, chia lại phân vùng, chạy `ntfsfix` hoặc gán cấu hình NAS cũ cho ổ này. `DATA3` là NTFS thường, không phải volume PRIVATE VeraCrypt đã xác nhận.
+> **An toàn dữ liệu:** Cấu hình NAS ba share bên dưới là trạng thái **trước khi ổ USB bị ngắt lúc 16:04 ngày 12/10/2026**. Khi đó ba phân vùng đã được kiểm tra chỉ đọc trước khi dùng làm NAS mới; không thấy tệp NAS cũ. Không format, chia lại phân vùng, chạy `ntfsfix` hoặc gán UUID cũ cho ổ mới. `DATA3` lịch sử là NTFS thường, không phải volume PRIVATE VeraCrypt đã xác nhận.
+
+## Trạng thái hiện tại sau khi thay đổi ổ USB — 12/10/2026
+
+| Hạng mục | Kết quả mới nhất |
+|---|---|
+| NAS1/NAS2/DATA3 | **TẠM NGỪNG:** ổ mang ba UUID cũ không còn hiện diện; ba điểm mount không tồn tại. KSMBD đã được dừng và tắt tự khởi động tạm thời để tránh chia sẻ thư mục không có ổ gắn. Cấu hình fstab và share vẫn được giữ nguyên |
+| Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB ở `/dev/sdb`; `sdb2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `sdb3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
+| Phân vùng BitLocker | **ĐÃ NHẬN DIỆN, CHƯA MỞ KHÓA:** không mount, không có mapper, `cryptsetup` chưa cài; chưa nhập hoặc lưu khóa. `sdb2` cũng chưa mount |
+| Lỗi khi ổ cũ rời router | Chủ thiết bị xác nhận **chủ ý thay ổ**. Kernel ghi `USB disconnect` khi còn ghi, mất ghi đồng bộ, `Buffer I/O error` trên `sda2`–`sda4`; `ntfs3` đánh dấu các volume dirty. Khi cắm lại ổ cũ, cần kiểm tra filesystem trước khi cho ghi |
+| Tailscale và quản trị | Tailscale vẫn chạy tại `100.114.53.95`; SSH còn truy cập được. TCP 445 hiện đóng do KSMBD đã dừng |
+
+Chủ thiết bị xác nhận đã **thay ổ có chủ ý**; nhật ký NAS trước đó không lưu serial nên không thể đối chiếu phần cứng bằng số serial. Đừng chạy các bước mount/SMB bên dưới trên `/dev/sdb` cho tới khi xác định mục tiêu sử dụng ổ mới. Ba ổ mạng Windows `N:`, `M:`, `Z:` hiện không truy cập được theo chủ ý bảo vệ dữ liệu.
 
 ## Sơ đồ và địa chỉ đang dùng
 
@@ -10,8 +22,8 @@ Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứn
 |---|---|
 | Router OpenWrt | LAN `192.168.1.1/24`; Tailscale `100.114.53.95`; MagicDNS ngắn `openwrt` trong tailnet `tail7e45a2.ts.net` |
 | Quản trị | LuCI `http://100.114.53.95` hoặc `http://openwrt` khi Tailscale hoạt động; SSH qua tailnet bằng khóa |
-| NAS từ máy Windows này | `N:` → `NAS1`, `M:` → `NAS2`, `Z:` → `DATA3`; có thể mở `\\100.114.53.95\NAS1`, `\\100.114.53.95\NAS2`, `\\100.114.53.95\DATA3` |
-| Bảo vệ | WAN từ chối kết nối vào; chỉ cho TCP 22, 80, 445 và ICMP echo từ Tailscale; SMB cần tài khoản `nas`, không cho guest |
+| NAS từ máy Windows này | Các map lịch sử: `N:` → `NAS1`, `M:` → `NAS2`, `Z:` → `DATA3`; **đang không truy cập được** vì ổ cũ vắng mặt và KSMBD tạm dừng |
+| Bảo vệ | WAN từ chối kết nối vào; firewall chỉ cho TCP 22, 80, 445 và ICMP echo từ Tailscale; dịch vụ SMB hiện dừng, nên TCP 445 đóng |
 
 ## Bước 1 — Xác nhận đúng router và kho gói
 
@@ -99,7 +111,7 @@ Ngày 12/10, cả ba map từng hiện **Unavailable** trong phiên Windows hi�
 
 ![File Explorer sau reboot hiện NAS1 N:, NAS2 M: và DATA3 Z:](reports/2026-10-11-clean-rebuild/screenshots/30-windows-mapped-nas-drives.jpg)
 
-## Bảng kết quả cuối
+## Bảng kết quả triển khai trước khi thay đổi ổ USB
 
 | Tiêu chí | Kết quả tại lần kiểm tra 12/10/2026 |
 |---|---|
@@ -114,13 +126,15 @@ Ngày 12/10, cả ba map từng hiện **Unavailable** trong phiên Windows hi�
 | FQDN MagicDNS trong Chrome | **FAIL phía client:** `openwrt.tail7e45a2.ts.net` từng báo `ERR_BLOCKED_BY_CLIENT`; DNS hệ điều hành và tên ngắn `openwrt` hoạt động. Chưa xác định tiện ích nào chặn |
 | Khôi phục dữ liệu NAS cũ / PRIVATE | **KHÔNG THỰC HIỆN**; ổ hiện tại được chọn làm NAS mới, UUID khác và không thấy dữ liệu cũ |
 
+Các dòng PASS về mount và SMB trong bảng này là **kết quả lịch sử trước 16:04 ngày 12/10/2026**, không phải trạng thái đang hoạt động. Trạng thái mới nhất ở bảng đầu README.
+
 ## Nếu sau này muốn bật BitLocker
 
-**Hiện chưa bật BitLocker.** Nếu muốn mã hóa một phân vùng vật lý, sao lưu dữ liệu trước, dừng share tương ứng, `sync`, tháo mount sạch trên router rồi mới cắm ổ vật lý sang Windows. Giữ khóa khôi phục 48 chữ số ở nơi riêng, kiểm tra tìm được khóa trước khi tháo ổ. Ổ mạng `N:`, `M:`, `Z:` là share SMB, không phải ký tự phân vùng vật lý để bật BitLocker trực tiếp. Phân vùng đã mã hóa sẽ không còn mount thẳng bằng cấu hình NTFS3 hiện nay.
+**Trạng thái đã thay đổi:** Router hiện nhận diện `sdb3` là BitLocker, nhưng chưa mở khóa hoặc mount. Nếu sau này mã hóa phân vùng khác, sao lưu dữ liệu trước, dừng share tương ứng, `sync`, tháo mount sạch trên router rồi mới cắm ổ vật lý sang Windows. Giữ khóa khôi phục 48 chữ số ở nơi riêng, kiểm tra tìm được khóa trước khi tháo ổ. Ổ mạng `N:`, `M:`, `Z:` là share SMB, không phải ký tự phân vùng vật lý để bật BitLocker trực tiếp. Phân vùng đã mã hóa sẽ không còn mount thẳng bằng cấu hình NTFS3 cũ.
 
 Để **mở khóa** volume trên Windows, dùng giao diện BitLocker hoặc `manage-bde -unlock E: -password` với đúng ký tự volume thực tế. Để **giải mã vĩnh viễn**, sau khi mở khóa dùng `manage-bde -off E:` và chờ `manage-bde -status E:` báo hoàn tất. Không ghi mật khẩu hoặc recovery key vào lệnh, ảnh hay repo. Xem [Microsoft: mở khóa](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/manage-bde-unlock), [giải mã](https://learn.microsoft.com/en-us/windows-security/operating-system-security/data-protection/bitlocker/operations-guide), [tìm recovery key](https://support.microsoft.com/en-us/windows/security/encryption/find-your-bitlocker-recovery-key).
 
-`cryptsetup --type bitlk` trên Linux là khả năng kỹ thuật, nhưng **chưa cài hoặc thử trên router này**; không coi là cách tự mở NAS đã được kiểm chứng. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads).
+`cryptsetup --type bitlk` trên Linux là khả năng kỹ thuật, nhưng **chưa cài hoặc thử trên router này**; không coi là cách tự mở NAS đã được kiểm chứng. Phân vùng `sdb3` mới được nhận diện bằng metadata BitLocker, không chứng minh có thể giải mã trên MT7621. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads).
 
 ## Tài liệu và ảnh lưu trữ
 
