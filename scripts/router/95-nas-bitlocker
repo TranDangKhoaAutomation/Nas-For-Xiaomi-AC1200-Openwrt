@@ -1,0 +1,14 @@
+#!/bin/sh
+# OpenWrt /etc/hotplug.d/block handler; manager verifies the exact UUID.
+case "$ACTION" in
+    add)
+        [ "$DEVTYPE" = partition ] || return 0
+        [ -e "/dev/$DEVNAME" ] || return 0
+        [ "$(blkid -s UUID -o value "/dev/$DEVNAME" 2>/dev/null)" = '1a518101-853b-45d0-ae99-beac1d47c63a' ] || return 0
+        (sleep 2; /usr/sbin/nas-bitlocker-manager start) >/dev/null 2>&1 &
+        ;;
+    remove)
+        [ "$(cat /tmp/nas-bitlocker-device 2>/dev/null)" = "$DEVNAME" ] || return 0
+        /usr/sbin/nas-bitlocker-manager stop >/dev/null 2>&1 || true
+        ;;
+esac

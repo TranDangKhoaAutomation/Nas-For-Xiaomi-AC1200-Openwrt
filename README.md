@@ -8,11 +8,11 @@ Hướng dẫn này ghi lại **cấu hình đã thực hiện và kiểm chứn
 
 | Hạng mục | Kết quả mới nhất |
 |---|---|
-| Phạm vi chủ thiết bị chọn cho ổ mới | Chủ thiết bị sau đó yêu cầu **truy cập từ xa cả `sdb2` và `sdb3`**. `sdb2` đã được cấu hình; `sdb3` còn chờ nhập mật khẩu BitLocker trực tiếp tại Terminal |
+| Phạm vi chủ thiết bị chọn cho ổ mới | Chủ thiết bị yêu cầu **truy cập từ xa cả `sdb2` và `sdb3`**, và chọn **lưu khóa mở BitLocker trên router** để tự mở khi cắm ổ. `sdb2` đã hoạt động; `sdb3` còn chờ chủ thiết bị nhập mật khẩu kín trên Windows để kiểm tra và nạp khóa |
 | `sdb2` — DANGKHOA | **PASS hiện tại:** mount NTFS3 đọc/ghi tại `/mnt/dangkhoa` theo UUID `A8E46416E463E4D2`; KSMBD chỉ cho user `nas`, không guest. Windows ngoài LAN OpenWrt đã map `P:` tới `\\100.114.53.95\DANGKHOA`; tạo, đọc, xóa tệp thử thành công qua Tailscale. KSMBD đã bật tự khởi động, **chưa kiểm chứng reboot cấu hình mới** |
 | NAS1/NAS2/DATA3 cũ | **ĐÃ NGƯNG:** ổ mang ba UUID cũ không còn hiện diện; ba mục fstab cũ đã tắt và các share cũ được thay bằng `DANGKHOA`. Bản sao cấu hình cũ còn trên router tại `/root/*before-newdisk-20261012` |
 | Ổ USB hiện thấy | Chỉ một ổ WDC 1 TB ở `/dev/sdb`; `sdb2` là NTFS nhãn `DangKhoa`, UUID `A8E46416E463E4D2`; `sdb3` là BitLocker khoảng 100 GiB, UUID `1a518101-853b-45d0-ae99-beac1d47c63a` |
-| `sdb3` — BitLocker | **CHƯA XONG:** `cryptsetup 2.8.0-r1` và các module cần thiết đã cài từ kho OpenWrt chính thức; metadata BitLocker đọc được, có tùy chọn mật khẩu và recovery passphrase. Phiên mở khóa đang chờ chủ thiết bị tự nhập mật khẩu; chưa có mapper, chưa mount, chưa share. Không lưu khóa trên router hoặc trong repo |
+| `sdb3` — BitLocker | **CHƯA XONG:** `cryptsetup 2.8.0-r1` và các module cần thiết đã cài; metadata BitLocker đọc được. Bộ mở khóa theo UUID đã cài trên router nhưng chưa bật khởi động, vì chưa có khóa thật. Phép thử khóa giả bị từ chối và không để lại tệp khóa. Chưa có mapper, mount hoặc share. Khóa thật sẽ chỉ lưu root đọc được trên router sau khi kiểm tra thành công; không đưa vào repo hoặc ảnh |
 | Lỗi khi ổ cũ rời router | Chủ thiết bị xác nhận **chủ ý thay ổ**. Kernel ghi `USB disconnect` khi còn ghi, mất ghi đồng bộ, `Buffer I/O error` trên `sda2`–`sda4`; `ntfs3` đánh dấu các volume dirty. Khi cắm lại ổ cũ, cần kiểm tra filesystem trước khi cho ghi |
 | Tailscale và quản trị | Tailscale vẫn chạy tại `100.114.53.95`; SSH còn truy cập được. TCP 445 chỉ mở từ zone Tailscale để phục vụ share `DANGKHOA`; WAN công cộng không mở SMB |
 
@@ -130,13 +130,27 @@ Ngày 12/10, cả ba map từng hiện **Unavailable** trong phiên Windows hi�
 
 Các dòng PASS về mount và SMB trong bảng này là **kết quả lịch sử trước 16:04 ngày 12/10/2026**, không phải trạng thái đang hoạt động. Trạng thái mới nhất ở bảng đầu README.
 
-## Nếu sau này muốn bật BitLocker
+## Bước 9 — Ổ thay thế và tự mở BitLocker khi cắm
+
+Ổ thay thế có `sdb2` NTFS nhãn `DangKhoa` và `sdb3` BitLocker. `sdb2` hiện được mount đọc/ghi và chia sẻ tên `DANGKHOA`; trên Windows ngoài LAN OpenWrt, `P:` nối tới `\\100.114.53.95\DANGKHOA` và đã qua phép thử tạo, đọc, xóa tệp. **Chưa có ảnh mới cho bước này; ảnh ở các bước 1–8 là ổ cũ.**
+
+Để `sdb3` tự mở trên **router**, chủ thiết bị đã chọn lưu mật khẩu BitLocker trong `/etc/nas-bitlocker/passphrase` với quyền `0600`, thư mục quyền `0700`. Đây là sự đánh đổi: người có quyền root hoặc có bản sao flash router có thể lấy mật khẩu và mở ổ. Không để bản sao mật khẩu trong Git, ảnh, lệnh hoặc README; giữ recovery key riêng với router và ổ. Windows auto-unlock gắn với máy/tài khoản Windows, không tự chuyển sang OpenWrt. [Microsoft BitLocker FAQ](https://learn.microsoft.com/en-us/windows/security/information-protection/bitlocker/bitlocker-key-management-faq), [cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads).
+
+Bộ quản lý trên router đã cài tại `/usr/sbin/nas-bitlocker-manager`, chỉ nhận UUID `1a518101-853b-45d0-ae99-beac1d47c63a`. Hook hotplug đã cài; dịch vụ sau boot **chưa bật**, vì chưa nạp mật khẩu thật. Để nạp, mở PowerShell trên chính máy Windows và chạy lệnh dưới đây; prompt không hiện ký tự. Script kiểm tra fingerprint SSH đã ghim, truyền mật khẩu qua SSH stdin, thử `cryptsetup --test-passphrase`, rồi mới lưu tệp quyền root trên router. Nếu sai, tệp tạm bị xóa và khóa cũ không bị thay.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Nas-Router\Nas-For-Xiaomi-AC1200-Openwrt\scripts\provision-bitlocker-passphrase.ps1"
+```
+
+**Chưa chạy bước nạp khóa thật**, nên chưa thể kết luận `sdb3` đọc/ghi hay tự mở. Sau khi nạp, cần kiểm tra mapper, filesystem bên trong, mount, share SMB qua Tailscale, bật init, reboot và thử rút/cắm lại có tháo mount sạch. Không rút ổ khi đang ghi; dừng kết nối SMB và tháo mount trước.
+
+### Nếu mã hóa hoặc giải mã phân vùng khác sau này
 
 **Trạng thái đã thay đổi:** Router hiện nhận diện `sdb3` là BitLocker, nhưng chưa mở khóa hoặc mount. Nếu sau này mã hóa phân vùng khác, sao lưu dữ liệu trước, dừng share tương ứng, `sync`, tháo mount sạch trên router rồi mới cắm ổ vật lý sang Windows. Giữ khóa khôi phục 48 chữ số ở nơi riêng, kiểm tra tìm được khóa trước khi tháo ổ. Ổ mạng `N:`, `M:`, `Z:` là share SMB, không phải ký tự phân vùng vật lý để bật BitLocker trực tiếp. Phân vùng đã mã hóa sẽ không còn mount thẳng bằng cấu hình NTFS3 cũ.
 
 Để **mở khóa** volume trên Windows, dùng giao diện BitLocker hoặc `manage-bde -unlock E: -password` với đúng ký tự volume thực tế. Để **giải mã vĩnh viễn**, sau khi mở khóa dùng `manage-bde -off E:` và chờ `manage-bde -status E:` báo hoàn tất. Không ghi mật khẩu hoặc recovery key vào lệnh, ảnh hay repo. Xem [Microsoft: mở khóa](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/manage-bde-unlock), [giải mã](https://learn.microsoft.com/en-us/windows-security/operating-system-security/data-protection/bitlocker/operations-guide), [tìm recovery key](https://support.microsoft.com/en-us/windows/security/encryption/find-your-bitlocker-recovery-key).
 
-`cryptsetup --type bitlk` đã được **cài** trên router và đọc được metadata BitLocker của `sdb3`; khả năng mở khóa, mount và tốc độ đọc/ghi **chưa được kiểm chứng** vì đang chờ chủ thiết bị nhập mật khẩu tại dấu nhắc kín. Không lưu mật khẩu hoặc recovery key để tự mở khóa sau reboot. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads) và [OpenWrt ksmbd](https://openwrt.org/docs/guide-user/services/nas/ksmbd).
+`cryptsetup --type bitlk` đã được **cài** trên router và đọc được metadata BitLocker của `sdb3`; khả năng mở khóa, mount và tốc độ đọc/ghi **chưa được kiểm chứng**. Xem [tài liệu cryptsetup BITLK](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads) và [OpenWrt ksmbd](https://openwrt.org/docs/guide-user/services/nas/ksmbd).
 
 ## Tài liệu và ảnh lưu trữ
 

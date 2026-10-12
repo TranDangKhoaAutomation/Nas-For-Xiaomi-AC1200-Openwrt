@@ -1,0 +1,66 @@
+#!/bin/sh
+# Manage only the BitLocker volume identified below. Never read the secret from argv.
+set -u
+
+UUID='1a518101-853b-45d0-ae99-beac1d47c63a'
+KEY='/etc/nas-bitlocker/passphrase'
+MAPPER='nas_bitlocker'
+TARGET='/mnt/bitlocker'
+LOCK='/tmp/nas-bitlocker-manager.lock'
+
+mounted() { grep -q " $TARGET " /proc/mounts; }
+device() { blkid -U "$UUID" 2>/dev/null; }
+
+start_volume() {
+    [ -s "$KEY" ] || { logger -t nas-bitlocker 'unlock key is not provisioned'; return 1; }
+    src="$(device)"
+    [ -n "$src" ] || { logger -t nas-bitlocker 'expected BitLocker UUID is absent'; return 1; }
+    [ "$(blkid -s UUID -o value "$src" 2>/dev/null)" = "$UUID" ] || return 1
+    if ! cryptsetup status "$MAPPER" >/dev/null 2>&1; then
+        cryptsetup open --batch-mode --type bitlk --key-file "$KEY" "$src" "$MAPPER" || {
+            logger -t nas-bitlocker 'unlock failed'
+            return 1
+        }
+    fi
+    if ! mounted; then
+        fstype="$(blkid -s TYPE -o value "/dev/mapper/$MAPPER" 2>/dev/null)"
+        [ "$fstype" = ntfs ] || {
+            logger -t nas-bitlocker "unexpected inner filesystem: $fstype"
+            cryptsetup close "$MAPPER" >/dev/null 2>&1 || true
+            return 1
+        }
+        mount -t ntfs3 -o rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev "/dev/mapper/$MAPPER" "$TARGET" || {
+            logger -t nas-bitlocker 'mount failed'
+            cryptsetup close "$MAPPER" >/dev/null 2>&1 || true
+            return 1
+        }
+    fi
+    printf '%s\n' "${src##*/}" > /tmp/nas-bitlocker-device
+    logger -t nas-bitlocker 'encrypted volume mounted'
+}
+
+stop_volume() {
+    if mounted; then
+        sync
+        umount "$TARGET" || return 1
+    fi
+    cryptsetup status "$MAPPER" >/dev/null 2>&1 && cryptsetup close "$MAPPER"
+    rm -f /tmp/nas-bitlocker-device
+}
+
+case "${1:-}" in
+    start|stop)
+        mkdir "$LOCK" 2>/dev/null || exit 0
+        trap 'rmdir "$LOCK" 2>/dev/null' EXIT HUP INT TERM
+        if [ "$1" = start ]; then start_volume; else stop_volume; fi
+        ;;
+    status)
+        if mounted && cryptsetup status "$MAPPER" >/dev/null 2>&1; then
+            echo 'mounted'
+        else
+            echo 'locked or unmounted'
+            exit 1
+        fi
+        ;;
+    *) echo 'usage: nas-bitlocker-manager {start|stop|status}' >&2; exit 2 ;;
+esac

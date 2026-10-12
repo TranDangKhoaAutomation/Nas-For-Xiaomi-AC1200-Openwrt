@@ -1,0 +1,21 @@
+#!/bin/sh
+# Accept the password only on stdin, test it, then store it outside the Git checkout.
+set -eu
+UUID='1a518101-853b-45d0-ae99-beac1d47c63a'
+src="$(blkid -U "$UUID" 2>/dev/null)"
+[ -n "$src" ] || { echo 'Expected BitLocker volume is absent' >&2; exit 1; }
+umask 077
+candidate="$(mktemp /tmp/nas-bitlocker-key.XXXXXX)"
+trap 'rm -f "$candidate"' EXIT HUP INT TERM
+cat > "$candidate"
+[ -s "$candidate" ] || { echo 'Empty passphrase' >&2; exit 1; }
+cryptsetup open --batch-mode --test-passphrase --type bitlk --key-file "$candidate" "$src" || {
+    echo 'BitLocker password did not unlock the expected volume' >&2
+    exit 1
+}
+mkdir -p /etc/nas-bitlocker
+chmod 700 /etc/nas-bitlocker
+cp "$candidate" /etc/nas-bitlocker/passphrase.new
+chmod 600 /etc/nas-bitlocker/passphrase.new
+mv -f /etc/nas-bitlocker/passphrase.new /etc/nas-bitlocker/passphrase
+echo 'Passphrase verified and stored root-only on router'
