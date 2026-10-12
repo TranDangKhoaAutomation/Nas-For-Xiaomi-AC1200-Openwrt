@@ -6,19 +6,19 @@
 >
 > **Trạng thái mới nhất:** xem bảng ngay dưới đây và các mục kiểm chứng ngày 12/10/2026 ở cuối tài liệu. Những bảng cũ là nhật ký tại thời điểm thực hiện, được giữ lại để đối chiếu.
 
-## Tóm tắt trạng thái đã kiểm chứng — 12/10/2026, 11:34 ICT
+## Tóm tắt trạng thái đã kiểm chứng — 12/10/2026, 12:06 ICT
 
 | Tiêu chí | Trạng thái hiện tại |
 |---|---|
-| OpenWrt và Tailscale sau reboot | **PASS:** router hoạt động hơn 10 giờ, Tailscale tự chạy và giữ `100.114.53.95`; `rpcd`/`uhttpd` chạy |
-| Quản trị từ Windows qua tailnet | **PASS:** SSH bằng khóa, LuCI qua `http://100.114.53.95` và tên ngắn MagicDNS `http://openwrt`; System Log tải được. Log router ghi nguồn `100.85.51.71` |
-| Firewall | **PASS theo cấu hình và kiểm tra hiện tại:** WAN input REJECT/forward DROP; tailnet chỉ được TCP 22/80 và ICMP echo tới router; không quảng bá subnet/exit node |
+| OpenWrt và Tailscale sau reboot NAS | **PASS:** reboot lại sau cấu hình NAS; Tailscale tự chạy, giữ `100.114.53.95`; `rpcd`, `uhttpd`, KSMBD chạy và ba phân vùng tự gắn lại |
+| Quản trị từ Windows qua tailnet | **PASS:** SSH bằng khóa và TCP 22/80 qua interface Tailscale sau reboot. LuCI phiên cũ yêu cầu đăng nhập lại sau reboot; kiểm chứng giao diện đã thực hiện trước reboot |
+| Firewall | **PASS:** WAN input REJECT/forward DROP; tailnet chỉ được TCP 22/80/445 và ICMP echo tới router; `fw4 check` đạt, `input_wan` không có rule SMB/quản trị |
 | FQDN MagicDNS trong Chrome | **FAIL phía client:** `openwrt.tail7e45a2.ts.net` bị `ERR_BLOCKED_BY_CLIENT`; tên ngắn `openwrt` đã hoạt động trên cùng tab |
-| Quản trị qua Internet ngoài LAN OpenWrt | **PASS:** Ethernet ngắt; Windows dùng Wi-Fi `10.31.110.127/24` qua gateway `10.31.110.104`, ngoài LAN router `192.168.1.0/24`. `tailscale netcheck` cho thấy hai đầu có IPv4 công cộng khác nhau; Tailscale chuyển tiếp qua DERP `hkg`. SSH bằng khóa, LuCI Overview/System Log qua IP tailnet và tên ngắn MagicDNS đều hoạt động. Không kết luận hai đầu ở hai ISP khác nhau |
+| Quản trị và NAS ngoài LAN OpenWrt | **PASS:** trước đó SSH/LuCI đã được kiểm thử từ Wi-Fi khác LAN và hai đầu có IPv4 công cộng khác nhau. Sau reboot NAS, Windows dùng Wi-Fi `192.168.0.104/24`, Ethernet ngắt; SMB qua IP tailnet đã tạo/đọc/xóa file thử trên cả ba share |
 | Mật khẩu root mạnh | **HOÃN THEO CHỦ THIẾT BỊ:** chủ thiết bị sẽ tự đổi sau; SSH root bằng mật khẩu đã tắt, LuCI vẫn dùng mật khẩu hiện tại |
-| NAS/HDD | **KHÔNG CAN THIỆP:** chưa thao tác dữ liệu hoặc filesystem của ổ NAS |
+| NAS/HDD | **PASS cho NAS mới:** ổ WDC 1 TB; NAS1, NAS2, DATA3 gắn NTFS3 đọc/ghi theo UUID và chia sẻ SMB có xác thực, không guest. Windows đã map N:, M:, Z:; thử tạo/đọc/xóa qua SMB PASS trước và sau reboot. Dữ liệu NAS cũ không thấy trên ổ hiện tại |
 
-**Quản trị ngoài LAN đã đạt.** Mật khẩu root mới được chủ thiết bị hoãn để tự đặt sau, nên tiêu chí mật khẩu mạnh chưa đạt và không được gộp vào PASS. Chưa xác định chắc nguyên nhân gốc của lỗi LuCI cũ hoặc thành phần Chrome chặn FQDN MagicDNS; đường quản trị bằng IP tailnet và tên ngắn đã hoạt động. Thiết bị Tailscale cũ `openwrt-nas` đã biến mất khỏi Admin Console; chi tiết audit ở phần sau, không xóa hoặc đăng ký lại trong lần làm việc này.
+**Quản trị ngoài LAN và NAS mới đã được kiểm chứng.** Mật khẩu root mới được chủ thiết bị hoãn để tự đặt sau, nên tiêu chí mật khẩu mạnh chưa đạt. Chưa xác định chắc nguyên nhân gốc của lỗi LuCI cũ hoặc thành phần Chrome chặn FQDN MagicDNS; đường quản trị bằng IP tailnet và tên ngắn đã hoạt động trước reboot NAS. Thiết bị Tailscale cũ `openwrt-nas` đã biến mất khỏi Admin Console; chi tiết audit ở phần sau, không xóa hoặc đăng ký lại trong lần làm việc này.
 
 ## Trạng thái thực tế sau khi reset
 
@@ -387,3 +387,63 @@ Theo yêu cầu tập trung vào vận hành ngoài LAN và hoãn đổi mật k
 ![LuCI System Log qua Tailscale trên Wi-Fi ngoài LAN](reports/2026-10-11-clean-rebuild/screenshots/26-luci-system-log-over-separate-wifi.jpg)
 
 **Kết luận phạm vi này:** quản trị OpenWrt bằng Tailscale qua một đường Internet khác đã được kiểm chứng thực tế bằng SSH và LuCI. Không mở cổng quản trị ra WAN công cộng, không thay đổi NAS/HDD. Phần đổi mật khẩu và lỗi Chrome với FQDN được ghi riêng, không làm giảm kết quả PASS của IP tailnet và tên ngắn MagicDNS.
+
+### Chẩn đoán NAS sau câu hỏi của chủ thiết bị — 12/10/2026, 11:40–11:44 ICT
+
+**NAS chưa được khôi phục sau factory reset.** Ban đầu router thấy box USB Mass Storage `13fd:0840` nhưng không có `/dev/sdX`, vì chưa cài `kmod-usb-storage`/`kmod-scsi-core`. Đã cài hai driver từ kho OpenWrt 25.12.5 chính thức; sau đó kernel thấy ổ WDC 1 TB và `/dev/sda1`–`/dev/sda4`. Đã cài `blkid` và `smartmontools` để đọc nhận dạng và SMART. Không cài KSMBD, không mount, không chạy sửa filesystem, không mở khóa VeraCrypt, không ghi lên các phân vùng.
+
+| Phân vùng hiện thấy | Nhận dạng chỉ đọc | Đối chiếu bản NAS cũ |
+|---|---|---|
+| `sda1` ~16 MiB | Microsoft reserved partition | Không phải NAS1 |
+| `sda2` ~831.5 GiB | NTFS, nhãn `Data`, UUID `2CF24485F24454EC` | UUID **khác** NAS1 cũ `01DC8764756E6240` |
+| `sda3` ~50 GiB | NTFS, nhãn `Data2`, UUID `549638DD9638C0F2` | UUID **khác** NAS2 cũ `78F6F2BBF6F278A8` |
+| `sda4` ~50 GiB | NTFS, nhãn `Data3`, UUID `08820F9C820F8D7E` | Được nhận là NTFS, không chứng minh đây là PRIVATE VeraCrypt cũ |
+
+SMART tổng thể trả `PASSED`; các bộ đếm reallocated/pending/uncorrectable/CRC hiện bằng 0 và ATA error log không có lỗi. Kết quả này không bảo đảm toàn bộ dữ liệu/file system nguyên vẹn. `/etc/init.d/ksmbd` và `/etc/config/ksmbd` chưa tồn tại; TCP 445 từ Windows qua Tailscale trả `False`, nên Windows chưa thể mở share NAS. **Không triển khai snapshot NAS cũ theo số `/dev/sdaX` hoặc các UUID cũ lên ổ hiện tại.** Cần chủ thiết bị xác nhận đây có phải ổ định dùng làm NAS và cho phép phạm vi mount/chia sẻ trước khi tiếp tục.
+
+### Khôi phục NAS mới — 12/10/2026, 11:45–12:06 ICT
+
+Chủ thiết bị xác nhận đây là ổ WDC 1 TB cần dùng và cho phép khôi phục NAS đọc/ghi. Trước khi ghi, đã cài `kmod-fs-ntfs3` và gắn cả ba phân vùng **chỉ đọc** để kiểm tra: `Data` dùng khoảng 123,2 MiB, `Data2` và `Data3` mỗi phân vùng khoảng 90,1 MiB; mỗi thư mục gốc chỉ thấy `System Volume Information`. Đã tháo cả ba mount chỉ đọc sau kiểm tra. Chủ thiết bị sau đó chọn **dùng ổ hiện tại làm NAS mới**. Điều này không chứng minh dữ liệu NAS cũ đã được khôi phục; các UUID cũ không khớp và trên cây tệp hiện tại không thấy dữ liệu người dùng.
+
+![Log LuCI nhận ổ USB 1 TB và bốn phân vùng](reports/2026-10-11-clean-rebuild/screenshots/27-usb-disk-detected-in-luci-log.jpg)
+
+Đã cài từ kho chính thức `block-mount`, `kmod-fs-ksmbd`, `ksmbd-server`, `luci-app-ksmbd` và `shadow-useradd`. Không format, chia lại phân vùng hoặc chạy sửa NTFS. Fstab gắn theo **UUID**, filesystem `ntfs3`, các tùy chọn `rw,uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev`; tài khoản hệ thống `nas` UID/GID 1000 không có quyền đăng nhập shell. Cấu hình fstab tự gắn khi boot hoặc khi cắm ổ.
+
+| Phân vùng hiện tại | UUID | Điểm gắn | Share SMB | Windows |
+|---|---|---|---|---|
+| `Data` ~831,5 GiB | `2CF24485F24454EC` | `/mnt/nas` | `NAS1` | `N:` |
+| `Data2` ~50 GiB | `549638DD9638C0F2` | `/mnt/nas2` | `NAS2` | `M:` |
+| `Data3` ~50 GiB | `08820F9C820F8D7E` | `/mnt/data3` | `DATA3` | `Z:` |
+
+![LuCI hiển thị ba UUID và mount NTFS3 đã bật](reports/2026-10-11-clean-rebuild/screenshots/29-luci-uuid-ntfs3-mounts.jpg)
+
+KSMBD chỉ cấu hình ba share trên, `read_only=no`, `users=nas`, `guest_ok=no`, `create_mask=0600`, `dir_mask=0700`; SMBv1 và guest IPC vẫn tắt. Template KSMBD có `interfaces = |INTERFACES| tailscale0`, `bind interfaces only = yes` để lắng nghe `br-lan` và `tailscale0`. **Không thêm `tailscale0` làm interface do netifd quản lý:** lần thử `ifup tailscale` đã gỡ IP khỏi TUN, làm SSH/LuCI qua tailnet mất tạm thời. Đã xóa interface thử nghiệm, restart daemon Tailscale giữ nguyên đăng nhập; `100.114.53.95`, TCP 22/80 và SMB hoạt động lại. Firewall chỉ thêm rule TCP 445 từ zone `tailscale`; WAN vẫn REJECT và không có rule mở SMB/SSH/LuCI. Bản sao cấu hình trước khi sửa nằm trên router tại `/root/*before-nas-20261012`.
+
+![LuCI hiển thị ba share SMB chỉ cho user nas, không guest](reports/2026-10-11-clean-rebuild/screenshots/28-luci-three-smb-shares.jpg)
+
+Mật khẩu SMB mạnh được tạo ngẫu nhiên, lưu trong cơ sở dữ liệu KSMBD trên router và **Windows Credential Manager của tài khoản Windows hiện tại** cho `100.114.53.95` và `192.168.1.1`; không ghi mật khẩu hoặc hash vào Git, README hay ảnh. Nếu dùng máy khác hoặc muốn đổi mật khẩu, đăng nhập SSH bằng khóa đã xác minh rồi chạy `ksmbd.adduser -u nas`, tự nhập mật khẩu mới hai lần tại prompt và cập nhật Windows Credential Manager; không gửi mật khẩu vào chat. Mật khẩu SMB độc lập với mật khẩu root LuCI.
+
+**Cách mở NAS trên Windows:** bật Tailscale, mở File Explorer → **This PC**. Ba ổ đã map cố định là **N: NAS1**, **M: NAS2**, **Z: DATA3**. Hoặc dán lần lượt `\\100.114.53.95\NAS1`, `\\100.114.53.95\NAS2`, `\\100.114.53.95\DATA3` vào thanh địa chỉ. Sau khi Windows đăng nhập lại, các ổ persistent sẽ tự kết nối khi Tailscale và router sẵn sàng; nếu báo mất kết nối, mở lại ổ sau khi Tailscale lên. `DATA3` là NTFS thường, **không phải** PRIVATE VeraCrypt cũ.
+
+![File Explorer hiển thị NAS1 N:, NAS2 M: và DATA3 Z:](reports/2026-10-11-clean-rebuild/screenshots/30-windows-mapped-nas-drives.jpg)
+
+| Phép thử | Kết quả và bằng chứng |
+|---|---|
+| Mount đọc/ghi trước reboot | **PASS:** `mount` thấy `/dev/sda2`, `sda3`, `sda4` trên ba điểm gắn bằng `ntfs3 (rw)`; LuCI hiển thị ba UUID được bật |
+| KSMBD có xác thực qua tailnet | **PASS:** TCP 445 từ Windows có source `100.85.51.71` qua interface `Tailscale`; `net use` mở cả ba share với credential lưu an toàn |
+| Ghi/đọc/xóa qua SMB trước reboot | **PASS:** tạo file kiểm tra nhỏ, đọc lại đúng nội dung rồi xóa thành công trên NAS1, NAS2, DATA3 |
+| Reboot và tự khởi động | **PASS:** `sync; reboot`; sau reboot uptime ~1 phút, `tailscale`, `ksmbd`, `rpcd`, `uhttpd` đều `running`, Tailscale IP vẫn `100.114.53.95`; cả ba mount vẫn `ntfs3 (rw)`; `fw4 check` đạt |
+| SMB từ mạng khác LAN OpenWrt sau reboot | **PASS:** Windows Ethernet `Disconnected`, Wi-Fi `192.168.0.104/24`, khác LAN `192.168.1.0/24`; TCP 445 đi qua interface `Tailscale`; tạo/đọc/xóa file thử trên cả ba share tiếp tục thành công |
+| Firewall WAN | **PASS theo cấu hình nftables:** chain `input_wan` không có TCP 22/80/445, cuối chain nhảy `reject_from_wan`; chain `input_tailscale` cho đúng TCP 22/80/445 và ICMP echo |
+| Ổ hiển thị trong File Explorer | **PASS:** `net use` và File Explorer hiện N:, M:, Z: với dung lượng tương ứng; ảnh 30 |
+| Dữ liệu NAS cũ hoặc PRIVATE | **CHƯA KHÔI PHỤC:** UUID không trùng snapshot cũ; ba phân vùng chỉ có thư mục hệ thống trước khi thử ghi. Không tự nhận DATA3 là VeraCrypt |
+
+LuCI yêu cầu đăng nhập lại sau reboot, như kỳ vọng khi phiên cũ hết hiệu lực; lần xác minh hậu reboot đã dùng SSH, TCP, SMB và mount thực tế. Chưa thử mở lại trang LuCI sau khi nhập mật khẩu root. Mật khẩu root mạnh vẫn được chủ thiết bị hoãn, cần tự đổi tại **Hệ thống → Quản trị**.
+
+### Nếu sau này muốn dùng BitLocker cho một phân vùng NAS
+
+**Hiện chưa bật BitLocker trên ổ NAS.** BitLocker áp dụng cho phân vùng/block volume, không mã hóa trực tiếp ổ mạng N:/M:/Z: bằng cách chọn ký tự share. Trước khi mã hóa phân vùng trên ổ WDC bằng Windows, cần sao lưu dữ liệu, dừng share tương ứng, `sync` và tháo mount sạch trên router, rồi cắm **ổ vật lý** sang Windows. Chỉ mã hóa đúng phân vùng đã chọn; không thay đổi phân vùng khác. Cất **khóa khôi phục 48 chữ số** ở nơi tách khỏi chính ổ được mã hóa và kiểm tra đã tìm được khóa trước khi tháo ổ. Khi gắn lại router, cấu hình `ntfs3`/UUID hiện tại của phân vùng đó sẽ không còn dùng trực tiếp được cho tới khi có cơ chế mở khóa BitLocker; không tiếp tục ghi lên thiết bị mã hóa như NTFS thường.
+
+Phương pháp được Microsoft hỗ trợ để **mở khóa** trên Windows: kết nối ổ vào Windows, dùng giao diện mở khóa BitLocker và nhập mật khẩu hoặc khóa khôi phục. Nếu dùng dòng lệnh với ký tự ví dụ `E:`: `manage-bde -status E:`, rồi `manage-bde -unlock E: -password` để được hỏi mật khẩu mà không đặt mật khẩu trong lệnh. Để **giải mã vĩnh viễn và tắt BitLocker**, sau khi mở khóa dùng `manage-bde -off E:` và chờ `manage-bde -status E:` xác nhận giải mã hoàn tất; đây là tác vụ khác với chỉ mở khóa. Nếu quên mật khẩu, tìm khóa khôi phục bằng **Key ID** trong Microsoft Account/tài khoản cơ quan/bản in hoặc USB đã lưu; Microsoft không thể tạo lại khóa bị mất. [Lệnh mở khóa của Microsoft](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/manage-bde-unlock), [hướng dẫn giải mã](https://learn.microsoft.com/en-us/windows-security/operating-system-security/data-protection/bitlocker/operations-guide), [tìm khóa khôi phục](https://support.microsoft.com/en-us/windows/security/encryption/find-your-bitlocker-recovery-key).
+
+Về mặt kỹ thuật, `cryptsetup open --type bitlk` trên Linux có thể mở phân vùng BitLocker bằng mật khẩu hoặc recovery passphrase để tạo mapper rồi mới mount filesystem bên trong. Dự án cryptsetup ghi rõ có giới hạn với thiết bị đang giải mã dở và không hỗ trợ mở bằng TPM/SmartCard; router này **chưa cài hoặc thử** bộ gói `cryptsetup`/`dm-crypt` cho BitLocker, nên chưa coi là giải pháp NAS tự mở khóa. Cần kiểm tra khả năng gói/kernel, hiệu năng MT7621, cách nhập khóa an toàn và boot recovery trên chính phân vùng cụ thể trước khi mã hóa. Không đưa mật khẩu/khóa khôi phục vào UCI, README, Git hoặc command line. [Tài liệu BITLK của cryptsetup](https://gitlab.com/cryptsetup/cryptsetup/-/blob/main/man/cryptsetup.8.adoc?ref_type=heads).
