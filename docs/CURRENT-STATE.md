@@ -1,69 +1,23 @@
-# Trạng thái hệ thống đã xác minh
+# Trạng thái hệ thống đã xác minh — 29/10/2026
 
-Snapshot kiểm tra ngày 2026-09-26:
+| Thành phần | Trạng thái |
+|---|---|
+| Router | Xiaomi Mi Router 3G, MT7621, OpenWrt 25.12.6, kernel 6.12.112 |
+| Địa chỉ | LAN 192.168.1.1; Tailscale 100.114.53.95, tên openwrt |
+| Quản lý storage | Hệ thống → Ổ đĩa; mã generic theo UUID trong router/luci-disk-manager |
+| Ổ USB | Khoảng 1 TB; bridge nhận dạng Generic External |
+| Vùng 16 MiB | Chưa nhận dạng filesystem/UUID; không mount |
+| DangKhoa 831.5 GiB | NTFS, UUID A8E46416E463E4D2, chưa gắn do dirty |
+| Data-DangKhoa 100 GiB | BitLocker UUID 1a518101-853b-45d0-ae99-beac1d47c63a, tự mở sau reboot, NTFS3 chỉ đọc tại /mnt/bitlocker |
+| SMB | BITLOCKER chỉ đọc, user nas, không guest. Share DANGKHOA tồn tại nhưng volume chưa mount |
+| Khóa tự mở | Root-only tại /etc/nas-disks/keys; không xuất khóa vào repo |
+| Dịch vụ | nas-disks S96, hotplug, cron mỗi phút; KSMBD, Tailscale, RPC và uHTTPd hoạt động |
+| Remote SMB | Windows TCP 445 qua interface Tailscale và Test-Path tới BITLOCKER=True |
+| Firewall | Tailnet cho quản trị/SMB; WAN không mở 22/80/445; fw4 check đạt |
+| Giao diện | Việt/Anh theo LuCI; Material sidebar không còn che nội dung |
 
-- Router: Xiaomi Mi Router 3G
-- Board: xiaomi,mi-router-3g
-- SoC: MediaTek MT7621
-- OpenWrt: 25.12.5 r33051-f5dae5ece4
-- Kernel: 6.12.94
-- Target: ramips/mt7621
-- Tailscale IPv4 hiện tại: 100.91.1.101
-- KSMBD: running
-- SMB user: nas
-- Password SMB: không lưu trong repo
+Reboot thật đã kiểm chứng, không chạy mount/unlock thủ công sau boot. Chưa thử ghi vì volume RO; chưa thử Android, 4G/5G độc lập hoặc thay ổ vật lý trong phiên này.
 
-## Storage
+Truy cập: [Windows/Android từ xa](REMOTE-ACCESS.md). Chi tiết: [báo cáo triển khai](../reports/2026-10-29-disk-manager/README.md).
 
-| Vùng | Thiết bị | Mount | FS | Share | Trạng thái |
-|---|---|---|---|---|---|
-| NAS1 | /dev/sda1 | /mnt/nas | NTFS / ntfs3 | NAS1 | RW |
-| NAS2 | /dev/sda2 | /mnt/nas2 | NTFS / ntfs3 | NAS2 | RW |
-| PRIVATE | /dev/sda3 -> /dev/mapper/private | /mnt/private | VeraCrypt/TCRYPT + NTFS | PRIVATE | RW khi unlock |
-
-NAS1 và NAS2 từng được xác định bằng UUID:
-- NAS1: 01DC8764756E6240
-- NAS2: 78F6F2BBF6F278A8
-
-PRIVATE được xác định là partition 3 trên cùng physical disk chứa đúng hai volume NAS1/NAS2.
-
-## PRIVATE auto-unlock
-
-Snapshot hiện tại có:
-- /root/.nas-private-passphrase: tồn tại;
-- quyền file: root-only;
-- service nas-private-autounlock: enabled.
-
-Nội dung keyfile không được export.
-
-Auto-unlock tiện cho reboot nhưng giảm bảo mật vật lý: nếu ai có quyền root hoặc lấy được router flash thì secret có thể bị lộ.
-
-## Network
-
-UNC hiện dùng qua Tailscale:
-
-    \\100.91.1.101\NAS1
-    \\100.91.1.101\NAS2
-    \\100.91.1.101\PRIVATE
-
-Firewall:
-- source tailscale -> TCP 445: ACCEPT;
-- source wan -> TCP 445: REJECT.
-
-Không port-forward SMB 445 ra Internet.
-
-## Package chính đang dùng
-
-- block-mount
-- cryptsetup
-- kmod-fs-ksmbd
-- kmod-fs-ntfs3
-- kmod-usb-storage
-- kmod-usb-xhci-hcd
-- kmod-usb-xhci-mtk
-- kmod-usb3
-- ksmbd-server
-- ntfs-3g
-- ntfs-3g-utils
-- smartmontools
-- tailscale
+Các báo cáo ngày 25–26/09 và 12/10, snapshot router/current hoặc UUID NAS1/NAS2/PRIVATE là lịch sử. Không restore trực tiếp chúng cho cấu hình hiện tại.

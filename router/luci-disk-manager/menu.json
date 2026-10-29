@@ -1,0 +1,7 @@
+{
+  "admin/system/disks": {
+    "title": "Disk Manager", "order": 46,
+    "action": { "type": "view", "path": "nas-disks" },
+    "depends": { "acl": ["luci-app-nas-disks"] }
+  }
+}

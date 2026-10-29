@@ -32,9 +32,8 @@ jobs:
           sdk="$(cat "$RUNNER_TEMP/sdk-path")"
           mkdir -p "$sdk/package/dm-zero/src"
           cp scripts/kernel/dm-zero/Makefile "$sdk/package/dm-zero/Makefile"
-          sed -i 's/PKG_VERSION:=6.12.94/PKG_VERSION:=6.12.112/' "$sdk/package/dm-zero/Makefile"
           cp scripts/kernel/dm-zero/src/Makefile "$sdk/package/dm-zero/src/Makefile"
-          curl --fail --location --retry 3 --output "$sdk/package/dm-zero/src/dm-zero.c" 'https://raw.githubusercontent.com/gregkh/linux/v6.12.112/drivers/md/dm-zero.c'
+          cp scripts/kernel/dm-zero/src/dm-zero.c "$sdk/package/dm-zero/src/dm-zero.c"
           printf '%s  %s\n' 'a9b63a5bd78eeeeb76651477bb234b819c2c573e9acbabcc61bda3bf55a04054' "$sdk/package/dm-zero/src/dm-zero.c" | sha256sum --check
       - name: Compile only the external kernel module
         shell: bash

@@ -1,0 +1,88 @@
+#!/usr/bin/ucode
+'use strict';
+import { readfile, open, mkdir, chmod, rmdir, rename, glob, access, realpath, basename } from 'fs';
+import { statvfs } from 'luci.core';
+import { cursor } from 'uci';
+const STATE = '/tmp/nas-disks';
+mkdir(STATE); chmod(STATE, 0o700);
+if (!mkdir(STATE + '/scan.lock')) exit(0);
+function text(path) { return trim(readfile(path) || ''); }
+function ident(uuid) { return 'v_' + replace(uuid, /[^A-Za-z0-9_]/g, '_'); }
+try {
+    let meta = {};
+    let pipe = require('fs').popen('/sbin/block info 2>/dev/null', 'r');
+    let output = pipe ? pipe.read('all') : '';
+    if (pipe) pipe.close();
+    for (let line in split(output || '', '\n')) {
+        let dev = match(line, /^(\/dev\/[^:]+):/);
+        if (!dev) continue;
+        meta[dev[1]] = {
+            uuid: match(line, /UUID="([^"]*)"/)?.[1] || '',
+            label: match(line, /LABEL="([^"]*)"/)?.[1] || '',
+            fstype: match(line, /TYPE="([^"]*)"/)?.[1] || ''
+        };
+    }
+    let mounted = {};
+    for (let line in split(text('/proc/mounts'), '\n')) {
+        let f = split(line, ' ');
+        if (length(f) < 4) continue;
+        mounted[f[0]] = { path: replace(f[1], /\\040/g, ' '), mode: match(f[3], /(^|,)ro(,|$)/) ? 'ro' : 'rw' };
+    }
+    let cfg = cursor();
+    let settings = {}, hints = {}, shares = {};
+    cfg.foreach('nas_disks', 'volume', function(s) { settings[s.uuid] = s; });
+    cfg.foreach('fstab', 'mount', function(s) { if (s.uuid) hints[lc(s.uuid)] = s; });
+    cfg.foreach('ksmbd', 'share', function(s) { if (s.path) shares[s.path] = s.name; });
+    let log = require('fs').popen('dmesg 2>/dev/null', 'r');
+    let kernel = log ? log.read('all') : '';
+    if (log) log.close();
+    let disks = [];
+    for (let path in glob('/sys/class/block/*')) {
+        let name = basename(path);
+        if (match(name, /^(mtd|ubi|loop|ram|zram|dm-)/)) continue;
+        if (access(path + '/partition') || !access(path + '/device')) continue;
+        let sectors = +text(path + '/size');
+        if (!sectors) continue;
+        let parts = [];
+        let candidates = glob(path + '/' + name + '*');
+        if (meta['/dev/' + name]) push(candidates, path);
+        for (let part in candidates) {
+            if (part != path && !access(part + '/partition')) continue;
+            let pname = basename(part), m = meta['/dev/' + pname] || {};
+            let id = m.uuid ? ident(m.uuid) : '';
+            let conf = settings[m.uuid] || {};
+            let hint = hints[lc(m.uuid || '')] || {};
+            let mount = mounted['/dev/' + pname] || mounted['/dev/mapper/nasd_' + id];
+            let target = conf.path || hint.target || '/mnt/disks/' + id;
+            let usage = null;
+            if (mount) {
+                let vfs = statvfs(mount.path);
+                if (vfs) usage = { total: vfs.blocks * vfs.frsize, available: vfs.bavail * vfs.frsize, used: (vfs.blocks - vfs.bfree) * vfs.frsize };
+            }
+            push(parts, {
+                device: '/dev/' + pname, id, uuid: m.uuid || '', label: m.label || '',
+                fstype: m.fstype || '', size: +text(part + '/size') * 512,
+                mount: mount || null, usage, hint_path: target,
+                hint_auto: hint.enabled == '1', share: shares[mount?.path || target] || ''
+            });
+        }
+        push(disks, {
+            device: '/dev/' + name, name, size: sectors * 512,
+            sequence: text(path + '/diskseq'),
+            model: text(path + '/device/vendor') + ' ' + text(path + '/device/model'),
+            serial: text(path + '/device/serial'),
+            transport: index(realpath(path) || '', '/usb') >= 0 ? 'USB' : 'block',
+            state: text(path + '/device/state') || 'online',
+            io_warning: !!match(kernel || '', regexp('I/O error, dev ' + name + '[, ]')),
+            partitions: parts
+        });
+    }
+    let file = open(STATE + '/inventory.new', 'w', 0o600);
+    if (!file) die('Cannot write inventory');
+    file.write(sprintf('%J', { scanned_at: time(), disks })); file.close();
+    rename(STATE + '/inventory.new', STATE + '/inventory.json');
+} catch (e) {
+    let file = open(STATE + '/scan-error', 'w', 0o600);
+    if (file) { file.write('scan_failed'); file.close(); }
+}
+rmdir(STATE + '/scan.lock');

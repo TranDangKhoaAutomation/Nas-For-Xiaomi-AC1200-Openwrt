@@ -18,3 +18,10 @@ config/**/*.example text eol=lf
 *.jar binary
 *.png binary
 *.ico binary
+*.jpg binary
+*.lmo binary
+*.ko binary
+*.uc text eol=lf
+router/luci-disk-manager/* text eol=lf
+router/luci-disk-manager/*.lmo binary
+scripts/kernel/dm-zero/** text eol=lf

@@ -1,0 +1,129 @@
+#!/bin/sh
+# OpenWrt's config helpers intentionally reference optional unset variables.
+. /lib/functions.sh
+BASE=/etc/nas-disks/keys
+STATE=/tmp/nas-disks
+umask 077
+mkdir -p "$STATE"
+chmod 700 "$STATE"
+
+load_volume() {
+    id="$1"
+    case "$id" in v_*) ;; *) return 1;; esac
+    case "$id" in *[!A-Za-z0-9_]*) return 1;; esac
+    uuid="$(uci -q get "nas_disks.$id.uuid")"
+    target="$(uci -q get "nas_disks.$id.path")"
+    ro="$(uci -q get "nas_disks.$id.readonly")"
+    kind="$(uci -q get "nas_disks.$id.fstype")"
+    [ -n "$uuid" ] && [ -n "$target" ] || return 1
+    case "$target" in /mnt/*) ;; *) return 1;; esac
+    case "$target" in *..*|*[!A-Za-z0-9_./-]*) return 1;; esac
+    mapper="nasd_$id"
+    key="${NAS_DISKS_KEY_FILE:-$BASE/$id}"
+}
+source_device() {
+    src="$(blkid -U "$uuid" 2>/dev/null)"
+    [ -n "$src" ] && [ -b "$src" ] || return 1
+    actual="$(blkid -s UUID -o value "$src" 2>/dev/null | tr A-Z a-z)"
+    expected="$(printf %s "$uuid" | tr A-Z a-z)"
+    [ "$actual" = "$expected" ]
+}
+is_mounted() { awk -v p="$target" '$2==p { found=1 } END { exit !found }' /proc/mounts; }
+mount_source() { awk -v p="$target" '$2==p { print $1; exit }' /proc/mounts; }
+refresh_shares() {
+    cfg="$1"
+    config_get sharepath "$cfg" path
+    [ "$sharepath" = "$target" ] || return 0
+    if [ "$mounted_mode" = ro ]; then value=yes; else value=no; fi
+    old="$(uci -q get "ksmbd.$cfg.read_only")"
+    if [ "$old" != "$value" ]; then uci set "ksmbd.$cfg.read_only=$value"; shares_changed=1; fi
+}
+mount_volume() {
+    load_volume "$1" || return 1
+    [ "$kind" != BitLocker ] || [ -s "$key" ] || return 1
+    source_device || return 1
+    if is_mounted; then
+        current="$(mount_source)"
+        [ "$current" = "$src" ] || [ "$current" = "/dev/mapper/$mapper" ] || return 1
+        return 0
+    fi
+    if [ -e "$target" ]; then
+        resolved="$(readlink -f "$target")"
+        [ "$resolved" = "$target" ] || return 1
+        [ -d "$target" ] || return 1
+    else
+        mkdir -p "$target" || return 1
+        [ "$(readlink -f "$target")" = "$target" ] || return 1
+    fi
+    mode=ro
+    openopt=--readonly
+    [ "$ro" = 0 ] && { mode=rw; openopt=; }
+    mountdev="$src"
+    opened=0
+    if [ "$kind" = BitLocker ]; then
+        dmsetup targets | grep -q '^zero[[:space:]]' || return 1
+        if ! cryptsetup status "$mapper" >/dev/null 2>&1; then
+            cryptsetup open --batch-mode $openopt --type bitlk --key-file "$key" "$src" "$mapper" || return 1
+            opened=1
+        fi
+        mountdev="/dev/mapper/$mapper"
+    fi
+    filesystem="$(blkid -s TYPE -o value "$mountdev" 2>/dev/null)"
+    case "$filesystem" in
+        ntfs) driver=ntfs3; opts=uid=1000,gid=1000,umask=077,iocharset=utf8,noexec,nosuid,nodev ;;
+        vfat|exfat) driver="$filesystem"; opts=uid=1000,gid=1000,umask=077,noexec,nosuid,nodev ;;
+        ext2|ext3|ext4|f2fs|btrfs|xfs) driver="$filesystem"; opts=noexec,nosuid,nodev ;;
+        *) [ "$opened" = 0 ] || cryptsetup close "$mapper"; return 1 ;;
+    esac
+    if ! mount -t "$driver" -o "$mode,$opts" "$mountdev" "$target"; then
+        if [ "$mode" != rw ] || ! mount -t "$driver" -o "ro,$opts" "$mountdev" "$target"; then
+            [ "$opened" = 0 ] || cryptsetup close "$mapper"
+            return 1
+        fi
+    fi
+    mounted_mode="$(awk -v p="$target" '$2==p { split($4,a,","); print a[1]; exit }' /proc/mounts)"
+    shares_changed=0
+    config_load ksmbd
+    config_foreach refresh_shares share
+    [ "$shares_changed" = 0 ] || uci commit ksmbd
+    if /etc/init.d/ksmbd status >/dev/null 2>&1; then /etc/init.d/ksmbd restart >/dev/null 2>&1; fi
+    logger -t nas-disks "mounted $id $mounted_mode"
+}
+unmount_volume() {
+    load_volume "$1" || return 1
+    if is_mounted; then
+        current="$(mount_source)"
+        case "$current" in /dev/mapper/"$mapper") ;; *)
+            source_device || return 1
+            [ "$current" = "$src" ] || return 1
+        esac
+        sync
+        umount "$target" || return 1
+    fi
+    if cryptsetup status "$mapper" >/dev/null 2>&1; then cryptsetup close "$mapper" || return 1; fi
+    logger -t nas-disks "unmounted $id"
+}
+auto_volume() {
+    section="$1"
+    config_get enabled "$section" enabled 0
+    [ "$enabled" = 1 ] || return 0
+    [ ! -e "$STATE/$section.paused" ] || return 0
+    config_get candidate_kind "$section" fstype
+    if [ "$candidate_kind" = BitLocker ] && [ ! -s "$BASE/$section" ]; then return 0; fi
+    config_get candidate_path "$section" path
+    awk -v p="$candidate_path" '$2==p { found=1 } END { exit !found }' /proc/mounts && return 0
+    /usr/sbin/nas-disks-manager mount "$section" >/dev/null 2>&1 || true
+}
+stop_volume() { /usr/sbin/nas-disks-manager unmount "$1" >/dev/null 2>&1 || true; }
+case "${1:-}" in
+    mount|unmount)
+        task="${2:-}"
+        case "$task" in *[!A-Za-z0-9_]*|'') exit 2;; esac
+        mkdir "$STATE/$task.lock" 2>/dev/null || exit 3
+        trap 'rmdir "$STATE/$task.lock" 2>/dev/null' EXIT HUP INT TERM
+        if [ "$1" = mount ]; then mount_volume "$task"; else unmount_volume "$task"; fi
+        ;;
+    reconcile) config_load nas_disks; config_foreach auto_volume volume ;;
+    stop-all) config_load nas_disks; config_foreach stop_volume volume ;;
+    *) exit 2 ;;
+esac

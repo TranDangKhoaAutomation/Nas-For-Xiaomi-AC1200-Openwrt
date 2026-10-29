@@ -9,6 +9,8 @@ Repo này public. Không commit:
 - Tailscale auth key hoặc state
 - VeraCrypt passphrase
 - /root/.nas-private-passphrase
+- /etc/nas-bitlocker/passphrase
+- /etc/nas-disks/keys/*
 - raw sysupgrade config backup chưa audit
 
 backups/public là SANITIZED.

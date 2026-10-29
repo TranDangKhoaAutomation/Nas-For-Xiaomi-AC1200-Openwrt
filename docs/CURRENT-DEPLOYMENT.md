@@ -1,35 +1,18 @@
-# Current Deployment Snapshot
+# Triển khai hiện tại — 29/10/2026
 
-Snapshot: 2026-09-26.
+Xiaomi Mi Router 3G, OpenWrt 25.12.6, kernel 6.12.112. Xem [trạng thái đã xác minh](CURRENT-STATE.md).
 
-- OpenWrt 25.12.5 r33051-f5dae5ece4
-- Kernel 6.12.94
-- Board xiaomi,mi-router-3g
-- MediaTek MT7621
-- NAS1 mounted RW at /mnt/nas
-- NAS2 mounted RW at /mnt/nas2
-- PRIVATE mounted RW through /dev/mapper/private at /mnt/private
-- KSMBD running
-- Tailscale enabled and running
-- PRIVATE auto-unlock enabled
-- /root/.nas-private-passphrase present with mode 0600
-- actual VeraCrypt passphrase is not published
-- SMB user: nas
+## Thành phần đang dùng
 
-Relevant packages:
+- Mã nguồn: [router/luci-disk-manager](../router/luci-disk-manager/README.md).
+- `/usr/sbin/nas-disks-manager`, `nas-disks-job`, `nas-disks-scan`.
+- `/etc/init.d/nas-disks` (S96), `/etc/hotplug.d/block/96-nas-disks`, cron reconcile mỗi phút.
+- Cấu hình theo UUID: `/etc/config/nas_disks`.
+- RPC object `nas.disks`; LuCI tại `/cgi-bin/luci/admin/system/disks`.
+- Khóa root-only tại `/etc/nas-disks/keys/`, không có trong snapshot public.
+- Gói dm-zero [6.12.112](../releases/dm-zero/6.12.112/README.md), tự nạp khi boot.
+- Catalog Việt/Anh và Material layout fix; bản dịch chính thức KSMBD/Firewall/Attended Sysupgrade/Package Manager.
 
-~~~text
-block-mount
-cryptsetup
-kmod-fs-ksmbd
-kmod-fs-ntfs3
-kmod-usb-storage
-kmod-usb-xhci-hcd
-kmod-usb-xhci-mtk
-kmod-usb3
-ksmbd-server
-ntfs-3g
-ntfs-3g-utils
-smartmontools
-tailscale
-~~~
+Manager BitLocker cố định UUID và trang BitLocker trước đó đã được thay bằng manager tổng quát. Thư mục `router/current` giữ snapshot lịch sử, không phải bộ deploy hiện hành.
+
+Tailscale: `100.114.53.95`; KSMBD template bind LAN và tailscale0, firewall tailnet cho TCP 22/80/445. Hướng dẫn [truy cập từ xa trên Windows/Android](REMOTE-ACCESS.md).

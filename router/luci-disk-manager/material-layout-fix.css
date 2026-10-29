@@ -1,0 +1,13 @@
+/* Keep the Material sidebar within the width reserved by the theme.
+ * Long translated menu labels must wrap instead of widening a fixed sidebar.
+ */
+body.logged-in .main > #mainmenu.main-left {
+    min-width: 0;
+    overflow-x: hidden;
+}
+body.logged-in .main > #mainmenu.main-left > .nav > .slide > .slide-menu > li > a {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+    padding-right: 1rem;
+}

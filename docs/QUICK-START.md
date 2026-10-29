@@ -1,84 +1,21 @@
-# Cấu hình nhanh
+# Bắt đầu nhanh — cấu hình hiện tại
 
-## 1. Điều kiện
+## Dùng NAS từ xa
 
-- Router đúng model Xiaomi Mi Router 3G.
-- OpenWrt đã boot được.
-- HDD/SSD USB ổn định.
-- Không format ổ có dữ liệu.
-- Client cài Tailscale nếu cần remote access.
+1. Cài Tailscale trên Windows/Android, đăng nhập đúng tailnet và bật kết nối.
+2. Mở share `\\100.114.53.95\BITLOCKER` bằng user `nas` và mật khẩu SMB. Windows có thể map thành ổ trong This PC; Android thêm kết nối SMB trong ứng dụng quản lý tệp.
+3. Muốn quản lý/mở khóa, vào [LuCI → Hệ thống → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/system/disks).
 
-## 2. Cài package
+**[Hướng dẫn chi tiết Windows và Android](REMOTE-ACCESS.md)** có bảng thông số, cách map ổ, phân biệt các loại mật khẩu và xử lý lỗi.
 
-OpenWrt 25.12 dùng apk:
+## Trạng thái tham chiếu 29/10/2026
 
-    apk update
-    apk add block-mount cryptsetup kmod-fs-ksmbd kmod-fs-ntfs3 \
-      kmod-usb-storage kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-usb3 \
-      ksmbd-server ntfs-3g ntfs-3g-utils smartmontools tailscale
+- BitLocker 100 GiB đã tự mở sau reboot, **chỉ đọc**.
+- NTFS DangKhoa 831.5 GiB chưa gắn do dirty.
+- Router Tailscale `100.114.53.95`; sau đổi/reset router phải lấy IP mới.
 
-## 3. Bật Tailscale
+## Dựng/cài lại giao diện trên router
 
-    /etc/init.d/tailscale enable
-    /etc/init.d/tailscale start
-    tailscale up
-    tailscale ip -4
+Đọc [bộ mã và hướng dẫn cài LuCI Disk Manager](../router/luci-disk-manager/README.md), [dm-zero đúng kernel](../releases/dm-zero/6.12.112/README.md) và [trạng thái hiện tại](CURRENT-STATE.md).
 
-Hoàn thành login theo flow của Tailscale. Không lưu auth key trong repo.
-
-## 4. Deploy storage manager
-
-Snapshot đã xác minh nằm trong router/current.
-
-Mapping file:
-
-- usr-sbin-nas-storage-manager -> /usr/sbin/nas-storage-manager
-- etc-init.d-nas-storage -> /etc/init.d/nas-storage
-- etc-hotplug.d-block-95-nas-storage -> /etc/hotplug.d/block/95-nas-storage
-
-Sau khi copy:
-
-    chmod 755 /usr/sbin/nas-storage-manager
-    chmod 755 /etc/init.d/nas-storage
-    chmod 755 /etc/hotplug.d/block/95-nas-storage
-    /etc/init.d/nas-storage enable
-    /etc/init.d/nas-storage restart
-    /usr/sbin/nas-storage-manager status
-
-## 5. Cấu hình KSMBD
-
-Snapshot UCI tham chiếu: router/current/etc-config-ksmbd
-
-Tạo user:
-
-    ksmbd.adduser -a nas
-
-Đổi password:
-
-    ksmbd.adduser -u nas
-    /etc/init.d/ksmbd restart
-
-Không ghi password trực tiếp vào file script.
-
-## 6. Firewall
-
-Snapshot tham chiếu: router/current/etc-config-firewall
-
-Nguyên tắc:
-- tailscale -> TCP 445 -> ACCEPT;
-- wan -> TCP 445 -> REJECT.
-
-Không mở SMB trực tiếp ra Internet.
-
-## 7. Kiểm tra
-
-    /usr/sbin/nas-storage-manager status
-    mount | grep -E '/mnt/(nas|nas2|private)'
-    /etc/init.d/ksmbd status
-    tailscale status
-
-Từ Windows:
-
-    \\100.91.1.101\NAS1
-
-PRIVATE chỉ hoạt động khi volume đã unlock.
+Chọn driver và module đúng firmware/kernel. Nhập khóa trên router sau khi cài, không lưu bí mật vào Git. Khi thay ổ, quét lại, đối chiếu UUID và cấu hình từng phân vùng. Snapshot NAS1/NAS2/PRIVATE cũ là lịch sử.

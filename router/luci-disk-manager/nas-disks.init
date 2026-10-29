@@ -1,0 +1,5 @@
+#!/bin/sh /etc/rc.common
+START=96
+STOP=06
+start() { /usr/sbin/nas-disks-manager reconcile; /usr/sbin/nas-disks-scan >/dev/null 2>&1 & }
+stop() { /usr/sbin/nas-disks-manager stop-all; }

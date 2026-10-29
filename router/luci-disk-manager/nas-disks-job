@@ -1,0 +1,39 @@
+#!/bin/sh
+set -u
+id="${1:-}"; job="${2:-}"; op="${3:-}"
+case "$id" in v_*) ;; *) exit 2;; esac
+case "$id" in *[!A-Za-z0-9_]*) exit 2;; esac
+case "$job" in /tmp/nas-disks-key.??????) ;; *) exit 2;; esac
+case "$op" in mount|unmount) ;; *) exit 2;; esac
+state=/tmp/nas-disks
+key="/etc/nas-disks/keys/$id"
+umask 077
+cleanup() { rm -f "$job/key"; rmdir "$job" 2>/dev/null || true; rmdir "$state/action.lock" 2>/dev/null || true; }
+trap cleanup EXIT HUP INT TERM
+result() { printf '{"phase":"%s","result":"%s"}\n' "$1" "$2" > "$state/$id.new"; mv -f "$state/$id.new" "$state/$id.json"; }
+fail() { result error "$1"; exit 1; }
+if [ "$op" = unmount ]; then
+    /usr/sbin/nas-disks-manager unmount "$id" >/dev/null 2>&1 || fail unmount_failed
+    touch "$state/$id.paused"
+    result success unmounted
+else
+    enabled="$(uci -q get "nas_disks.$id.enabled")"
+    if [ -s "$job/key" ]; then
+        uuid="$(uci -q get "nas_disks.$id.uuid")"
+        src="$(blkid -U "$uuid" 2>/dev/null)"
+        [ -n "$src" ] || fail volume_missing
+        cryptsetup open --batch-mode --test-passphrase --type bitlk --key-file "$job/key" "$src" >/dev/null 2>&1 || fail unlock_failed
+        if [ "$enabled" = 1 ]; then
+            mkdir -p /etc/nas-disks/keys
+            chmod 700 /etc/nas-disks /etc/nas-disks/keys
+            cp "$job/key" "$key.new" || fail save_failed
+            chmod 600 "$key.new"
+            mv -f "$key.new" "$key" || fail save_failed
+        else key="$job/key"; fi
+    fi
+    rm -f "$state/$id.paused"
+    result working mounting
+    NAS_DISKS_KEY_FILE="$key" /usr/sbin/nas-disks-manager mount "$id" >/dev/null 2>&1 || fail mount_failed
+    result success mounted
+fi
+/usr/sbin/nas-disks-scan >/dev/null 2>&1 &

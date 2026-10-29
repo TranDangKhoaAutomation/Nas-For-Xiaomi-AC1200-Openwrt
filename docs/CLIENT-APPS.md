@@ -1,4 +1,9 @@
-# Client Apps
+# Ứng dụng máy khách
+
+**Để truy cập NAS từ xa hiện tại, dùng [hướng dẫn Windows và Android](REMOTE-ACCESS.md).** Windows dùng File Explorer/map ổ; Android dùng SMB client cho nhập tên share BITLOCKER.
+
+Các app bên dưới là bản cũ của NAS1/NAS2/PRIVATE. Bản Android hiện có IP mặc định `100.91.1.101` và danh sách share cố định; chưa cập nhật cho cấu hình mới. Các kết quả build/test bên dưới là lịch sử, không phải kiểm tra lại app ngày 29/10/2026.
+
 
 ## Windows — Khoa-NAS-PC
 
