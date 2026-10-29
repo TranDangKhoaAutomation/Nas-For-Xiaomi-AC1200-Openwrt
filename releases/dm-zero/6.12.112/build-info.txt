@@ -1,3 +1,3 @@
 /home/runner/work/_temp/openwrt-sdk-25.12.6-ramips-mt7621_gcc-14.3.0_musl.Linux-x86_64/build_dir/target-mipsel_24kc_musl/linux-ramips_mt7621/dm-zero-6.12.112/.pkgdir/kmod-dm-zero/lib/modules/6.12.112/dm-zero.ko: ELF 32-bit LSB relocatable, MIPS, MIPS32 rel2 version 1 (SYSV), BuildID[sha1]=e71d3cd7b5e64324539d4f9550f173b60f431d5d, with debug_info, not stripped
 2d7a21b0b597091cdd1310b9813845582baac6a7166fdc8372ff62c3ac9d1763  /home/runner/work/_temp/openwrt-sdk-25.12.6-ramips-mt7621_gcc-14.3.0_musl.Linux-x86_64/build_dir/target-mipsel_24kc_musl/linux-ramips_mt7621/dm-zero-6.12.112/.pkgdir/kmod-dm-zero/lib/modules/6.12.112/dm-zero.ko
-6.12.112 SMP mod_unload MIPS32_R2 32BIT 
+6.12.112 SMP mod_unload MIPS32_R2 32BIT

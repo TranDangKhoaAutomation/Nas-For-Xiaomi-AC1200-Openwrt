@@ -74,7 +74,7 @@
 | releases/Khoa-NAS-PC.exe | 11497803 | 62c627db4abebc853a19b48d4750b7023fa8dee959e72e9a35e0a81e904040a3 |
 | releases/SHA256SUMS.txt | 176 | 9464320e575e1d1ed8711208d991bd82495bf3f43655a99f9bc8554d85ff0046 |
 | releases/dm-zero/6.12.112/README.md | 1529 | fdcfb9af428d424e5e0aa0d85d35f3c30cd6e607b640e088b63ae6435997e94b |
-| releases/dm-zero/6.12.112/build-info.txt | 680 | fc800f6e08d497ba8a58b7db52d8ef1f3e88669c947da4a8d2785f10f40683d5 |
+| releases/dm-zero/6.12.112/build-info.txt | 679 | 0609aa00eb5c59ec5927bdc8e4d40380d784229d25c138069909146d88cf5672 |
 | releases/dm-zero/6.12.112/kmod-dm-zero-6.12.112.6.12.112-r1.apk | 1763 | 529230dbedb980ba65d7c0184da267fda0b403c5ed0c7f67565e2ea14dda9b10 |
 | reports/01_CHKDSK_F_REPAIR.txt | 96278 | 9b9aad4765e6dcdcfb656b349f89b3b7bac0718db454c9aaf7d2545f76f277ee |
 | reports/2026-10-11-clean-rebuild/2026-10-12-full-journal.md | 80020 | 79a1bfb4296f06afd1f9527e47ea0550fb2526c3b88af5efa2843dd6d924fe4b |
