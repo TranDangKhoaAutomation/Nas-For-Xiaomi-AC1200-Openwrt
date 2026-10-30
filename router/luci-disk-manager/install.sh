@@ -26,6 +26,7 @@ for file in /etc/config/nas_disks /etc/config/fstab /etc/crontabs/root \
     /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/ucode/nas-smb.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
     /usr/share/luci/menu.d/luci-app-nas-disks.json /www/luci-static/resources/view/nas-disks.js \
     /www/luci-static/resources/view/nas-connect.js \
+    /www/luci-static/resources/view/nas-accounts.js /www/luci-static/resources/nas-smb-dialog.js \
     /www/luci-static/material/menu-layout-fix.css \
     /usr/lib/lua/luci/i18n/nas-disks.vi.lmo /usr/lib/lua/luci/i18n/nas-disks.en.lmo; do
     if [ -f "$file" ]; then cp -p "$file" "$backup/$(echo "$file" | tr / _)"; fi
@@ -54,11 +55,14 @@ cp "$DIR/acl.json" /usr/share/rpcd/acl.d/luci-app-nas-disks.json
 cp "$DIR/menu.json" /usr/share/luci/menu.d/luci-app-nas-disks.json
 cp "$DIR/nas-disks.js" /www/luci-static/resources/view/nas-disks.js
 cp "$DIR/nas-connect.js" /www/luci-static/resources/view/nas-connect.js
+cp "$DIR/nas-accounts.js" /www/luci-static/resources/view/nas-accounts.js
+cp "$DIR/nas-smb-dialog.js" /www/luci-static/resources/nas-smb-dialog.js
 cp "$DIR/nas-disks.vi.lmo" /usr/lib/lua/luci/i18n/nas-disks.vi.lmo
 cp "$DIR/nas-disks.en.lmo" /usr/lib/lua/luci/i18n/nas-disks.en.lmo
 chmod 644 /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/ucode/nas-smb.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
     /usr/share/luci/menu.d/luci-app-nas-disks.json /www/luci-static/resources/view/nas-disks.js \
     /www/luci-static/resources/view/nas-connect.js \
+    /www/luci-static/resources/view/nas-accounts.js /www/luci-static/resources/nas-smb-dialog.js \
     /usr/lib/lua/luci/i18n/nas-disks.vi.lmo /usr/lib/lua/luci/i18n/nas-disks.en.lmo
 if [ -d /www/luci-static/material ]; then
     cp "$DIR/material-layout-fix.css" /www/luci-static/material/menu-layout-fix.css

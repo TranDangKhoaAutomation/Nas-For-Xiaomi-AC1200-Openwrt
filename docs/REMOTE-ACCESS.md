@@ -143,7 +143,9 @@ Mỗi phân vùng có cấu hình riêng theo UUID. Khi thay ổ, quét lại v�
 
 Các loại mật khẩu này độc lập. Khóa BitLocker lưu trên router chỉ root được đọc; người chiếm được quyền root hoặc flash/backup chứa khóa có thể lấy mật khẩu. Giữ recovery key riêng.
 
-Đổi mật khẩu SMB ngay trong **Các dịch vụ → Hướng dẫn kết nối**: bấm liên kết **Đổi mật khẩu SMB** ở đoạn dưới tài khoản, chọn user, nhập mật khẩu mới hai lần rồi lưu. Cần phiên LuCI có quyền quản trị NAS. Chỉ đổi mật khẩu tài khoản SMB đã có trong cấu hình share; không đổi mật khẩu root hoặc BitLocker. Sau khi đổi, kết nối lại thiết bị bằng mật khẩu mới.
+Đổi mật khẩu tại **Các dịch vụ → Tài khoản SMB**: [mở trang qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-accounts), tìm dòng `nas` và bấm **Đổi mật khẩu SMB**. Nhập mật khẩu mới hai lần rồi lưu. Trang liệt kê các tài khoản được gán trong thư mục chia sẻ cùng tên thư mục được phép truy cập; liên kết **Thiết lập quyền truy cập thư mục** dẫn sang **Chia sẻ mạng** để sửa người dùng được phép.
+
+Bạn cũng có thể mở cùng hộp thoại từ **Hướng dẫn kết nối → Đổi mật khẩu SMB**. Cần phiên LuCI có quyền quản trị NAS. Chỉ đổi mật khẩu tài khoản SMB đã có trong cấu hình share; không đổi mật khẩu root hoặc BitLocker. Sau khi đổi, kết nối lại thiết bị bằng mật khẩu mới. Trang **Chia sẻ mạng** chỉ cấu hình chia sẻ và quyền thư mục, không có mục đổi mật khẩu.
 
 ## 5. Khi không truy cập được
 

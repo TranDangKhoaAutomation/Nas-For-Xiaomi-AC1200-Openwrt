@@ -24,3 +24,13 @@ Mã: [luci-disk-manager](../../router/luci-disk-manager/README.md). Hướng d�
 Bổ sung liên kết **Đổi mật khẩu SMB** trong đoạn hướng dẫn tài khoản. Đã kiểm tra form tiếng Việt, hủy không đổi mật khẩu, RPC cập nhật bằng stdin trong database thử riêng và từ chối user/mật khẩu không hợp lệ. Mật khẩu SMB thật chưa bị thay đổi khi triển khai.
 
 ![Form đổi mật khẩu SMB](screenshots/smb-password-form.jpg)
+
+## Bổ sung trang tài khoản SMB ngày 30/10
+
+**Các dịch vụ → Tài khoản SMB** (`/cgi-bin/luci/admin/services/nas-accounts`) hiển thị tài khoản được gán trong các thư mục chia sẻ, tên thư mục và nút đổi mật khẩu. Liên kết cạnh ô chọn tài khoản đã trỏ tới trang này. **Chia sẻ mạng** chỉ còn là đích của liên kết cấu hình quyền thư mục.
+
+Đã xác minh trực tiếp bằng Chrome qua Tailscale: menu tiếng Việt, dòng `nas` với `DANGKHOA, BITLOCKER`, mở/hủy hộp thoại đổi mật khẩu và liên kết từ Hướng dẫn kết nối. Không đổi mật khẩu thật. Hộp thoại dùng chung được kiểm thử bằng RPC giả lập: chặn xác nhận sai/độ dài byte/ký tự xuống dòng; gửi đúng tài khoản và xóa ô mật khẩu trước khi gọi RPC; phục hồi điều khiển khi RPC lỗi. Cả 3 kiểm thử đạt. Không thêm API hoặc quyền ACL.
+
+![Trang tài khoản SMB](screenshots/smb-accounts.png)
+
+![Đổi mật khẩu ngay từ dòng tài khoản](screenshots/smb-account-password.png)

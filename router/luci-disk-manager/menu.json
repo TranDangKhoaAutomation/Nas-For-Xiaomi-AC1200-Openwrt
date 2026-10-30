@@ -4,6 +4,11 @@
     "action": { "type": "view", "path": "nas-disks" },
     "depends": { "acl": ["luci-app-nas-disks"] }
   },
+  "admin/services/nas-accounts": {
+    "title": "SMB accounts", "order": 91,
+    "action": { "type": "view", "path": "nas-accounts" },
+    "depends": { "acl": ["luci-app-nas-disks"] }
+  },
   "admin/services/nas-connect": {
     "title": "Connection guide", "order": 90,
     "action": { "type": "view", "path": "nas-connect" },

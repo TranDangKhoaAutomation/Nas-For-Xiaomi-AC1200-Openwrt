@@ -2,9 +2,9 @@
 'require view';
 'require rpc';
 'require ui';
+'require nas-smb-dialog as smbDialog';
 
 var getInfo = rpc.declare({object:'nas.disks',method:'connection_info',expect:{'':{}},reject:true});
-var setSmbPassword = rpc.declare({object:'nas.smb',method:'password',params:['user','password'],expect:{'':{}},reject:true,nobatch:true});
 
 function steps(items) {
     return E('ol', {'style':'padding-left:24px;line-height:1.8'}, items.map(function(item) {
@@ -46,38 +46,7 @@ return view.extend({
             function changeSmbPassword(ev) {
                 ev.preventDefault();
                 var users = Array.from(new Set(shares.reduce(function(all,s) { return all.concat(smbUsers(s)); }, [])));
-                var user = E('select', {'aria-label':_('SMB account')}, users.map(function(name) { return E('option', {'value':name}, [name]); }));
-                user.value = share && smbUsers(share)[0] || users[0] || '';
-                var secret = E('input', {'type':'password','autocomplete':'new-password','maxlength':'128','style':'width:100%','aria-label':_('New SMB password')});
-                var confirm = E('input', {'type':'password','autocomplete':'new-password','maxlength':'128','style':'width:100%','aria-label':_('Confirm password')});
-                var message = E('p', {'role':'status','aria-live':'polite','style':'margin:14px 0'});
-                var cancel = E('button', {'class':'cbi-button','type':'button','click':ui.hideModal}, [_('Cancel')]);
-                var save = E('button', {'class':'cbi-button cbi-button-apply','type':'button'}, [_('Change SMB password')]);
-                save.disabled = !users.length;
-                save.addEventListener('click', function() {
-                    var pw = secret.value;
-                    if (pw !== confirm.value) { message.textContent = _('Passwords do not match.'); return; }
-                    var size = new TextEncoder().encode(pw).length;
-                    if (size < 8 || size > 128 || /[\x00\r\n]/.test(pw)) { message.textContent = _('Use 8 to 128 UTF-8 bytes without line breaks.'); return; }
-                    secret.value = ''; confirm.value = ''; save.disabled = cancel.disabled = true;
-                    setSmbPassword(user.value,pw).then(function(reply) {
-                        pw = null;
-                        if (!reply.ok) throw new Error(_('The SMB password could not be changed. Check that this account already exists.'));
-                        ui.hideModal();
-                        ui.addNotification(null,E('p',{},[_('SMB password changed. Reconnect your devices using the new password.')]),'info');
-                    }).catch(function() {
-                        pw = null; save.disabled = cancel.disabled = false;
-                        message.textContent = _('The SMB password could not be changed. Check that this account already exists.');
-                    });
-                });
-                function row(label,input) { return E('div', {'style':'margin:16px 0'}, [E('label', {'style':'display:block;margin-bottom:8px'}, [label]),input]); }
-                ui.showModal(_('Change SMB password'), [
-                    row(_('SMB account'), E('div', {'style':'display:flex;flex-wrap:wrap;gap:12px;align-items:center'}, [
-                        user, E('a', {'href':L.url('admin','services','ksmbd'),'target':'_blank','rel':'noopener noreferrer'}, [_('Configure SMB accounts')])
-                    ])), row(_('New SMB password'),secret), row(_('Confirm password'),confirm),
-                    E('p', {}, [_('NAS sharing will reconnect. Devices using this account need the new password.')]), message,
-                    E('div', {'style':'display:flex;gap:12px;justify-content:flex-end;margin-top:18px'}, [cancel,save])
-                ]);
+                smbDialog.show(users, share && smbUsers(share)[0], true);
             }
             var share = shares.filter(function(s) { return s.name === selected; })[0] ||
                 shares.filter(function(s) { return s.mounted; })[0] || shares[0];

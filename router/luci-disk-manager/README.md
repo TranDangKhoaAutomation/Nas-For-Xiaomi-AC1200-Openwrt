@@ -8,7 +8,7 @@ Nút **Mở thư mục NAS** trên Windows dùng [tiện ích mở File Explorer
 
 Liên kết **Đổi mật khẩu SMB** ngay dưới tài khoản mở form nhập/xác nhận mật khẩu cho user SMB hiện có. RPC `nas.smb.password` cần quyền ghi của nhóm quản trị NAS, kiểm tra user trong cấu hình share và cập nhật qua stdin của `ksmbd.adduser -u`; không truyền mật khẩu qua URL, argv hay lưu tệp mật khẩu tạm. Kiểm tra tích hợp dùng cơ sở dữ liệu thử riêng, không đổi mật khẩu thật khi triển khai.
 
-Trong form, liên kết **Thiết lập tài khoản SMB** cạnh ô chọn tài khoản mở **Các dịch vụ → Chia sẻ mạng** ở tab mới, nơi cấu hình người dùng được phép cho từng thư mục. Liên kết chỉ điều hướng, không tạo tài khoản hoặc thay đổi quyền truy cập.
+Trong form, liên kết **Thiết lập tài khoản SMB** cạnh ô chọn tài khoản mở **Các dịch vụ → Tài khoản SMB** ở tab mới. Trang này liệt kê tài khoản được cấu hình trong các thư mục chia sẻ, thư mục được phép truy cập và nút **Đổi mật khẩu SMB**. Nút **Thiết lập quyền truy cập thư mục** mới dẫn sang **Chia sẻ mạng**, nơi gán người dùng được phép. Trang tài khoản dùng chung hộp thoại đổi mật khẩu với Hướng dẫn kết nối; không tạo/xóa tài khoản hệ thống hay tự thay đổi quyền chia sẻ.
 
 ## Chức năng
 
@@ -48,7 +48,8 @@ Tắt tự mở không xóa khóa đã lưu. Người có root hoặc đọc đ�
 |---|---|
 | `disks.uc` | `/usr/share/rpcd/ucode/disks.uc`, object `nas.disks` |
 | `acl.json`, `menu.json` | RPC ACL và menu LuCI |
-| `nas-disks.js`, `nas-connect.js` | View quản lý ổ và hướng dẫn kết nối trong LuCI |
+| `nas-disks.js`, `nas-connect.js`, `nas-accounts.js` | View quản lý ổ, hướng dẫn kết nối và tài khoản SMB trong LuCI |
+| `nas-smb-dialog.js` | Hộp thoại đổi mật khẩu SMB dùng chung cho hai trang |
 | `nas-disks-manager` | Mount/unmount theo UUID, reconcile |
 | `nas-disks-job` | Xử lý mật khẩu và thao tác nền |
 | `nas-disks-scan` | Quét sysfs, block metadata và trạng thái mount |
@@ -61,6 +62,12 @@ Tạo lại catalog trên máy phát triển:
 
 ```powershell
 python router/luci-disk-manager/compile_catalog.py
+```
+
+Kiểm thử hộp thoại đổi mật khẩu (RPC giả lập, không đổi mật khẩu thật):
+
+```powershell
+node --test router/luci-disk-manager/tests/smb-dialog.test.cjs
 ```
 
 Runtime đã được kiểm tra trực tiếp: cú pháp, API/ACL, xử lý mật khẩu sai, mở khóa thực, root-only key, reboot tự mở và SMB chỉ đọc. Installer là công cụ cài lại được bổ sung vào repo, được kiểm tra cú pháp; không chạy lại installer trên router đang hoạt động trong lần cập nhật Git này.
