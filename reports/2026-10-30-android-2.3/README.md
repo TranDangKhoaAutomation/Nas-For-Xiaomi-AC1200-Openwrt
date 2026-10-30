@@ -75,3 +75,9 @@ Tài liệu tham khảo: [Tailscale connection types](https://tailscale.com/docs
 Lệnh tái kiểm thử: `go test -v ./nasnet` tại `software/android/native`; `flutter analyze` và `flutter test` tại `software/android`; `python -m unittest discover -s distribution -p 'test_*.py'`; `node --test router/luci-disk-manager/tests/smb-dialog.test.cjs`.
 
 Ảnh minh họa có thể tạo lại bằng test opt-in `report_capture_test.dart` với biến `KHOANAS_VISUAL_OUTPUT` trỏ tới thư mục ảnh và Flutter/material font cài ở `C:/flutter`. Test minh họa không tính vào 9 kiểm thử chức năng.
+
+## Xác minh phát hành công khai
+
+[Release khoanas-2026.10.30.1](https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/tag/khoanas-2026.10.30.1) đã được [workflow GitHub Actions](https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/actions/runs/41079806138) kiểm tra và phát hành thành công từ commit `fa0896a`. Đường tải APK, Ready.zip và SHA256SUMS qua `releases/latest/download/` đều trả HTTP 200.
+
+Đã tải lại ZIP công khai, đối chiếu digest do GitHub cung cấp, CRC ZIP, từng nội dung giải nén với payload local và toàn bộ SHA-256 bên trong: đều đạt. ZIP nén trên GitHub/Linux có bytes/digest khác ZIP local do runtime nén, nhưng từng tệp bên trong giống hệt; dùng SHA256SUMS cùng release khi kiểm tra tệp tải. Metadata artifact, digest và kết quả nằm trong [release-verification.json](release-verification.json). Probe cuối vẫn không vào được SSH/HTTP router, nên các giới hạn NAS thật ở trên giữ nguyên.

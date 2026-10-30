@@ -140,7 +140,8 @@
 | reports/2026-10-11-clean-rebuild/screenshots/38-q-folder-file-write-verified-after-reboot.jpg | 68718 | c411f677486a4ab945461b84bd7e9abe54b7fd67042a1959a10b6243eb25b171 |
 | reports/2026-10-29-disk-manager/README.md | 3785 | c2def2cb477160fc3c5c5d0b75b432501697e99e617771ffa7f79b4edfa7e877 |
 | reports/2026-10-29-disk-manager/screenshots/disks-after-reboot.jpg | 97046 | b705150ac35b43a9e6bc2cff650febfc946733bd04ee14c54d56aa2e1e7d2e76 |
-| reports/2026-10-30-android-2.3/README.md | 10239 | 0c799fc339348256dd3ae95156ca9ca53f2473d22c0384b5e2b5e6b0256ec7b9 |
+| reports/2026-10-30-android-2.3/README.md | 11313 | 2e639dddd5fb255528b7bb0e0d7917145cab590a859910b02a88f875c212a308 |
+| reports/2026-10-30-android-2.3/release-verification.json | 2935 | ad4d8017c71053f4ac5d004c1d80f18f8b504c1f94101fa7181fb209a40a14fc |
 | reports/2026-10-30-android-2.3/screenshots/01-backup-default.png | 40799 | cb4c9cb4247e8a39efe0312750252d1a2a1b51b73796827a57e00016d4258dc0 |
 | reports/2026-10-30-android-2.3/screenshots/02-backup-settings.png | 41161 | 3f75f84f652d63ceed8274c212998450adfd77faa5e38ba8ae729df0efb40975 |
 | reports/2026-10-30-android-2.3/screenshots/03-backup-schedule.png | 47916 | 3dd2fc5bf121b4c4afc346f4491dc40a3a447cdd0eadd0b1e206af4c72c64187 |

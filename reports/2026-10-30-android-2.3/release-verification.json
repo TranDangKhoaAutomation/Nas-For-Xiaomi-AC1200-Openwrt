@@ -1,0 +1,64 @@
+{
+  "verified_utc": "2026-10-30T15:24:33.701517+00:00",
+  "release": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/tag/khoanas-2026.10.30.1",
+  "tag": "khoanas-2026.10.30.1",
+  "source_commit": "fa0896a51ea78c61aaa184388d90faaee139e181",
+  "workflow": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/actions/runs/41079806138",
+  "workflow_conclusion": "success",
+  "assets": [
+    {
+      "name": "Cai-NAS.cmd",
+      "bytes": 2072,
+      "digest": "sha256:717bf3cf4e5739dd7be4b230d38e5135ceb2cf133f12bf7836fa7f14a5c950b4",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/Cai-NAS.cmd"
+    },
+    {
+      "name": "KhoaNAS-Android-x86_64.apk",
+      "bytes": 46065650,
+      "digest": "sha256:7fef47e27b950577b1a18146ff78066ebb8a565861e05406b6701f9eec3dc24a",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/KhoaNAS-Android-x86_64.apk"
+    },
+    {
+      "name": "KhoaNAS-Android.apk",
+      "bytes": 42938042,
+      "digest": "sha256:7813fd89bd076ff40d0f5262c759d77e959dc4c97713efe127da1572c4c8b8d1",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/KhoaNAS-Android.apk"
+    },
+    {
+      "name": "KhoaNAS-Open.exe",
+      "bytes": 45548056,
+      "digest": "sha256:66a9108c0aea55fc1ed3f4e32bb9d8ad7bcf20e4f8cbd979d878c47619a2d769",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/KhoaNAS-Open.exe"
+    },
+    {
+      "name": "KhoaNAS-Ready.zip",
+      "bytes": 63210803,
+      "digest": "sha256:b9e3a8ea949c5ea2d4426b40fc14c3715f9acb7406c22e64514c7fd746bb2edc",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/KhoaNAS-Ready.zip"
+    },
+    {
+      "name": "KhoaNAS-Router.tar.gz",
+      "bytes": 44368,
+      "digest": "sha256:d19780444209a624c6b421cea387a5ae9943af1ed71f8f069715463bbe6fe4ac",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/KhoaNAS-Router.tar.gz"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 512,
+      "digest": "sha256:e85f797ff752275941f61962f19843fba0c31be65d57d3a91c496e829e2399d5",
+      "url": "https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/download/khoanas-2026.10.30.1/SHA256SUMS.txt"
+    }
+  ],
+  "download_verification": {
+    "latest_apk_http": 200,
+    "latest_ready_zip_http": 200,
+    "latest_checksums_http": 200,
+    "ready_zip_crc": "passed",
+    "ready_zip_entries_match_local_payload": true,
+    "ready_zip_inner_sha256": "passed"
+  },
+  "router_final_probe": {
+    "ssh_22": "timed out",
+    "http_80": "unavailable"
+  }
+}
