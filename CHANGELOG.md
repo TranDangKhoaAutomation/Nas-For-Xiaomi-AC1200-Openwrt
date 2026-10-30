@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-10-30
+- Chuyển cửa sổ cài tiện ích Windows sang Qt 6/PySide6, dùng logo GitHub của chủ repo cho cửa sổ và EXE; có thông báo trực tiếp và bố cục tự co giãn.
 - Thêm nút mở thư mục NAS: giao thức khoanas trên Windows với tiện ích và bản EXE; Android gọi ứng dụng nhận liên kết smb. Tiện ích chỉ mở gốc share trên IP router được cho phép, không chứa mật khẩu.
 - Bổ sung khoảng cách đoạn văn, nút mở/tải đặt cùng hàng có xuống dòng, tách hướng dẫn khỏi điều khiển trên trang kết nối.
 - Thêm Các dịch vụ → Hướng dẫn kết nối trong LuCI, liên kết từ trang Ổ đĩa.

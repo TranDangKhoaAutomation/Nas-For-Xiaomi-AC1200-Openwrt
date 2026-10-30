@@ -10,8 +10,8 @@ Hướng dẫn cũng có ngay trong LuCI tại **Các dịch vụ → Hướng d
 |---|---|
 | Router trong Tailscale | `100.114.53.95`, tên thiết bị `openwrt` |
 | Trang quản lý ổ đĩa từ xa | [Hệ thống → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/system/disks) |
-| Share BitLocker 100 GiB | `\\100.114.53.95\BITLOCKER` — đã tự mở sau reboot, **chỉ đọc** |
-| Share NTFS khoảng 831,5 GiB | `\\100.114.53.95\DANGKHOA` — **chưa dùng được lúc kiểm tra**, phân vùng chưa gắn do NTFS dirty |
+| Share BitLocker 100 GiB | `\\100.114.53.95\BITLOCKER` — hiện **đọc/ghi**, đã kiểm tra SMB ngày 30/10 |
+| Share NTFS khoảng 831,5 GiB | `\\100.114.53.95\DANGKHOA` — đã hết dirty sau CHKDSK trên Windows, hiện **đọc/ghi** |
 | Tài khoản SMB | `nas`; mật khẩu nhập trực tiếp trên thiết bị, không ghi trong repo |
 | Cổng SMB | TCP `445` trong tailnet |
 
@@ -41,7 +41,7 @@ Trong **Các dịch vụ → Hướng dẫn kết nối**, chọn **Windows**, k
    ```
 
 4. Khi được hỏi tài khoản, chọn **More choices / Lựa chọn khác → Use a different account / Dùng tài khoản khác** nếu cần; nhập user `nas` và mật khẩu SMB.
-5. Sau khi mở được, đọc hoặc chép tệp từ NAS về máy. Chế độ chỉ đọc hiện tại không cho tạo, đổi tên hay xóa tệp trên share.
+5. Sau khi mở được, thao tác tệp theo trạng thái thực tế của share. Ngày 30/10 đã thử tạo, đọc lại và xóa tệp trên cả BITLOCKER và DANGKHOA; nếu trang Ổ đĩa báo chỉ đọc thì không thể ghi.
 
 ### Map ổ bền vững
 
@@ -132,8 +132,8 @@ Các loại mật khẩu này độc lập. Khóa BitLocker lưu trên router ch
 | Hỏi mật khẩu nhiều lần | Dùng mật khẩu SMB của `nas`, không dùng mật khẩu root hoặc BitLocker |
 | Windows lỗi 1219 | Chạy `net use` để xác định kết nối trùng tới đúng router; ngắt riêng map NAS liên quan rồi nối lại. Không xóa toàn bộ map đang dùng |
 | Thấy thư mục rỗng/share không dùng được | Kiểm tra phân vùng đã mount thật trong trang Ổ đĩa; sự tồn tại của tên share không chứng minh dữ liệu đã được gắn |
-| `DANGKHOA` chưa mở được | Hiện phân vùng NTFS lớn chưa gắn do dirty; cần sao lưu/kiểm tra NTFS trên phân vùng vật lý trước khi cho ghi |
-| `BITLOCKER` không ghi được | Hiện đang chỉ đọc. Xác nhận filesystem sạch và kết nối ổ ổn định trước khi đổi chế độ; manager không force dirty NTFS |
+| `DANGKHOA` chưa mở được | Kiểm tra trạng thái gắn. Ngày 30/10 đã hết dirty và ghi được; nếu dirty tái xuất hiện, sao lưu và kiểm tra NTFS trên ổ cắm trực tiếp vào Windows |
+| `BITLOCKER` không ghi được | Kiểm tra trạng thái mount thực tế và quyền share. Ngày 30/10 đã chuyển RW thành công sau CHKDSK; manager không force dirty NTFS |
 | Android mất kết nối khi bật VPN khác | Android chỉ cho một VPN hoạt động; chọn Tailscale khi cần NAS |
 | IP không còn đúng sau reset | Lấy IP mới từ Tailscale, cập nhật kết nối Windows/Android và URL LuCI |
 

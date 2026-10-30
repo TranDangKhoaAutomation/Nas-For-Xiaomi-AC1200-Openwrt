@@ -17,7 +17,7 @@ Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 | BitLocker 100 GiB | `\\192.168.1.1\BITLOCKER` | `\\100.114.53.95\BITLOCKER` |
 | NTFS khoảng 831,5 GiB | `\\192.168.1.1\DANGKHOA` | `\\100.114.53.95\DANGKHOA` |
 
-**BITLOCKER đã tự mở sau reboot và hiện chỉ đọc. DANGKHOA chưa gắn do NTFS dirty**, nên sự tồn tại của tên share không có nghĩa phân vùng đó đang dùng được. Không force dirty NTFS hoặc format để khắc phục lỗi truy cập.
+**Ngày 30/10: BITLOCKER và DANGKHOA đều đọc/ghi được.** Đã chạy CHKDSK trên ổ cắm trực tiếp vào Windows, xác nhận cả hai không còn dirty, cắm lại router và thử tạo/đọc/xóa tệp qua SMB. Xem trạng thái thực tế trong trang Ổ đĩa; manager vẫn không force dirty NTFS.
 
 Tài khoản SMB là `nas`; nhập mật khẩu trực tiếp trên thiết bị. Mật khẩu SMB, mật khẩu quản trị LuCI và mật khẩu BitLocker là các thông tin độc lập. IP Tailscale tham chiếu là `100.114.53.95`; kiểm tra lại khi đổi/reset router.
 

@@ -1,4 +1,4 @@
-# Triển khai hiện tại — 29/10/2026
+# Triển khai hiện tại — 30/10/2026
 
 Xiaomi Mi Router 3G, OpenWrt 25.12.6, kernel 6.12.112. Xem [trạng thái đã xác minh](CURRENT-STATE.md).
 

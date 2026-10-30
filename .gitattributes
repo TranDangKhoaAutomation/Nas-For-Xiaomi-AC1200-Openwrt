@@ -25,3 +25,4 @@ config/**/*.example text eol=lf
 router/luci-disk-manager/* text eol=lf
 router/luci-disk-manager/*.lmo binary
 scripts/kernel/dm-zero/** text eol=lf
+software/windows-open-nas/*.py text eol=lf

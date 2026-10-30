@@ -8,10 +8,10 @@
 
 **[Hướng dẫn chi tiết Windows và Android](REMOTE-ACCESS.md)** có bảng thông số, cách map ổ, phân biệt các loại mật khẩu và xử lý lỗi.
 
-## Trạng thái tham chiếu 29/10/2026
+## Trạng thái tham chiếu 30/10/2026
 
-- BitLocker 100 GiB đã tự mở sau reboot, **chỉ đọc**.
-- NTFS DangKhoa 831.5 GiB chưa gắn do dirty.
+- BitLocker 100 GiB đã gắn **đọc/ghi** sau CHKDSK và cắm lại router. Tự mở sau reboot đã kiểm chứng ngày 29/10 ở chế độ chỉ đọc.
+- NTFS DangKhoa 831.5 GiB đã hết dirty và gắn đọc/ghi; cả hai share đã thử tạo/đọc/xóa qua SMB.
 - Router Tailscale `100.114.53.95`; sau đổi/reset router phải lấy IP mới.
 
 ## Dựng/cài lại giao diện trên router

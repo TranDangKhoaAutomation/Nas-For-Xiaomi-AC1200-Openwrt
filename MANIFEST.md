@@ -5,13 +5,13 @@
 
 | File | Bytes | SHA-256 |
 |---|---:|---|
-| .gitattributes | 537 | 98ab4435fa934f725ba252787ce457da833a92ddc4f9f844b4cfe863cab6b4e6 |
+| .gitattributes | 580 | c6745f328868901d4c80606666540cab359d19d7c0093748e24212d58850d7e5 |
 | .github/workflows/build-dm-zero.yml | 2950 | 56eecb6724277cfb70725b63f6acc860865eb11b4cd0eb34ceaf6673b51ee5c6 |
 | .gitignore | 279 | ef78f81d3639b7cdb2b75915c339370fbbbcb2aee26f9a618025bf054d5dea33 |
-| CHANGELOG.md | 2613 | b8d0a2e627ed6b6318c067dca451d4f0098ee15ed7d32040290def04bd7771fc |
+| CHANGELOG.md | 2798 | 3b668198d5d60890aa6d1b4643b2ae6a63d0d3bfec37cbc0149f4a29f46b1972 |
 | MANIFEST.json | 24382 | 6d53b542806fa2ce0a897e2d3ef03ba72ad2724ec7a5bd95a1c4b0b61532db03 |
 | NOTICE.md | 927 | 5e2d675add1a8df7a1b7bd481d3d245fd508c2a5fe1aeb5f8355077fbb808c98 |
-| README.md | 4997 | 8ef18ae2155d7b83a5c0699fb0c9f346b70cd112ce38aa4cda325411cbdb1457 |
+| README.md | 5049 | d0cbe42cdaa2c5b165561cdbb563953a99dcbf46c2dbfeae1b8b0f87972328bb |
 | SECURITY.md | 869 | eb864497d40971e7297b06c414fe835eb1fbe1043b05b0782d1cdf99e59859e8 |
 | SHA256SUMS.txt | 15850 | 4f361ab56eec30fd2249bbad29c75dc982707e88708dc24c7cb6275512cd477e |
 | apps/android/.gitignore | 746 | 441eaa1de5b3db9fae056e7503567e9f8dd94173e1389c60f76956abf729015a |
@@ -55,12 +55,12 @@
 | docs/APPS.md | 945 | 87a729b5ae53a7e328d5b3c6a3f779ba559ab546cd007bbea47d46e8665c82ee |
 | docs/BACKUP-RESTORE.md | 2121 | 72d39895c5ea555737d85319546738103ac081271ed14885333a51309196d9c6 |
 | docs/CLIENT-APPS.md | 1460 | 8671051b1b47e0e60bff81edaa790a22e38b0fc9d0ef1286d0e6dfb09e6438d5 |
-| docs/CURRENT-DEPLOYMENT.md | 1247 | ccef140ad4ef1036d06d299d70f94c0ba2af6a233c19f9231bb4542ff0907f30 |
-| docs/CURRENT-STATE.md | 1810 | be8ba62fe4ffe95559bbe6c3d5e927bacb8f29fc107b697d9ffefd3e27199373 |
+| docs/CURRENT-DEPLOYMENT.md | 1247 | b209866958500bff2275b0584303fc2b4446632787b6ec69d2867fbbbcd98809 |
+| docs/CURRENT-STATE.md | 2187 | a9835b23e8fc1e63da0c988161d53926513cdba585a96808da2aa772909c0cbb |
 | docs/OPERATIONS.md | 764 | 03cb074619013cca87815b98e9c33d32ed831dc25172f45b23c9c45c4f8fe005 |
-| docs/QUICK-START.md | 1418 | fdaf65f5e8a51e82b4da92a6ba1e7b799e005f25bd4d622e9c65bcf967c48936 |
+| docs/QUICK-START.md | 1587 | 2f5176badbca8e5fd3105a2e97fe005562b8ca4e033a8873cad5bd1bfdba124c |
 | docs/RECOVERY.md | 687 | f315f066bc63f0f16548422c698cd945a3a56b6cf874e4ab40410dd7cc5ca0c8 |
-| docs/REMOTE-ACCESS.md | 12506 | 494fc06dee243cb32047c967e87c9a97b86aeb36ef09f4936286f674823328d3 |
+| docs/REMOTE-ACCESS.md | 12620 | fb0c4ac2b0506092099f01200fd0f508790051427fae68fa39c8f0b6a287ccc3 |
 | docs/ROUTER-CONFIG.md | 1114 | a19ce4933f6f8eb789aad315706dc303bc6ace36fed8dc166d350aa6c106545b |
 | docs/SECURITY.md | 1101 | 5ab87dc769d2d10942410ed0d151cd3e592fb2972eabd6b29a82f3214e57b5ca |
 | docs/SMB-PASSWORD.md | 656 | ec84731a3a1fa1291d436f23256dfe47241f6b308bcb096407c2cef8ce3bebe2 |
@@ -76,8 +76,8 @@
 | releases/dm-zero/6.12.112/README.md | 1529 | fdcfb9af428d424e5e0aa0d85d35f3c30cd6e607b640e088b63ae6435997e94b |
 | releases/dm-zero/6.12.112/build-info.txt | 679 | 0609aa00eb5c59ec5927bdc8e4d40380d784229d25c138069909146d88cf5672 |
 | releases/dm-zero/6.12.112/kmod-dm-zero-6.12.112.6.12.112-r1.apk | 1763 | 529230dbedb980ba65d7c0184da267fda0b403c5ed0c7f67565e2ea14dda9b10 |
-| releases/windows-open-nas/KhoaNAS-Open.exe | 11397814 | c2aa56468e0c8cf419db5a3df6bafb91efe30fe36a474074cb4fcfa08910f0bd |
-| releases/windows-open-nas/README.md | 511 | a4dd23d882d6cab4af2e5d686b62cf650f76ae40cd9833eceba13af5de823174 |
+| releases/windows-open-nas/KhoaNAS-Open.exe | 45549318 | 1c6b64cf3f6923415a7a6b397b8d7ab60a4bfc0eb1cea275a9908f19ff77b2ba |
+| releases/windows-open-nas/README.md | 494 | c5f26f2ef13291526f93e20d6b74ef3eff3f80534ea2d96ecbe331882ca6aab4 |
 | reports/01_CHKDSK_F_REPAIR.txt | 96278 | 9b9aad4765e6dcdcfb656b349f89b3b7bac0718db454c9aaf7d2545f76f277ee |
 | reports/2026-10-11-clean-rebuild/2026-10-12-full-journal.md | 80020 | 79a1bfb4296f06afd1f9527e47ea0550fb2526c3b88af5efa2843dd6d924fe4b |
 | reports/2026-10-11-clean-rebuild/README-before-reset.md | 10398 | 5ef7b9ef440f5833b9d6ddc5e50cd9b3a5ae80ca77e77d57373448b8d7869e2e |
@@ -122,6 +122,8 @@
 | reports/2026-10-29-disk-manager/screenshots/disks-after-reboot.jpg | 97046 | b705150ac35b43a9e6bc2cff650febfc946733bd04ee14c54d56aa2e1e7d2e76 |
 | reports/2026-10-30-connection-guide/README.md | 2098 | 2a7433a9736994c984b1a83e5e850d12f0e4a1480b194a53db429be9a70ce418 |
 | reports/2026-10-30-connection-guide/screenshots/connection-guide.jpg | 89902 | a17321b67e4a0ca5ff3071beb9bb12adcca7655350a5bdaa52e906b069e63b77 |
+| reports/2026-10-30-qt6-readwrite/README.md | 2156 | 941696247edd8d34efb9a8d6e82ca5e64c25be69b5aee00e7087f071ce72eba1 |
+| reports/2026-10-30-qt6-readwrite/screenshots/qt6-setup.png | 24691 | 7c767bb9a5c5190e343b4ad463099a2bfb65c709045f85b0477b7c612945fef1 |
 | reports/Bao-Cao-Hoan-Tat-Router-NAS.md | 22421 | a772cd3101696e6926ea84e939f94e1dbaf2d1620edd814432a00d33f404593e |
 | reports/README.md | 284 | 989ecdd827d89ca977e088149f38a1a601cd2e84c04dbc512ff45ba455123400 |
 | router/current/STATUS-SNAPSHOT.txt | 1483 | 8c9d899bed9420b1dfa36db1afa97c45be271439dfc2956c54f1363e0edf9138 |
@@ -235,6 +237,14 @@
 | software/releases/Khoa-NAS-Android-v1.0.0.apk | 50370032 | 21ae7e50a677a99f14de731063e3d681bb8d08ec49e0d0972d4c3cda70dbd747 |
 | software/releases/Khoa-NAS-PC.exe | 11497803 | 62c627db4abebc853a19b48d4750b7023fa8dee959e72e9a35e0a81e904040a3 |
 | software/releases/README.md | 322 | 85361440d4ec7498ae0cf2a12437459d908c652bf7e0d1958bec6ddede0f0d5d |
-| software/windows-open-nas/README.md | 2837 | 19a0455daa6c69cec9fe5a1e04f0147f20e39d9e9bc7c137fb4601920a0eda4f |
-| software/windows-open-nas/open_nas.py | 5193 | dc3e7681539910569f5bc489387078ae8738df2d21d73b328a06cd82daefc7c5 |
+| software/windows-open-nas/README.md | 3755 | 0db0768daca9fa059b558e9161923d43702254771590bc486298ef4172a362a6 |
+| software/windows-open-nas/assets/THIRD-PARTY-NOTICES.md | 1006 | f52c33d4017078800217aed32aecea21af2200c99c1dfbd1519cdea7ef56859c |
+| software/windows-open-nas/assets/github-avatar.png | 88395 | 09495b465e5e48d2e8274824f46c5caef8aa07df601237fbcc9e1fbf411c07ad |
+| software/windows-open-nas/assets/khoa-nas.ico | 76228 | 8133fad1105a214c16aeef55ae272f9e23c4bded9d1ccec3aaf46dd84cb3f8b8 |
+| software/windows-open-nas/assets/licenses/GPL-3.0.txt | 35147 | 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903 |
+| software/windows-open-nas/assets/licenses/LGPL-3.0.txt | 7652 | e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118 |
+| software/windows-open-nas/build.py | 1627 | 8deef20fdf292b1dbc2fbbd5fa0f62a68a2a1d858cbaafcfd995e0bdd99049f3 |
+| software/windows-open-nas/open_nas.py | 5148 | eec41e2a1e8c603c66ab6da014d905981c2fb57b6f1b42547df36fe9ee9a7199 |
+| software/windows-open-nas/requirements.txt | 36 | 02c3eb948fae63d8e4e8a05a92afaaa846d99e74feae02b39d18eed3215bab0b |
+| software/windows-open-nas/setup_ui.py | 6402 | f3e3b0090ce7da8e0cd44342a662991b0dc5790fc0341d0b8d85dce9d4a4b78d |
 | software/windows-open-nas/test_open_nas.py | 1305 | 26597a6478c62d7ef9b3e258063ef2d6b2d78ece0dcb03d39e5a981e66a540f6 |
