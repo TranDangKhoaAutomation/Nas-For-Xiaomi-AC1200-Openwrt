@@ -2,6 +2,6 @@
   "luci-app-nas-disks": {
     "description": "Manage attached disks and encrypted volumes",
     "read": { "ubus": { "nas.disks": ["status", "connection_info"] } },
-    "write": { "ubus": { "nas.disks": ["scan", "configure", "action"], "nas.smb": ["password"] } }
+    "write": { "ubus": { "nas.disks": ["scan", "configure", "action"], "nas.smb": ["password", "create"] } }
   }
 }

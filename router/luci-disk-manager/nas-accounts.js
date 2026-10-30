@@ -35,6 +35,9 @@ return view.extend({
         return E('div', {}, [
             E('h2', {}, [_('SMB accounts')]),
             E('p', {}, [_('SMB accounts used by the shared folders on this router. Select an account to change its password.')]),
+            E('button', {'type':'button','class':'cbi-button cbi-button-add','style':'margin:12px 0','click':function() {
+                smbDialog.create(info.shares || []);
+            }}, [_('Add SMB account')]),
             E('section', {'class':'cbi-section'}, [
                 E('table', {'class':'table'}, [E('tr', {'class':'tr table-titles'}, [
                     E('th', {'class':'th'}, [_('SMB account')]),
@@ -42,8 +45,8 @@ return view.extend({
                     E('th', {'class':'th'}, [_('Actions')])
                 ])].concat(rows)),
                 E('p', {'style':'margin-top:16px'}, [
-                    E('a', {'href':L.url('admin','services','ksmbd')}, [_('Configure folder access')]), ' · ',
-                    E('a', {'href':L.url('admin','services','nas-connect')}, [_('Connection guide')])
+                    E('a', {'href':L.url('admin','services','nas','shares')}, [_('Configure folder access')]), ' · ',
+                    E('a', {'href':L.url('admin','services','nas','connect')}, [_('Connection guide')])
                 ])
             ])
         ]);

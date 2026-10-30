@@ -2,14 +2,14 @@
 
 Hướng dẫn cập nhật ngày **30/10/2026**. Máy khách dùng Tailscale để đến router, sau đó dùng SMB để mở dữ liệu. Router và ổ NAS cần được bật; máy Windows ở nhà không cần chạy thường trực.
 
-Hướng dẫn cũng có ngay trong LuCI tại **Các dịch vụ → Hướng dẫn kết nối**: [mở qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-connect) hoặc [mở trong mạng nhà](http://192.168.1.1/cgi-bin/luci/admin/services/nas-connect). Trang lấy IP và danh sách share từ cấu hình router, cho chọn LAN/Tailscale, xem Windows/Android, sao chép đường dẫn và làm mới thông tin; đồng thời cảnh báo share chưa gắn hoặc chỉ đọc. Từ trang **Ổ đĩa** cũng có liên kết tới hướng dẫn.
+Hướng dẫn cũng có ngay trong LuCI tại **Các dịch vụ → NAS → Hướng dẫn kết nối**: [mở qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas/connect) hoặc [mở trong mạng nhà](http://192.168.1.1/cgi-bin/luci/admin/services/nas/connect). Trang lấy IP và danh sách share từ cấu hình router, cho chọn LAN/Tailscale, xem Windows/Android, sao chép đường dẫn và làm mới thông tin; đồng thời cảnh báo share chưa gắn hoặc chỉ đọc. Từ trang **Ổ đĩa** cũng có liên kết tới hướng dẫn.
 
 ## Địa chỉ và trạng thái hiện tại
 
 | Mục | Giá trị |
 |---|---|
 | Router trong Tailscale | `100.114.53.95`, tên thiết bị `openwrt` |
-| Trang quản lý ổ đĩa từ xa | [Hệ thống → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/system/disks) |
+| Trang quản lý ổ đĩa từ xa | [NAS → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/services/nas/disks) |
 | Share BitLocker 100 GiB | `\\100.114.53.95\BITLOCKER` — hiện **đọc/ghi**, đã kiểm tra SMB ngày 30/10 |
 | Share NTFS khoảng 831,5 GiB | `\\100.114.53.95\DANGKHOA` — đã hết dirty sau CHKDSK trên Windows, hiện **đọc/ghi** |
 | Tài khoản SMB | `nas`; mật khẩu nhập trực tiếp trên thiết bị, không ghi trong repo |
@@ -33,7 +33,7 @@ Router đã chạy Tailscale trực tiếp, nên truy cập IP của router khô
 
 ### Mở nhanh
 
-Trong **Các dịch vụ → Hướng dẫn kết nối**, chọn **Windows**, kiểu kết nối và share. Nút **Mở thư mục NAS** gọi File Explorer qua [tiện ích Windows](../software/windows-open-nas/README.md). Cài tiện ích một lần trên mỗi máy và nhập IP router được phép; sau đó có thể mở bằng nút này thay vì chép đường dẫn. Nút tải tiện ích nằm cạnh nút mở. Cách nhập đường dẫn thủ công bên dưới vẫn dùng được mà không cần tiện ích.
+Trong **Các dịch vụ → NAS → Hướng dẫn kết nối**, chọn **Windows**, kiểu kết nối và share. Nút **Mở thư mục NAS** gọi File Explorer qua [tiện ích Windows](../software/windows-open-nas/README.md). Cài tiện ích một lần trên mỗi máy và nhập IP router được phép; sau đó có thể mở bằng nút này thay vì chép đường dẫn. Nút tải tiện ích nằm cạnh nút mở. Cách nhập đường dẫn thủ công bên dưới vẫn dùng được mà không cần tiện ích.
 
 1. Bật Tailscale.
 2. Mở **File Explorer / Trình khám phá tệp**.
@@ -124,10 +124,10 @@ tệp khác vẫn cần Tailscale/VPN riêng khi ở ngoài nhà. Không mở SM
 
 Khi Tailscale đang kết nối, mở:
 
-[http://100.114.53.95/cgi-bin/luci/admin/system/disks](http://100.114.53.95/cgi-bin/luci/admin/system/disks)
+[http://100.114.53.95/cgi-bin/luci/admin/services/nas/disks](http://100.114.53.95/cgi-bin/luci/admin/services/nas/disks)
 
 1. Đăng nhập tài khoản quản trị router.
-2. Trong **Hệ thống → Ổ đĩa**, tìm đúng phân vùng theo nhãn, dung lượng và UUID.
+2. Trong **NAS → Ổ đĩa**, tìm đúng phân vùng theo nhãn, dung lượng và UUID.
 3. Bấm **Quản lý**. Với BitLocker, nhập mật khẩu phân vùng nếu chưa có khóa đã lưu.
 4. Bật **Tự mở khóa và gắn sau khởi động** nếu muốn lưu mật khẩu đã xác minh trên router, rồi bấm **Lưu và mở khóa**.
 5. Đợi trạng thái **Đã gắn · chỉ đọc** hoặc **Đã gắn · đọc/ghi** trước khi mở share SMB.
@@ -143,9 +143,11 @@ Mỗi phân vùng có cấu hình riêng theo UUID. Khi thay ổ, quét lại v�
 
 Các loại mật khẩu này độc lập. Khóa BitLocker lưu trên router chỉ root được đọc; người chiếm được quyền root hoặc flash/backup chứa khóa có thể lấy mật khẩu. Giữ recovery key riêng.
 
-Đổi mật khẩu tại **Các dịch vụ → Tài khoản SMB**: [mở trang qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-accounts), tìm dòng `nas` và bấm **Đổi mật khẩu SMB**. Nhập mật khẩu mới hai lần rồi lưu. Trang liệt kê các tài khoản được gán trong thư mục chia sẻ cùng tên thư mục được phép truy cập; liên kết **Thiết lập quyền truy cập thư mục** dẫn sang **Chia sẻ mạng** để sửa người dùng được phép.
+Đổi mật khẩu tại **Các dịch vụ → NAS → Tài khoản SMB**: [mở trang qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas/accounts), tìm dòng `nas` và bấm **Đổi mật khẩu SMB**. Nhập mật khẩu mới hai lần rồi lưu. Trang liệt kê các tài khoản được gán trong thư mục chia sẻ cùng tên thư mục được phép truy cập; liên kết **Thiết lập quyền truy cập thư mục** dẫn sang tab **Chia sẻ** để sửa người dùng được phép.
 
-Bạn cũng có thể mở cùng hộp thoại từ **Hướng dẫn kết nối → Đổi mật khẩu SMB**. Cần phiên LuCI có quyền quản trị NAS. Chỉ đổi mật khẩu tài khoản SMB đã có trong cấu hình share; không đổi mật khẩu root hoặc BitLocker. Sau khi đổi, kết nối lại thiết bị bằng mật khẩu mới. Trang **Chia sẻ mạng** chỉ cấu hình chia sẻ và quyền thư mục, không có mục đổi mật khẩu.
+Muốn thêm người dùng, bấm **Thêm tài khoản SMB**, nhập tên tài khoản mới, mật khẩu hai lần và chọn từng thư mục được phép. Tên bắt đầu bằng chữ thường, gồm tối đa 31 chữ thường/số/gạch dưới/gạch ngang. Tài khoản chỉ dùng truy cập NAS, không đăng nhập quản trị router. Quyền đọc/ghi theo thiết lập của share; thư mục không chọn sẽ không được cấp quyền. Cần gắn ổ trước khi tạo tài khoản. Sau khi lưu, dùng tài khoản và mật khẩu mới trên Windows/Android.
+
+Bạn cũng có thể mở cùng hộp thoại từ **Hướng dẫn kết nối → Đổi mật khẩu SMB**. Cần phiên LuCI có quyền quản trị NAS. Chỉ đổi mật khẩu tài khoản SMB đã có trong cấu hình share; không đổi mật khẩu root hoặc BitLocker. Sau khi đổi, kết nối lại thiết bị bằng mật khẩu mới. Tab **Chia sẻ** chỉ cấu hình chia sẻ và quyền thư mục, không có mục đổi mật khẩu. Các đường dẫn cũ tới Ổ đĩa, Chia sẻ mạng, Tài khoản SMB và Hướng dẫn kết nối vẫn chuyển nội bộ tới các tab NAS tương ứng.
 
 ## 5. Khi không truy cập được
 

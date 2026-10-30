@@ -1,14 +1,16 @@
 # Quản lý ổ đĩa trong LuCI
 
-Mã đang triển khai trên OpenWrt 25.12.6, cập nhật ngày 30/10/2026. Trang ở **Hệ thống → Ổ đĩa** (`/cgi-bin/luci/admin/system/disks`), nhận danh sách ổ/phân vùng thực tế và lưu thiết lập theo UUID.
+Mã đang triển khai trên OpenWrt 25.12.6, cập nhật ngày 30/10/2026. Chỉ còn một mục **Các dịch vụ → NAS**, với các tab **Ổ đĩa, Chia sẻ, Tài khoản SMB, Hướng dẫn kết nối**. Các đường dẫn cũ vẫn là alias tới tab tương ứng. Tab **Ổ đĩa** (`/cgi-bin/luci/admin/services/nas/disks`) nhận danh sách ổ/phân vùng thực tế và lưu thiết lập theo UUID.
 
-**Các dịch vụ → Hướng dẫn kết nối** (`/cgi-bin/luci/admin/services/nas-connect`) hướng dẫn mở NAS trên Windows/Android ngay trong router. Chọn truy cập từ xa qua Tailscale hoặc mạng nhà, rồi chọn thư mục chia sẻ. IP, tài khoản SMB được cấu hình, trạng thái gắn/chỉ đọc và đường dẫn sao chép lấy từ router hiện tại; không cố định theo ổ hoặc IP tham chiếu. Có liên kết tới trang này ngay trong trang Ổ đĩa.
+**NAS → Hướng dẫn kết nối** (`/cgi-bin/luci/admin/services/nas/connect`) hướng dẫn mở NAS trên Windows/Android ngay trong router. Chọn truy cập từ xa qua Tailscale hoặc mạng nhà, rồi chọn thư mục chia sẻ. IP, tài khoản SMB được cấu hình, trạng thái gắn/chỉ đọc và đường dẫn sao chép lấy từ router hiện tại; không cố định theo ổ hoặc IP tham chiếu. Có liên kết tới trang này ngay trong trang Ổ đĩa.
 
 Nút **Mở thư mục NAS** trên Windows dùng [tiện ích mở File Explorer](../../software/windows-open-nas/README.md); cài một lần cho từng máy. Trên Android dùng liên kết `smb://`, cần ứng dụng quản lý tệp tương thích. Nút lấy IP/share đang chọn và không đổi quyền đọc/ghi của ổ.
 
-Liên kết **Đổi mật khẩu SMB** ngay dưới tài khoản mở form nhập/xác nhận mật khẩu cho user SMB hiện có. RPC `nas.smb.password` cần quyền ghi của nhóm quản trị NAS, kiểm tra user trong cấu hình share và cập nhật qua stdin của `ksmbd.adduser -u`; không truyền mật khẩu qua URL, argv hay lưu tệp mật khẩu tạm. Kiểm tra tích hợp dùng cơ sở dữ liệu thử riêng, không đổi mật khẩu thật khi triển khai.
+Liên kết **Đổi mật khẩu SMB** ngay dưới tài khoản mở form nhập/xác nhận mật khẩu cho user SMB hiện có. RPC `nas.smb.password` cần quyền ghi của nhóm quản trị NAS, kiểm tra user trong cấu hình share, chuyển UTF-8 sang UTF-16LE và dùng `digest.md4` tạo NT hash trong tiến trình. Cơ sở dữ liệu KSMBD được thay nguyên tử, quyền 0600; không truyền mật khẩu rõ qua URL, argv, tiến trình con hay tệp tạm. Cách này tránh lỗi termios chưa khởi tạo của prompt `ksmbd.adduser` 3.5.6 khi stdin là pipe. Không đổi mật khẩu `nas` thật khi triển khai.
 
-Trong form, liên kết **Thiết lập tài khoản SMB** cạnh ô chọn tài khoản mở **Các dịch vụ → Tài khoản SMB** ở tab mới. Trang này liệt kê tài khoản được cấu hình trong các thư mục chia sẻ, thư mục được phép truy cập và nút **Đổi mật khẩu SMB**. Nút **Thiết lập quyền truy cập thư mục** mới dẫn sang **Chia sẻ mạng**, nơi gán người dùng được phép. Trang tài khoản dùng chung hộp thoại đổi mật khẩu với Hướng dẫn kết nối; không tạo/xóa tài khoản hệ thống hay tự thay đổi quyền chia sẻ.
+Trong form, liên kết **Thiết lập tài khoản SMB** cạnh ô chọn tài khoản mở **NAS → Tài khoản SMB** ở tab mới. Tab này liệt kê tài khoản được gán trong thư mục chia sẻ, thư mục được phép truy cập, nút **Đổi mật khẩu SMB** và **Thêm tài khoản SMB**. Nút **Thiết lập quyền truy cập thư mục** dẫn sang tab **Chia sẻ**.
+
+Khi thêm, quản trị viên nhập tên 1–31 ký tự chữ thường/số/gạch dưới/gạch ngang, mật khẩu hai lần và chọn rõ các share riêng tư. RPC `nas.smb.create` từ chối tên đã tồn tại trong Unix hoặc KSMBD; không ghi đè tài khoản có sẵn, không bật khách hoặc Force Root. Tài khoản Unix bị khóa mật khẩu, shell `/bin/false`, không tạo home. Tài khoản SMB dùng UID/GID khác root của chủ sở hữu dữ liệu hiện tại để đọc được các tệp NTFS 0600; các share đã chọn phải có cùng chủ sở hữu và được gắn. Đây là phân quyền **theo share**, không tách chủ sở hữu từng tệp giữa các tài khoản. Share không được chọn vẫn bị KSMBD chặn. Luồng có khóa chống tạo đồng thời và dọn danh tính mới nếu ghi mật khẩu/cấu hình thất bại.
 
 ## Chức năng
 
@@ -25,7 +27,7 @@ Các filesystem có thể gắn còn phụ thuộc driver đã cài trên router
 
 ## Cài mới hoặc cài lại
 
-Thiết bị cần có LuCI, `rpcd-mod-ucode`, `block-mount`, `cryptsetup`, `kmod-dm`, driver filesystem tương ứng và KSMBD nếu dùng SMB. Script dành cho OpenWrt 25.12 dùng ucode; không restore nguyên cấu hình router cũ.
+Thiết bị cần có LuCI, `rpcd-mod-ucode`, `ucode-mod-digest`, `shadow-useradd`, `block-mount`, `cryptsetup`, `kmod-dm`, driver filesystem tương ứng và KSMBD nếu dùng SMB. Script dành cho OpenWrt 25.12 dùng ucode; không restore nguyên cấu hình router cũ.
 
 1. Chép **cả thư mục này** sang router qua SSH/SCP. Không chép các khóa, mật khẩu hoặc backup riêng tư vào repo.
 2. Nếu nâng từ manager BitLocker cũ, tháo volume cũ an toàn trước khi chuyển. Installer tắt hook/service cũ, không tự đóng volume đang sử dụng và không tự chuyển khóa cũ.
@@ -35,7 +37,7 @@ Thiết bị cần có LuCI, `rpcd-mod-ucode`, `block-mount`, `cryptsetup`, `kmo
    sh install.sh
    ```
 
-4. Đăng xuất/đăng nhập lại LuCI để phiên mới nhận ACL của trang. Mở **Hệ thống → Ổ đĩa → Quản lý** trên phân vùng mong muốn.
+4. Đăng xuất/đăng nhập lại LuCI để phiên mới nhận ACL của trang. Mở **Các dịch vụ → NAS → Ổ đĩa → Quản lý** trên phân vùng mong muốn.
 5. Chọn đường dẫn, chế độ truy cập và tự gắn/mở khóa; với BitLocker, nhập mật khẩu rồi bấm **Lưu và mở khóa**.
 
 Installer không chứa UUID, IP, đường dẫn mount riêng của ổ tham chiếu hoặc mật khẩu. Cấu hình hiện có trong `/etc/config/nas_disks` được giữ; bản sao cấu hình trước thay đổi nằm trong `/root/nas-disks-install-<thời gian>/`.
@@ -57,6 +59,7 @@ Tắt tự mở không xóa khóa đã lưu. Người có root hoặc đọc đ�
 | `vi.json`, `tailscale.vi.json` | Nguồn dịch |
 | `compile_catalog.py` | Tạo catalog LMO Việt/Anh gốc của LuCI |
 | `material-layout-fix.css`, `patch-material.uc` | Sửa menu Material và nạp tài nguyên mới |
+| `patch-nas-menu.uc` | Bỏ khai báo menu KSMBD trùng; giữ view/ACL gốc và alias đường dẫn cũ |
 
 Tạo lại catalog trên máy phát triển:
 
@@ -69,6 +72,14 @@ Kiểm thử hộp thoại đổi mật khẩu (RPC giả lập, không đổi m
 ```powershell
 node --test router/luci-disk-manager/tests/smb-dialog.test.cjs
 ```
+
+Trên router, chép `tests/smb-validation.uc` rồi chạy bằng root để kiểm tra vector hash, các dạng Force Root và yêu cầu tạo sai (không tạo tài khoản thật):
+
+```sh
+ucode smb-validation.uc /usr/share/rpcd/ucode/nas-smb.uc
+```
+
+Kiểm thử thêm tài khoản/SMB thực tế và ảnh menu gộp: [báo cáo hoàn thiện NAS](../../reports/2026-10-30-nas-consolidation/README.md).
 
 Runtime đã được kiểm tra trực tiếp: cú pháp, API/ACL, xử lý mật khẩu sai, mở khóa thực, root-only key, reboot tự mở và SMB chỉ đọc. Installer là công cụ cài lại được bổ sung vào repo, được kiểm tra cú pháp; không chạy lại installer trên router đang hoạt động trong lần cập nhật Git này.
 

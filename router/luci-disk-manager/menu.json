@@ -1,17 +1,111 @@
 {
+  "admin/services/nas": {
+    "title": "NAS",
+    "action": {
+      "type": "firstchild"
+    },
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks",
+        "luci-app-ksmbd"
+      ]
+    },
+    "order": 90
+  },
+  "admin/services/nas/disks": {
+    "title": "Disk Manager",
+    "action": {
+      "path": "nas-disks",
+      "type": "view"
+    },
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "order": 10
+  },
   "admin/system/disks": {
-    "title": "Disk Manager", "order": 46,
-    "action": { "type": "view", "path": "nas-disks" },
-    "depends": { "acl": ["luci-app-nas-disks"] }
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "action": {
+      "path": "admin/services/nas/disks",
+      "type": "alias"
+    }
+  },
+  "admin/services/nas/shares": {
+    "title": "Sharing",
+    "action": {
+      "path": "ksmbd",
+      "type": "view"
+    },
+    "depends": {
+      "acl": [
+        "luci-app-ksmbd"
+      ]
+    },
+    "order": 20
+  },
+  "admin/services/ksmbd": {
+    "depends": {
+      "acl": [
+        "luci-app-ksmbd"
+      ]
+    },
+    "action": {
+      "path": "admin/services/nas/shares",
+      "type": "alias"
+    }
+  },
+  "admin/services/nas/accounts": {
+    "title": "SMB accounts",
+    "action": {
+      "path": "nas-accounts",
+      "type": "view"
+    },
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "order": 30
   },
   "admin/services/nas-accounts": {
-    "title": "SMB accounts", "order": 91,
-    "action": { "type": "view", "path": "nas-accounts" },
-    "depends": { "acl": ["luci-app-nas-disks"] }
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "action": {
+      "path": "admin/services/nas/accounts",
+      "type": "alias"
+    }
+  },
+  "admin/services/nas/connect": {
+    "title": "Connection guide",
+    "action": {
+      "path": "nas-connect",
+      "type": "view"
+    },
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "order": 40
   },
   "admin/services/nas-connect": {
-    "title": "Connection guide", "order": 90,
-    "action": { "type": "view", "path": "nas-connect" },
-    "depends": { "acl": ["luci-app-nas-disks"] }
+    "depends": {
+      "acl": [
+        "luci-app-nas-disks"
+      ]
+    },
+    "action": {
+      "path": "admin/services/nas/connect",
+      "type": "alias"
+    }
   }
 }

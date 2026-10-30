@@ -76,7 +76,7 @@ function connection_info() {
         for (let m in mounts)
             if ((s.path == m.path || index(s.path, m.path + '/') == 0) &&
                 (!mounted || length(m.path) > length(mounted.path))) mounted = m;
-        push(shares, { name: s.name, path: s.path, users: s.users || '',
+        push(shares, { id: s['.name'], name: s.name, path: s.path, users: s.users || '',
             guest: s.guest_ok == 'yes' || s.guest_ok == '1',
             mounted: !!mounted, readonly: s.read_only != 'no' && s.read_only != '0' || !!mounted?.readonly });
     });

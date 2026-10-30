@@ -129,8 +129,8 @@ return view.extend({
                 _('Check that the correct volume is mounted or unlocked in Disk Manager. A configured share name alone does not mean its disk is ready.'),
                 _('If Windows keeps asking for credentials, check the SMB account. For error 1219, disconnect only the conflicting connection to this NAS, then reconnect.'),
                 _('Do not expose or port-forward SMB port 445 to the public Internet. Use the authenticated Tailscale connection.')
-            ]), E('p', {}, [E('a', {'href':L.url('admin','system','disks')}, [_('Disk Manager')]), ' · ',
-                E('a', {'href':L.url('admin','services','ksmbd')}, [_('Configure network shares')]), ' · ',
+            ]), E('p', {}, [E('a', {'href':L.url('admin','services','nas','disks')}, [_('Disk Manager')]), ' · ',
+                E('a', {'href':L.url('admin','services','nas','shares')}, [_('Configure network shares')]), ' · ',
                 E('a', {'href':'https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/blob/main/docs/REMOTE-ACCESS.md','target':'_blank','rel':'noopener noreferrer'}, [_('Detailed remote access guide')])])
             ]));
             content.replaceChildren.apply(content, nodes);

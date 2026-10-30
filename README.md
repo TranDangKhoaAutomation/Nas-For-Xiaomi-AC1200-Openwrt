@@ -1,8 +1,10 @@
 # NAS trên Xiaomi Mi Router 3G — OpenWrt và Tailscale
 
-Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang **Hệ thống → Ổ đĩa** để nhận ổ/phân vùng đang cắm, chỉnh thiết lập theo UUID và nhập mật khẩu BitLocker ngay trong LuCI. **Các dịch vụ → Hướng dẫn kết nối** có hướng dẫn Windows/Android với IP và share lấy trực tiếp từ router.
+Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang **NAS → Ổ đĩa** để nhận ổ/phân vùng đang cắm, chỉnh thiết lập theo UUID và nhập mật khẩu BitLocker ngay trong LuCI. **Các dịch vụ → NAS → Hướng dẫn kết nối** có hướng dẫn Windows/Android với IP và share lấy trực tiếp từ router.
 
 ## Bắt đầu sử dụng
+
+Giao diện NAS đã gộp thành một mục **Các dịch vụ → NAS** với bốn tab **Ổ đĩa · Chia sẻ · Tài khoản SMB · Hướng dẫn kết nối**. Tab tài khoản có nút thêm user, chọn thư mục được phép và đổi mật khẩu. Đường dẫn cũ vẫn hoạt động qua alias. Xem [kiểm thử bổ sung và ảnh giao diện](reports/2026-10-30-nas-consolidation/README.md).
 
 - **[Truy cập NAS từ xa trên Windows và Android](docs/REMOTE-ACCESS.md)**: cài/kết nối Tailscale, map ổ vào This PC, thêm SMB trên Android và xử lý lỗi kết nối.
 - **[Khoa NAS 2 cho Android](software/android/README.md)**: quản lý tệp và ổ đĩa, tích hợp Tailscale ngay trong app.
@@ -14,8 +16,8 @@ Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 
 | Mục | Trong LAN | Từ xa khi Tailscale kết nối |
 |---|---|---|
-| Quản lý ổ đĩa | [Mở trang Ổ đĩa](http://192.168.1.1/cgi-bin/luci/admin/system/disks) | [Mở trang Ổ đĩa qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/system/disks) |
-| Hướng dẫn kết nối | [Mở hướng dẫn](http://192.168.1.1/cgi-bin/luci/admin/services/nas-connect) | [Mở hướng dẫn qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-connect) |
+| Quản lý ổ đĩa | [Mở trang Ổ đĩa](http://192.168.1.1/cgi-bin/luci/admin/services/nas/disks) | [Mở trang Ổ đĩa qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas/disks) |
+| Hướng dẫn kết nối | [Mở hướng dẫn](http://192.168.1.1/cgi-bin/luci/admin/services/nas/connect) | [Mở hướng dẫn qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas/connect) |
 | BitLocker 100 GiB | `\\192.168.1.1\BITLOCKER` | `\\100.114.53.95\BITLOCKER` |
 | NTFS khoảng 831,5 GiB | `\\192.168.1.1\DANGKHOA` | `\\100.114.53.95\DANGKHOA` |
 
