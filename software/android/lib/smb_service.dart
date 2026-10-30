@@ -1,106 +1,164 @@
-import 'dart:io';
-import 'dart:typed_data';
+import 'dart:convert';
 
-import 'package:dart_smb2/dart_smb2.dart';
+import 'package:flutter/services.dart';
 
 class NasConnection {
   const NasConnection({
     required this.host,
-    required this.share,
+    this.share = '',
     required this.username,
     required this.password,
     this.domain = '',
+    this.remote = true,
   });
+  final String host, share, username, password, domain;
+  final bool remote;
+}
 
-  final String host;
-  final String share;
-  final String username;
-  final String password;
-  final String domain;
+class NasEntry {
+  NasEntry.fromJson(Map<String, dynamic> data)
+    : name = data['name'] as String,
+      isDirectory = data['directory'] as bool,
+      size = (data['size'] as num).toInt(),
+      modified = DateTime.fromMillisecondsSinceEpoch(
+        (data['modified'] as num).toInt() * 1000,
+      );
+  final String name;
+  final bool isDirectory;
+  final int size;
+  final DateTime modified;
 }
 
 class NasService {
-  Smb2Pool? _pool;
-  NasConnection? _connection;
+  static const channel = MethodChannel('com.trandangkhoa.nas/native');
+  NasConnection? connection;
+  bool get isConnected => connection != null;
 
-  bool get isConnected => _pool != null;
-  NasConnection? get connection => _connection;
+  Future<Map<String, dynamic>> _json(
+    String method, [
+    Map<String, dynamic>? args,
+  ]) async {
+    final value = await channel.invokeMethod<String>(method, args);
+    return jsonDecode(value ?? '{}') as Map<String, dynamic>;
+  }
 
-  Future<void> connect(NasConnection connection) async {
-    await disconnect();
-    final pool = await Smb2Pool.connect(
-      host: connection.host.trim(),
-      share: connection.share.trim(),
-      user: connection.username.trim().isEmpty
-          ? null
-          : connection.username.trim(),
-      password: connection.password.isEmpty ? null : connection.password,
-      domain: connection.domain.trim().isEmpty
-          ? null
-          : connection.domain.trim(),
-      workers: 2,
-      timeoutSeconds: 15,
-      signing: true,
-      version: Smb2Version.any,
+  Future<void> startNetwork() => channel.invokeMethod<void>('networkStart');
+  Future<void> loginNetwork() => channel.invokeMethod<void>('networkLogin');
+  Future<void> logoutNetwork() async {
+    try {
+      await channel.invokeMethod<void>('networkLogout');
+    } finally {
+      connection = null;
+    }
+  }
+
+  Future<Map<String, dynamic>> networkState() => _json('networkState');
+  Future<Map<String, dynamic>> transferState() => _json('transferState');
+  Future<void> cancelTransfer() => channel.invokeMethod<void>('cancelTransfer');
+  Future<List<String>> connect(NasConnection config) async {
+    connection = null;
+    final result = await _json('connect', {
+      'host': config.host.trim(),
+      'user': config.username.trim(),
+      'password': config.password,
+      'domain': config.domain.trim(),
+      'remote': config.remote,
+    });
+    connection = NasConnection(
+      host: config.host.trim(),
+      username: config.username.trim(),
+      password: '',
+      domain: config.domain.trim(),
+      remote: config.remote,
     );
-    _pool = pool;
-    _connection = connection;
-    await pool.listDirectory('');
+    return (result['shares'] as List).cast<String>();
   }
 
   Future<void> disconnect() async {
-    final pool = _pool;
-    _pool = null;
-    _connection = null;
-    if (pool != null) await pool.disconnect();
+    await channel.invokeMethod<void>('disconnect');
+    connection = null;
   }
 
-  Smb2Pool get _requirePool {
-    final pool = _pool;
-    if (pool == null) throw StateError('Chưa kết nối NAS');
-    return pool;
-  }
-
-  Future<List<Smb2DirEntry>> listDirectory(String path) async {
-    final items = await _requirePool.listDirectory(path);
-    items.sort((a, b) {
-      if (a.isDirectory != b.isDirectory) return a.isDirectory ? -1 : 1;
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  Future<Map<String, dynamic>> mount(String share) =>
+      _json('mount', {'share': share});
+  Future<Map<String, dynamic>> list(String path) =>
+      _json('list', {'path': path});
+  Future<void> mkdir(String path) =>
+      channel.invokeMethod<void>('mkdir', {'path': path});
+  Future<void> rename(String from, String to) =>
+      channel.invokeMethod<void>('rename', {'from': from, 'to': to});
+  Future<void> remove(String path) =>
+      channel.invokeMethod<void>('remove', {'path': path});
+  Future<void> upload(String source, String path) =>
+      channel.invokeMethod<void>('upload', {'source': source, 'path': path});
+  Future<void> download(String path, String destination) =>
+      channel.invokeMethod<void>('download', {
+        'path': path,
+        'destination': destination,
+      });
+  Future<bool> exportFile(String path, String name) async =>
+      await channel.invokeMethod<bool>('exportFile', {
+        'path': path,
+        'name': name,
+      }) ??
+      false;
+  Future<Map<String, dynamic>> rpc(
+    String host,
+    bool remote,
+    String session,
+    String object,
+    String method,
+    Map<String, dynamic> params,
+  ) async {
+    final body = jsonEncode({
+      'jsonrpc': '2.0',
+      'id': 1,
+      'method': 'call',
+      'params': [session, object, method, params],
     });
-    return items;
-  }
-
-  Future<Smb2StatVfs> storageInfo() => _requirePool.statvfs('');
-  Future<void> createDirectory(String path) => _requirePool.mkdir(path);
-
-  Future<void> deleteEntry(String path, {required bool isDirectory}) =>
-      isDirectory ? _requirePool.rmdir(path) : _requirePool.deleteFile(path);
-
-  Future<void> uploadFile(
-    File localFile,
-    String remotePath, {
-    void Function(int sent, int total)? onProgress,
-  }) async {
-    final total = await localFile.length();
-    var sent = 0;
-    final source = localFile.openRead().map((chunk) {
-      final data = Uint8List.fromList(chunk);
-      sent += data.length;
-      onProgress?.call(sent, total);
-      return data;
+    final response = await _json('routerRequest', {
+      'host': host.trim(),
+      'body': body,
+      'remote': remote,
     });
-    await _requirePool.streamWrite(remotePath, source);
-  }
-
-  Future<int> downloadFile(
-    String remotePath,
-    File destination, {
-    void Function(int received, int total)? onProgress,
-  }) {
-    return _requirePool.downloadToFile(
-      remotePath,
-      destination,
-      onProgress: onProgress,
-    );
+    final result = response['result'];
+    if (response['error'] != null ||
+        result is! List ||
+        result.isEmpty ||
+        result.first != 0) {
+      throw StateError(
+        'Router từ chối yêu cầu. Kiểm tra đăng nhập và quyền truy cập.',
+      );
+    }
+    return result.length > 1 && result[1] is Map
+        ? Map<String, dynamic>.from(result[1] as Map)
+        : {};
   }
 }
+
+String readableError(Object error) {
+  if (error is PlatformException) {
+    return error.message ?? 'Chưa hoàn tất thao tác';
+  }
+  return error.toString().replaceFirst(RegExp(r'^(Bad state|Exception): '), '');
+}
+
+String formatBytes(num? value) {
+  if (value == null) return '—';
+  var n = value.toDouble();
+  const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+  var i = 0;
+  while (n >= 1024 && i < units.length - 1) {
+    n /= 1024;
+    i++;
+  }
+  return '${n.toStringAsFixed(i == 0 ? 0 : 1)} ${units[i]}';
+}
+
+bool validEntryName(String name) =>
+    name.isNotEmpty &&
+    name != '.' &&
+    name != '..' &&
+    name.trim() == name &&
+    !name.endsWith('.') &&
+    !RegExp(r'[\\/:*?"<>|\x00-\x1f]').hasMatch(name);

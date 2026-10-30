@@ -101,7 +101,7 @@ return view.extend({
                 ]),
                 value(_('Router address'), host || _('Not available'), !!host),
                 E('p', {}, [method === 'remote' ?
-                    _('Install Tailscale on Windows or Android, sign in to a tailnet allowed to reach this router, and keep it connected. The router must also be online in Tailscale. No exit node is needed to access the router itself.') :
+                    _('On Windows, connect Tailscale. Khoa NAS for Android has Tailscale built in. Sign in to a tailnet allowed to reach this router; the router must also be online.') :
                     _('Connect the computer or phone to this router’s home network. This LAN address is not for access over mobile data or another network.')]),
                 method === 'remote' ? E('p', {}, [E('a', {'href':'https://tailscale.com/download','target':'_blank','rel':'noopener noreferrer'}, [_('Download Tailscale')])]) : ''
             ])];
@@ -139,15 +139,14 @@ return view.extend({
                     ]));
                 } else if (host) {
                     guide.push(E('div', {'class':'nas-connect-actions'}, [E('a', {'class':'cbi-button cbi-button-action',
-                        'href':'smb://' + host + '/' + encodeURIComponent(share.name)}, [_('Open NAS folder')])]),
-                    E('p', {}, [_('Requires an Android file manager that handles smb:// links. If no app opens, add the SMB connection manually using the details below.')]),
+                        'href':'smb://' + host + '/' + encodeURIComponent(share.name)}, [_('Open NAS folder')]),
+                        E('a', {'class':'cbi-button','href':'https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/raw/refs/heads/main/releases/android/KhoaNAS-v2.0.0-arm64-v8a.apk','target':'_blank','rel':'noopener noreferrer'}, [_('Download Khoa NAS for Android')])]),
+                    E('p', {}, [_('Install Khoa NAS once, then use Open NAS folder. Remote access uses Tailscale inside the app, without a separate VPN app.')]),
                     steps([
-                        _('Open a file manager that supports SMB2 or SMB3. Choose Network, Add connection, then SMB or Windows share.'),
-                        _('Enter the server, port, share and account below. Leave Domain empty unless your administrator specifies one.'),
-                        _('Save the connection and open the shared folder. For offline use, copy the files you need to phone storage.')
+                        _('In Khoa NAS, choose Remote and sign in to Tailscale, or choose Home network when at home.'),
+                        _('Check the router address, enter your SMB account and password, then connect. Select the shared folder from the list.')
                     ]), value(_('Server / Host'), host, true), value(_('Port'), '445', false),
-                    value(_('Share name'), share.name, true),
-                    E('p', {}, [_('Android permits one active VPN at a time. Another VPN may disconnect Tailscale.')]));
+                    value(_('Share name'), share.name, true));
                 }
                 guide.push(value(_('SMB account'), account, false), E('p', {}, [
                     _('Use the SMB password for this account. It is separate from the router administrator password, the BitLocker password and the Tailscale account. This page never displays passwords.'), ' ',

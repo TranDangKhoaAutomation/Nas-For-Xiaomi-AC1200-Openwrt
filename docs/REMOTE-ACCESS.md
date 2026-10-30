@@ -19,7 +19,10 @@ Hướng dẫn cũng có ngay trong LuCI tại **Các dịch vụ → Hướng d
 
 ## 1. Kết nối Tailscale
 
-1. Cài Tailscale trên máy Windows hoặc điện thoại Android từ [nguồn chính thức](https://tailscale.com/download).
+Với Khoa NAS 2 trên Android, bỏ qua việc cài VPN riêng và đăng nhập Tailscale ngay trong app ở mục 3.
+Các bước dưới dành cho Windows hoặc ứng dụng SMB Android khác.
+
+1. Cài Tailscale trên thiết bị từ [nguồn chính thức](https://tailscale.com/download).
 2. Đăng nhập vào tailnet đã được cấp quyền truy cập router. Nếu dùng tài khoản khác, quản trị tailnet phải mời/chia sẻ thiết bị và cho phép quyền cần thiết.
 3. Bật kết nối Tailscale và kiểm tra router `openwrt` đang trực tuyến.
 4. Giữ Tailscale kết nối trong lúc dùng NAS.
@@ -69,7 +72,22 @@ Test-Path '\\100.114.53.95\BITLOCKER'
 
 TCP phải thành công trước khi xử lý tài khoản SMB. `Test-Path=True` chứng minh share mở được bằng thông tin đăng nhập hiện có; không chứng minh share cho phép ghi.
 
-## 3. Android: thêm kết nối SMB trong ứng dụng quản lý tệp
+## 3. Android: dùng Khoa NAS có Tailscale tích hợp
+
+Khoa NAS 2 có ba mục **Tệp, Ổ đĩa, Kết nối**. Mã nguồn và hướng dẫn build nằm ở
+[software/android](../software/android/README.md). App đăng nhập Tailscale bằng thiết bị
+riêng, dùng kết nối TCP trong tiến trình qua tsnet; không cần cài app Tailscale/VPN riêng.
+
+1. Trong **Kết nối**, chọn **Từ xa → Đăng nhập Tailscale** và tự xác thực.
+2. Nhập IP router hiện tại, tài khoản `nas` và mật khẩu SMB rồi nhấn **Kết nối NAS**.
+3. Chọn `DANGKHOA` hoặc `BITLOCKER` từ danh sách share do router cung cấp.
+4. Muốn quản lý phân vùng, mở **Ổ đĩa** và đăng nhập tài khoản LuCI riêng.
+
+Trong mạng nhà chọn **Trong nhà** và dùng IP LAN. App không chuyển lưu lượng của ứng dụng
+khác qua Tailscale và chưa có dịch vụ đồng bộ nền. Tài khoản SMB chỉ được lưu mật khẩu khi
+chọn **Nhớ đăng nhập**; mật khẩu quản trị router chỉ dùng trong bộ nhớ.
+
+### Dùng ứng dụng quản lý tệp khác
 
 Trong tab Android của trang hướng dẫn, nút **Mở thư mục NAS** dùng liên kết `smb://` theo IP và share đang chọn. Chỉ những ứng dụng có đăng ký nhận liên kết này mới mở trực tiếp; nếu không mở được, thêm kết nối thủ công theo các bước bên dưới.
 
@@ -92,13 +110,15 @@ Trên Android, NAS hiện thành một **kết nối mạng trong ứng dụng q
 4. Lưu kết nối rồi mở `BITLOCKER`. Nếu ứng dụng liệt kê share sau khi đăng nhập, chọn `BITLOCKER` trong danh sách.
 5. Để dùng khi không có mạng, chép tệp cần thiết về bộ nhớ điện thoại. Truy cập trực tiếp trên NAS cần Internet và Tailscale đang kết nối.
 
-Các bản Khoa-NAS Android cũ trong repo chỉ có danh sách `NAS1/NAS2/PRIVATE` và địa chỉ cũ. Không dùng mặc định của bản đó để suy ra share hiện tại; hướng dẫn này dùng một SMB client cho phép nhập `BITLOCKER`.
+Các APK Khoa-NAS v1 và thư mục `apps/android` là bản lịch sử, có danh sách `NAS1/NAS2/PRIVATE`
+và IP cũ. Bản Khoa NAS 2 trong `software/android` lấy danh sách share thật sau khi đăng nhập.
 
 ### Android không bật VPN Tailscale riêng
 
-Trong mạng nhà, dùng IP LAN của router và không cần Tailscale. Khi ở ngoài mạng nhà, app SMB hiện có vẫn cần đường kết nối tới NAS; chỉ đổi nút hay IP không thay thế được đường kết nối đó.
-
-Một hướng phát triển là tích hợp kết nối Tailscale riêng bên trong app bằng [tsnet](https://tailscale.com/docs/features/tsnet) hoặc [libtailscale](https://github.com/tailscale/libtailscale), dùng TCP/IP trong tiến trình ứng dụng. Đây là đề xuất kiến trúc dựa trên khả năng nhúng của thư viện, chưa phải tính năng của APK hiện tại và chưa kiểm thử tích hợp Android. Cần thêm cầu nối native, luồng đăng nhập tailnet, lưu trạng thái riêng trong app và kiểm tra vòng đời/kết nối nền. Không nhúng auth key dùng chung vào APK. Không mở SMB 445 ra Internet để thay thế.
+Khoa NAS 2 dùng [tsnet](https://tailscale.com/docs/features/tsnet) qua cầu nối native Go/Kotlin.
+Kết nối từ xa luôn dùng TCP netstack của tsnet, không tự rơi về mạng LAN/hệ thống. Trạng thái thiết bị
+ở vùng dữ liệu riêng của app, không có auth key dùng chung trong APK. Các ứng dụng quản lý
+tệp khác vẫn cần Tailscale/VPN riêng khi ở ngoài nhà. Không mở SMB 445 ra Internet.
 
 ## 4. Mở khóa hoặc quản lý ổ từ xa bằng LuCI
 
@@ -136,7 +156,7 @@ Các loại mật khẩu này độc lập. Khóa BitLocker lưu trên router ch
 | Thấy thư mục rỗng/share không dùng được | Kiểm tra phân vùng đã mount thật trong trang Ổ đĩa; sự tồn tại của tên share không chứng minh dữ liệu đã được gắn |
 | `DANGKHOA` chưa mở được | Kiểm tra trạng thái gắn. Ngày 30/10 đã hết dirty và ghi được; nếu dirty tái xuất hiện, sao lưu và kiểm tra NTFS trên ổ cắm trực tiếp vào Windows |
 | `BITLOCKER` không ghi được | Kiểm tra trạng thái mount thực tế và quyền share. Ngày 30/10 đã chuyển RW thành công sau CHKDSK; manager không force dirty NTFS |
-| Android mất kết nối khi bật VPN khác | Android chỉ cho một VPN hoạt động; chọn Tailscale khi cần NAS |
+| Ứng dụng SMB Android khác mất kết nối khi bật VPN khác | Android chỉ cho một VPN hoạt động; Khoa NAS 2 dùng Tailscale trong tiến trình và không chiếm ô VPN này |
 | IP không còn đúng sau reset | Lấy IP mới từ Tailscale, cập nhật kết nối Windows/Android và URL LuCI |
 
 Không mở hoặc port-forward TCP 445 từ Internet công cộng. Dùng đường tailnet đã xác thực; WAN trên hệ thống tham chiếu vẫn từ chối kết nối vào.
@@ -148,4 +168,12 @@ Không mở hoặc port-forward TCP 445 từ Internet công cộng. Dùng đư�
 - BitLocker tự mở, mount chỉ đọc và SMB đọc được sau reboot thật, không chạy unlock thủ công.
 - Lần kiểm tra này chưa đưa điện thoại ra 4G/5G hoặc thử Android thực tế. Các bước Android là hướng dẫn cấu hình, không phải kết quả đã thử trên điện thoại.
 
-Để tự kiểm thử từ xa độc lập: trên Android tắt Wi-Fi, dùng 4G/5G, bật Tailscale rồi mở `BITLOCKER`; trên Windows dùng mạng khác LAN router. Khi share đang chỉ đọc, chỉ thử mở/đọc tệp.
+### Cập nhật kiểm thử Android ngày 30/10/2026
+
+[Khoa NAS 2 trên LDPlayer](../reports/2026-10-30-android-integrated/README.md) đã duyệt SMB,
+tạo/đổi tên/xóa thư mục thử nghiệm, tải xuống/lên khớp nội dung và đọc trạng thái hai phân vùng
+thật qua RPC có xác thực. Tailscale nhúng đã khởi tạo và mở trình duyệt; tài khoản thật chưa
+được đăng nhập. Chưa kiểm thử điện thoại vật lý hoặc mạng di động độc lập.
+
+Để tự kiểm thử từ xa độc lập: trên Android tắt Wi-Fi, dùng 4G/5G, mở Khoa NAS → Từ xa,
+đăng nhập Tailscale rồi mở `BITLOCKER`; trên Windows dùng mạng khác LAN router.

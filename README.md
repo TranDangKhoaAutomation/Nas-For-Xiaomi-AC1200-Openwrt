@@ -5,6 +5,7 @@ Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 ## Bắt đầu sử dụng
 
 - **[Truy cập NAS từ xa trên Windows và Android](docs/REMOTE-ACCESS.md)**: cài/kết nối Tailscale, map ổ vào This PC, thêm SMB trên Android và xử lý lỗi kết nối.
+- **[Khoa NAS 2 cho Android](software/android/README.md)**: quản lý tệp và ổ đĩa, tích hợp Tailscale ngay trong app.
 - **[Hướng dẫn quản lý ổ đĩa trong LuCI](router/luci-disk-manager/README.md)**: quét ổ, tùy chỉnh mount, mở khóa/tự mở và cài lại giao diện.
 - [Trạng thái đã kiểm chứng](docs/CURRENT-STATE.md) và [báo cáo triển khai 29/10](reports/2026-10-29-disk-manager/README.md).
 
@@ -31,7 +32,7 @@ Tài khoản SMB là `nas`; nhập mật khẩu trực tiếp trên thiết bị
 - Tháo gắn an toàn, từ chối nếu đang bận; NTFS từ chối RW thì fallback RO, không force.
 - Việt/Anh theo ngôn ngữ LuCI; menu Material dài xuống dòng thay vì che nội dung các trang.
 
-Ngày 29/10 đã thử reboot thật: module dm-zero tự nạp, BitLocker tự mở và mount chỉ đọc, KSMBD/cron chạy lại. Windows mở được `BITLOCKER` qua LAN và IP Tailscale; TCP 445 đi qua interface Tailscale. Chưa kiểm thử Android hoặc mạng 4G/5G độc lập trong phiên này.
+Ngày 29/10 đã thử reboot thật: module dm-zero tự nạp, BitLocker tự mở và mount chỉ đọc, KSMBD/cron chạy lại. Windows mở được `BITLOCKER` qua LAN và IP Tailscale; TCP 445 đi qua interface Tailscale. Ngày 30/10 đã thử Khoa NAS 2 trên LDPlayer: SMB nội bộ đọc/ghi và xem trạng thái ổ thật; đăng nhập tailnet và thử 4G/5G còn chờ chủ tài khoản.
 
 ## Mã triển khai và module
 

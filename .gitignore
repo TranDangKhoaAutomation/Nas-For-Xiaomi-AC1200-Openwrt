@@ -17,3 +17,5 @@ id_ed25519
 **/nas-disks/keys/
 router/luci-disk-manager/keys/
 **/nas-bitlocker/passphrase*
+software/android/android/app/libs/*.aar
+software/android/android/app/libs/*.jar

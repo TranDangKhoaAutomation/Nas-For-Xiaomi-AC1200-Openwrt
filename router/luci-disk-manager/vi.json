@@ -147,5 +147,10 @@
   "Use 8 to 128 UTF-8 bytes without line breaks.": "Dùng mật khẩu từ 8 đến 128 byte UTF-8, không chứa ký tự xuống dòng.",
   "The SMB password could not be changed. Check that this account already exists.": "Chưa đổi được mật khẩu SMB. Hãy kiểm tra tài khoản này đã tồn tại.",
   "SMB password changed. Reconnect your devices using the new password.": "Đã đổi mật khẩu SMB. Hãy kết nối lại các thiết bị bằng mật khẩu mới.",
-  "NAS sharing will reconnect. Devices using this account need the new password.": "Chia sẻ NAS sẽ kết nối lại. Thiết bị dùng tài khoản này cần nhập mật khẩu mới."
+  "NAS sharing will reconnect. Devices using this account need the new password.": "Chia sẻ NAS sẽ kết nối lại. Thiết bị dùng tài khoản này cần nhập mật khẩu mới.",
+  "On Windows, connect Tailscale. Khoa NAS for Android has Tailscale built in. Sign in to a tailnet allowed to reach this router; the router must also be online.": "Windows dùng Tailscale; Khoa NAS trên Android đã tích hợp sẵn. Đăng nhập mạng Tailscale có quyền truy cập router và giữ router trực tuyến.",
+  "Download Khoa NAS for Android": "Tải Khoa NAS cho Android",
+  "Install Khoa NAS once, then use Open NAS folder. Remote access uses Tailscale inside the app, without a separate VPN app.": "Cài Khoa NAS một lần rồi nhấn Mở thư mục NAS. Tailscale đã tích hợp trong app, không cần ứng dụng VPN riêng.",
+  "In Khoa NAS, choose Remote and sign in to Tailscale, or choose Home network when at home.": "Trong Khoa NAS, chọn Từ xa và đăng nhập Tailscale; khi ở nhà có thể chọn Trong nhà.",
+  "Check the router address, enter your SMB account and password, then connect. Select the shared folder from the list.": "Kiểm tra IP router, nhập tài khoản và mật khẩu SMB rồi kết nối. Chọn thư mục chia sẻ trong danh sách."
 }

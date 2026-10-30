@@ -10,15 +10,15 @@ let lines = [];
 let hasCss = index(header, 'menu-layout-fix.css') >= 0;
 for (let line in split(header, '\n')) {
     if (index(line, 'admin/translations') >= 0) {
-        line = replace(line, /nas-disks-\d{8}-\d+/g, 'nas-disks-20261030-3');
-        line = replace(line, /nas_disks_v=\d{8}-\d+/g, 'nas_disks_v=20261030-3');
+        line = replace(line, /nas-disks-\d{8}-\d+/g, 'nas-disks-20261030-4');
+        line = replace(line, /nas_disks_v=\d{8}-\d+/g, 'nas_disks_v=20261030-4');
     }
     if (index(line, 'admin/translations') >= 0 && index(line, 'nas_disks_v=') < 0) {
         let end = index(line, '"></script>');
         if (end >= 0) {
             let before = substr(line, 0, end);
             line = before + (index(before, '?') >= 0 ? '&' : '?') +
-                'nas_disks_v=20261030-3' + substr(line, end);
+                'nas_disks_v=20261030-4' + substr(line, end);
         }
     }
     push(lines, line);
