@@ -135,5 +135,9 @@
   "If Windows keeps asking for credentials, check the SMB account. For error 1219, disconnect only the conflicting connection to this NAS, then reconnect.": "Nếu Windows hỏi tài khoản liên tục, kiểm tra tài khoản SMB. Với lỗi 1219, chỉ ngắt kết nối đang xung đột tới NAS này rồi kết nối lại.",
   "Do not expose or port-forward SMB port 445 to the public Internet. Use the authenticated Tailscale connection.": "Dùng kết nối Tailscale đã xác thực; không mở hoặc chuyển tiếp cổng SMB 445 ra Internet công cộng.",
   "Detailed remote access guide": "Hướng dẫn truy cập từ xa chi tiết",
-  "Open your NAS from Windows or Android, at home or remotely through Tailscale.": "Mở NAS trên Windows hoặc Android, trong mạng nhà hoặc từ xa qua Tailscale."
+  "Open your NAS from Windows or Android, at home or remotely through Tailscale.": "Mở NAS trên Windows hoặc Android, trong mạng nhà hoặc từ xa qua Tailscale.",
+  "Open NAS folder": "Mở thư mục NAS",
+  "On Windows, install the NAS opener once and allow this router’s IP addresses. Your browser may ask before opening File Explorer.": "Trên Windows, cài tiện ích mở NAS một lần và nhập các IP router được phép. Trình duyệt có thể hỏi xác nhận trước khi mở File Explorer.",
+  "Download Windows NAS opener": "Tải tiện ích mở NAS cho Windows",
+  "Requires an Android file manager that handles smb:// links. If no app opens, add the SMB connection manually using the details below.": "Cần ứng dụng quản lý tệp Android nhận liên kết smb://. Nếu không mở được ứng dụng, hãy thêm kết nối SMB theo thông tin bên dưới."
 }

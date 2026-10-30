@@ -88,14 +88,24 @@ return view.extend({
                 }));
                 var guide = [tabs];
                 if (host && platform === 'windows') {
-                    guide.push(value(_('Path for File Explorer'), '\\\\' + host + '\\' + share.name, true), steps([
+                    guide.push(E('div', {'class':'nas-connect-actions'}, [
+                        E('a', {'class':'cbi-button cbi-button-action',
+                            'href':'khoanas://open?host=' + encodeURIComponent(host) + '&share=' + encodeURIComponent(share.name)}, [_('Open NAS folder')]),
+                        E('a', {'class':'cbi-button',
+                            'href':'https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/raw/refs/heads/main/releases/windows-open-nas/KhoaNAS-Open.exe'}, [_('Download Windows NAS opener')])
+                    ]),
+                    E('p', {}, [_('On Windows, install the NAS opener once and allow this router’s IP addresses. Your browser may ask before opening File Explorer.')]),
+                    value(_('Path for File Explorer'), '\\\\' + host + '\\' + share.name, true), steps([
                         _('Open File Explorer, paste the path above into its address bar, then press Enter.'),
                         _('When asked, choose Use a different account and enter an SMB account listed below with its SMB password.'),
                         _('To keep it in This PC, choose Map network drive, select a free drive letter, and paste the same path into Folder.'),
                         _('Enable Reconnect at sign-in. Use Connect using different credentials if needed, then finish. If the drive shows disconnected after sign-in, connect Tailscale and open it again.')
                     ]));
                 } else if (host) {
-                    guide.push(steps([
+                    guide.push(E('div', {'class':'nas-connect-actions'}, [E('a', {'class':'cbi-button cbi-button-action',
+                        'href':'smb://' + host + '/' + encodeURIComponent(share.name)}, [_('Open NAS folder')])]),
+                    E('p', {}, [_('Requires an Android file manager that handles smb:// links. If no app opens, add the SMB connection manually using the details below.')]),
+                    steps([
                         _('Open a file manager that supports SMB2 or SMB3. Choose Network, Add connection, then SMB or Windows share.'),
                         _('Enter the server, port, share and account below. Leave Domain empty unless your administrator specifies one.'),
                         _('Save the connection and open the shared folder. For offline use, copy the files you need to phone storage.')
@@ -119,7 +129,14 @@ return view.extend({
             content.replaceChildren.apply(content, nodes);
         }
         draw();
-        return E('div', {}, [E('h2', {}, [_('Connection guide')]),
+        return E('div', {'class':'nas-connect-guide'}, [E('style', {}, [
+            '.nas-connect-guide p{margin:12px 0;line-height:1.65}' +
+            '.nas-connect-guide .cbi-section{margin-top:18px}' +
+            '.nas-connect-guide .cbi-tabmenu{margin:0 0 16px}' +
+            '.nas-connect-guide .nas-connect-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0}' +
+            '.nas-connect-guide ol li{margin:6px 0}' +
+            '.nas-connect-guide h3{scroll-margin-top:88px}'
+        ]), E('h2', {}, [_('Connection guide')]),
             E('p', {}, [_('Open your NAS from Windows or Android, at home or remotely through Tailscale.')]),
             refresh, content]);
     }, handleSaveApply:null, handleSave:null, handleReset:null

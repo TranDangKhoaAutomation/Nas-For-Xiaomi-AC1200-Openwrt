@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-10-30
+- Thêm nút mở thư mục NAS: giao thức khoanas trên Windows với tiện ích và bản EXE; Android gọi ứng dụng nhận liên kết smb. Tiện ích chỉ mở gốc share trên IP router được cho phép, không chứa mật khẩu.
+- Bổ sung khoảng cách đoạn văn, nút mở/tải đặt cùng hàng có xuống dòng, tách hướng dẫn khỏi điều khiển trên trang kết nối.
 - Thêm Các dịch vụ → Hướng dẫn kết nối trong LuCI, liên kết từ trang Ổ đĩa.
 - Hướng dẫn Windows/Android, LAN/Tailscale; IP, share, tài khoản và trạng thái mount/chỉ đọc lấy từ router hiện tại, có làm mới và sao chép đường dẫn.
 - API chỉ đọc thông tin kết nối, bản dịch Việt/Anh và installer được cập nhật cùng mã triển khai. Kiểm tra trực tiếp bằng Chrome qua Tailscale; chưa thử Android/4G thực tế.

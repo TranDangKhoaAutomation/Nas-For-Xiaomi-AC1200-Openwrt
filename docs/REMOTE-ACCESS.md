@@ -30,6 +30,8 @@ Router đã chạy Tailscale trực tiếp, nên truy cập IP của router khô
 
 ### Mở nhanh
 
+Trong **Các dịch vụ → Hướng dẫn kết nối**, chọn **Windows**, kiểu kết nối và share. Nút **Mở thư mục NAS** gọi File Explorer qua [tiện ích Windows](../software/windows-open-nas/README.md). Cài tiện ích một lần trên mỗi máy và nhập IP router được phép; sau đó có thể mở bằng nút này thay vì chép đường dẫn. Nút tải tiện ích nằm cạnh nút mở. Cách nhập đường dẫn thủ công bên dưới vẫn dùng được mà không cần tiện ích.
+
 1. Bật Tailscale.
 2. Mở **File Explorer / Trình khám phá tệp**.
 3. Bấm thanh địa chỉ, nhập:
@@ -69,6 +71,8 @@ TCP phải thành công trước khi xử lý tài khoản SMB. `Test-Path=True`
 
 ## 3. Android: thêm kết nối SMB trong ứng dụng quản lý tệp
 
+Trong tab Android của trang hướng dẫn, nút **Mở thư mục NAS** dùng liên kết `smb://` theo IP và share đang chọn. Chỉ những ứng dụng có đăng ký nhận liên kết này mới mở trực tiếp; nếu không mở được, thêm kết nối thủ công theo các bước bên dưới.
+
 Trên Android, NAS hiện thành một **kết nối mạng trong ứng dụng quản lý tệp**. Chọn ứng dụng hỗ trợ SMB2/SMB3 và cho nhập tên share, chẳng hạn các ứng dụng được nêu trong [hướng dẫn NAS từ xa của Tailscale](https://tailscale.com/docs/use-cases/personal-or-at-home-use/access-nas-media-file-servers?tab=android).
 
 1. Mở Tailscale, kết nối đúng tailnet và xác nhận router trực tuyến.
@@ -89,6 +93,12 @@ Trên Android, NAS hiện thành một **kết nối mạng trong ứng dụng q
 5. Để dùng khi không có mạng, chép tệp cần thiết về bộ nhớ điện thoại. Truy cập trực tiếp trên NAS cần Internet và Tailscale đang kết nối.
 
 Các bản Khoa-NAS Android cũ trong repo chỉ có danh sách `NAS1/NAS2/PRIVATE` và địa chỉ cũ. Không dùng mặc định của bản đó để suy ra share hiện tại; hướng dẫn này dùng một SMB client cho phép nhập `BITLOCKER`.
+
+### Android không bật VPN Tailscale riêng
+
+Trong mạng nhà, dùng IP LAN của router và không cần Tailscale. Khi ở ngoài mạng nhà, app SMB hiện có vẫn cần đường kết nối tới NAS; chỉ đổi nút hay IP không thay thế được đường kết nối đó.
+
+Một hướng phát triển là tích hợp kết nối Tailscale riêng bên trong app bằng [tsnet](https://tailscale.com/docs/features/tsnet) hoặc [libtailscale](https://github.com/tailscale/libtailscale), dùng TCP/IP trong tiến trình ứng dụng. Đây là đề xuất kiến trúc dựa trên khả năng nhúng của thư viện, chưa phải tính năng của APK hiện tại và chưa kiểm thử tích hợp Android. Cần thêm cầu nối native, luồng đăng nhập tailnet, lưu trạng thái riêng trong app và kiểm tra vòng đời/kết nối nền. Không nhúng auth key dùng chung vào APK. Không mở SMB 445 ra Internet để thay thế.
 
 ## 4. Mở khóa hoặc quản lý ổ từ xa bằng LuCI
 

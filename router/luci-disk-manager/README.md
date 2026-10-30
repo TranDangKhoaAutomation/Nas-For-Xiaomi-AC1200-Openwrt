@@ -4,6 +4,8 @@ Mã đang triển khai trên OpenWrt 25.12.6, cập nhật ngày 30/10/2026. Tra
 
 **Các dịch vụ → Hướng dẫn kết nối** (`/cgi-bin/luci/admin/services/nas-connect`) hướng dẫn mở NAS trên Windows/Android ngay trong router. Chọn truy cập từ xa qua Tailscale hoặc mạng nhà, rồi chọn thư mục chia sẻ. IP, tài khoản SMB được cấu hình, trạng thái gắn/chỉ đọc và đường dẫn sao chép lấy từ router hiện tại; không cố định theo ổ hoặc IP tham chiếu. Có liên kết tới trang này ngay trong trang Ổ đĩa.
 
+Nút **Mở thư mục NAS** trên Windows dùng [tiện ích mở File Explorer](../../software/windows-open-nas/README.md); cài một lần cho từng máy. Trên Android dùng liên kết `smb://`, cần ứng dụng quản lý tệp tương thích. Nút lấy IP/share đang chọn và không đổi quyền đọc/ghi của ổ.
+
 ## Chức năng
 
 - Xem dung lượng, filesystem, trạng thái gắn/mở khóa, dung lượng trống và share SMB hiện có.
