@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-30
+- Thêm Các dịch vụ → Hướng dẫn kết nối trong LuCI, liên kết từ trang Ổ đĩa.
+- Hướng dẫn Windows/Android, LAN/Tailscale; IP, share, tài khoản và trạng thái mount/chỉ đọc lấy từ router hiện tại, có làm mới và sao chép đường dẫn.
+- API chỉ đọc thông tin kết nối, bản dịch Việt/Anh và installer được cập nhật cùng mã triển khai. Kiểm tra trực tiếp bằng Chrome qua Tailscale; chưa thử Android/4G thực tế.
+- Sửa thứ tự tham số `join()` của ucode trong so sánh topology và bộ vá theme; kiểm tra bộ vá trên bản sao header, chạy lặp lại cho cùng kết quả.
+
 ## 2026-10-29
 - Thêm LuCI Disk Manager tổng quát: quét ổ thực tế, thiết lập/mount/unlock theo UUID, xử lý mật khẩu nền và key root-only.
 - Thêm Việt/Anh theo LuCI, bản dịch Tailscale/nút dịch vụ và sửa chung sidebar Material che nội dung.

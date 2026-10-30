@@ -1,6 +1,6 @@
 # NAS trên Xiaomi Mi Router 3G — OpenWrt và Tailscale
 
-Cập nhật **29/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang **Hệ thống → Ổ đĩa** để nhận ổ/phân vùng đang cắm, chỉnh thiết lập theo UUID và nhập mật khẩu BitLocker ngay trong LuCI.
+Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang **Hệ thống → Ổ đĩa** để nhận ổ/phân vùng đang cắm, chỉnh thiết lập theo UUID và nhập mật khẩu BitLocker ngay trong LuCI. **Các dịch vụ → Hướng dẫn kết nối** có hướng dẫn Windows/Android với IP và share lấy trực tiếp từ router.
 
 ## Bắt đầu sử dụng
 
@@ -13,6 +13,7 @@ Cập nhật **29/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 | Mục | Trong LAN | Từ xa khi Tailscale kết nối |
 |---|---|---|
 | Quản lý ổ đĩa | [Mở trang Ổ đĩa](http://192.168.1.1/cgi-bin/luci/admin/system/disks) | [Mở trang Ổ đĩa qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/system/disks) |
+| Hướng dẫn kết nối | [Mở hướng dẫn](http://192.168.1.1/cgi-bin/luci/admin/services/nas-connect) | [Mở hướng dẫn qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-connect) |
 | BitLocker 100 GiB | `\\192.168.1.1\BITLOCKER` | `\\100.114.53.95\BITLOCKER` |
 | NTFS khoảng 831,5 GiB | `\\192.168.1.1\DANGKHOA` | `\\100.114.53.95\DANGKHOA` |
 

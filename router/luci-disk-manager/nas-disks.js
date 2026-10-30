@@ -136,6 +136,7 @@ return view.extend({
         return E('div',{},[
             E('h2',{},[_('Disk Manager')]),
             E('p',{},[_('Detect attached disks, manage each volume and configure mounting or encrypted unlock by UUID.')]),
+            E('p',{},[E('a',{'href':L.url('admin','services','nas-connect')},[_('Connection guide')])]),
             E('div',{'style':'display:flex;align-items:center;flex-wrap:wrap'},[scanButton,scanTime]),note,list,
             E('p',{'class':'cbi-section-descr'},[_('New disks appear after a scan. Existing settings are only applied to matching UUIDs; a replacement disk is never unlocked using a device name alone.')]),
             E('a',{'href':L.url('admin','services','ksmbd')},[_('Configure network shares')])

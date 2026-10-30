@@ -1,6 +1,8 @@
 # Quản lý ổ đĩa trong LuCI
 
-Mã đang triển khai trên OpenWrt 25.12.6 ngày 29/10/2026. Trang ở **Hệ thống → Ổ đĩa** (`/cgi-bin/luci/admin/system/disks`), nhận danh sách ổ/phân vùng thực tế và lưu thiết lập theo UUID.
+Mã đang triển khai trên OpenWrt 25.12.6, cập nhật ngày 30/10/2026. Trang ở **Hệ thống → Ổ đĩa** (`/cgi-bin/luci/admin/system/disks`), nhận danh sách ổ/phân vùng thực tế và lưu thiết lập theo UUID.
+
+**Các dịch vụ → Hướng dẫn kết nối** (`/cgi-bin/luci/admin/services/nas-connect`) hướng dẫn mở NAS trên Windows/Android ngay trong router. Chọn truy cập từ xa qua Tailscale hoặc mạng nhà, rồi chọn thư mục chia sẻ. IP, tài khoản SMB được cấu hình, trạng thái gắn/chỉ đọc và đường dẫn sao chép lấy từ router hiện tại; không cố định theo ổ hoặc IP tham chiếu. Có liên kết tới trang này ngay trong trang Ổ đĩa.
 
 ## Chức năng
 
@@ -40,7 +42,7 @@ Tắt tự mở không xóa khóa đã lưu. Người có root hoặc đọc đ�
 |---|---|
 | `disks.uc` | `/usr/share/rpcd/ucode/disks.uc`, object `nas.disks` |
 | `acl.json`, `menu.json` | RPC ACL và menu LuCI |
-| `nas-disks.js` | View LuCI |
+| `nas-disks.js`, `nas-connect.js` | View quản lý ổ và hướng dẫn kết nối trong LuCI |
 | `nas-disks-manager` | Mount/unmount theo UUID, reconcile |
 | `nas-disks-job` | Xử lý mật khẩu và thao tác nền |
 | `nas-disks-scan` | Quét sysfs, block metadata và trạng thái mount |
@@ -56,5 +58,7 @@ python router/luci-disk-manager/compile_catalog.py
 ```
 
 Runtime đã được kiểm tra trực tiếp: cú pháp, API/ACL, xử lý mật khẩu sai, mở khóa thực, root-only key, reboot tự mở và SMB chỉ đọc. Installer là công cụ cài lại được bổ sung vào repo, được kiểm tra cú pháp; không chạy lại installer trên router đang hoạt động trong lần cập nhật Git này.
+
+Ngày 30/10 đã kiểm tra trang Hướng dẫn kết nối bằng Chrome qua IP Tailscale: menu, bản dịch tiếng Việt, Windows/Android, chọn LAN/Tailscale, chọn share chưa gắn/chỉ đọc, làm mới và nút sao chép. API `connection_info` chỉ đọc thông tin kết nối; không đọc hoặc trả về mật khẩu/khóa. Trạng thái gắn nhận diện các mount dữ liệu dưới `/mnt`, không chứng minh quyền tailnet hay kết nối SMB của máy khách. Chưa thử kết nối thực tế từ Android/4G.
 
 Hướng dẫn sử dụng: [truy cập từ xa bằng Windows/Android](../../docs/REMOTE-ACCESS.md). Kết quả triển khai: [báo cáo 29/10](../../reports/2026-10-29-disk-manager/README.md).

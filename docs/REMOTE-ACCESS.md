@@ -1,6 +1,8 @@
 # Truy cập NAS từ xa trên Windows và Android
 
-Hướng dẫn cập nhật ngày **29/10/2026**. Máy khách dùng Tailscale để đến router, sau đó dùng SMB để mở dữ liệu. Router và ổ NAS cần được bật; máy Windows ở nhà không cần chạy thường trực.
+Hướng dẫn cập nhật ngày **30/10/2026**. Máy khách dùng Tailscale để đến router, sau đó dùng SMB để mở dữ liệu. Router và ổ NAS cần được bật; máy Windows ở nhà không cần chạy thường trực.
+
+Hướng dẫn cũng có ngay trong LuCI tại **Các dịch vụ → Hướng dẫn kết nối**: [mở qua Tailscale](http://100.114.53.95/cgi-bin/luci/admin/services/nas-connect) hoặc [mở trong mạng nhà](http://192.168.1.1/cgi-bin/luci/admin/services/nas-connect). Trang lấy IP và danh sách share từ cấu hình router, cho chọn LAN/Tailscale, xem Windows/Android, sao chép đường dẫn và làm mới thông tin; đồng thời cảnh báo share chưa gắn hoặc chỉ đọc. Từ trang **Ổ đĩa** cũng có liên kết tới hướng dẫn.
 
 ## Địa chỉ và trạng thái hiện tại
 

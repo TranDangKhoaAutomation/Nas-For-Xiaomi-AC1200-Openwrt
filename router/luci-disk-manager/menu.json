@@ -3,5 +3,10 @@
     "title": "Disk Manager", "order": 46,
     "action": { "type": "view", "path": "nas-disks" },
     "depends": { "acl": ["luci-app-nas-disks"] }
+  },
+  "admin/services/nas-connect": {
+    "title": "Connection guide", "order": 90,
+    "action": { "type": "view", "path": "nas-connect" },
+    "depends": { "acl": ["luci-app-nas-disks"] }
   }
 }

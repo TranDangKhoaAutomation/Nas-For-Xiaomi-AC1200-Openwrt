@@ -1,5 +1,5 @@
 'use strict';
-import { access, readfile, open, mkdir, chmod, lstat, mkdtemp, unlink, rmdir, glob, basename } from 'fs';
+import { access, readfile, open, mkdir, chmod, lstat, mkdtemp, unlink, rmdir, glob, basename, popen } from 'fs';
 import { cursor } from 'uci';
 const STATE = '/tmp/nas-disks';
 const KEYS = '/etc/nas-disks/keys';
@@ -34,7 +34,7 @@ function status() {
         push(actual, name + ':' + trim(readfile(path + '/diskseq') || ''));
     }
     let previous = map(result.disks, function(d) { return d.name + ':' + (d.sequence || ''); });
-    if (join(sort(actual), '|') != join(sort(previous), '|') && !access(STATE + '/scan.lock')) scan();
+    if (join('|', sort(actual)) != join('|', sort(previous)) && !access(STATE + '/scan.lock')) scan();
     for (let line in split(readfile('/proc/mounts') || '', '\n')) {
         let f = split(line, ' ');
         if (length(f) >= 4) mounts[f[0]] = { path: replace(f[1], /\\040/g, ' '), mode: match(f[3], /(^|,)ro(,|$)/) ? 'ro' : 'rw' };
@@ -59,6 +59,39 @@ function status() {
     result.module_ready = access('/sys/module/dm_zero');
     result.supported = split(trim(readfile('/proc/filesystems') || ''), '\n');
     return result;
+}
+// Read only connection metadata. Never expose passwords, keys or tailnet identities.
+function connection_info() {
+    let cfg = cursor(), shares = [], mounts = [];
+    for (let line in split(readfile('/proc/mounts') || '', '\n')) {
+        let f = split(line, ' ');
+        if (length(f) < 4) continue;
+        let path = replace(f[1], /\\040/g, ' ');
+        if (index(path, '/mnt/') == 0)
+            push(mounts, { path, readonly: !!match(f[3], /(^|,)ro(,|$)/) });
+    }
+    cfg.foreach('ksmbd', 'share', function(s) {
+        if (!s.name || !s.path || s.enabled == '0') return;
+        let mounted = null;
+        for (let m in mounts)
+            if ((s.path == m.path || index(s.path, m.path + '/') == 0) &&
+                (!mounted || length(m.path) > length(mounted.path))) mounted = m;
+        push(shares, { name: s.name, path: s.path, users: s.users || '',
+            guest: s.guest_ok == 'yes' || s.guest_ok == '1',
+            mounted: !!mounted, readonly: s.read_only != 'no' && s.read_only != '0' || !!mounted?.readonly });
+    });
+    let lan = cfg.get('network', 'lan', 'ipaddr');
+    if (type(lan) == 'array') lan = lan[0];
+    lan = split(lan || '', '/')[0];
+    if (!match(lan, /^\d{1,3}(\.\d{1,3}){3}$/)) lan = '';
+    let tail = '';
+    if (access('/usr/sbin/tailscale') || access('/usr/bin/tailscale')) {
+        let pipe = popen('tailscale ip -4 2>/dev/null', 'r');
+        tail = pipe ? trim(pipe.read('all') || '') : '';
+        if (pipe) pipe.close();
+    }
+    if (!match(tail, /^\d{1,3}(\.\d{1,3}){3}$/)) tail = '';
+    return { lan_ip: lan, tailscale_ip: tail, shares };
 }
 function scan() {
     if (!init_state()) return { error: 'state_unavailable' };
@@ -126,7 +159,7 @@ function action(req) {
     return { accepted: true };
 }
 return { 'nas.disks': {
-    status: { call: status }, scan: { call: scan },
+    status: { call: status }, connection_info: { call: connection_info }, scan: { call: scan },
     configure: { args: { uuid: '', name: '', path: '', readonly: true, enabled: false }, call: configure },
     action: { args: { uuid: '', operation: '', password: '' }, call: action }
 } };
