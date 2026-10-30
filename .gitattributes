@@ -13,6 +13,7 @@ config/**/*.example text eol=lf
 *.ps1 text eol=crlf
 *.exe binary
 *.apk binary
+*.pdf binary
 *.zip binary
 *.bin binary
 *.jar binary

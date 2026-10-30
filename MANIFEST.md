@@ -5,13 +5,13 @@
 
 | File | Bytes | SHA-256 |
 |---|---:|---|
-| .gitattributes | 715 | 65e421b57ae4acb5306918b0fc9e5ff7ce8ce8538ea051cc41141b5b5888e9ee |
+| .gitattributes | 728 | 6f520d64400e6c0b970947e74704299d7944474d0e4a6fb0e8386a216cc86239 |
 | .github/workflows/build-dm-zero.yml | 2950 | 56eecb6724277cfb70725b63f6acc860865eb11b4cd0eb34ceaf6673b51ee5c6 |
 | .gitignore | 359 | b1a43259a59aa26859b5a6b33cff714b146b503bd84480031d7f4453d77bf284 |
 | CHANGELOG.md | 3022 | 14a879b7205de8c9050cc8fa4acce9d29d04b9f37be53ff57aba384a13d9fb65 |
 | MANIFEST.json | 24382 | 6d53b542806fa2ce0a897e2d3ef03ba72ad2724ec7a5bd95a1c4b0b61532db03 |
 | NOTICE.md | 927 | 5e2d675add1a8df7a1b7bd481d3d245fd508c2a5fe1aeb5f8355077fbb808c98 |
-| README.md | 5279 | 53c672b13e87c49d1f22d930fe8a356494b4a0491bb581714d5e74baaf39d3d8 |
+| README.md | 5482 | c8aea7401274ceaa596c9abf7ceb862a28c0f58d07dc1bd233a14758f7ccdb97 |
 | SECURITY.md | 869 | eb864497d40971e7297b06c414fe835eb1fbe1043b05b0782d1cdf99e59859e8 |
 | SHA256SUMS.txt | 15850 | 4f361ab56eec30fd2249bbad29c75dc982707e88708dc24c7cb6275512cd477e |
 | apps/android/.gitignore | 746 | 441eaa1de5b3db9fae056e7503567e9f8dd94173e1389c60f76956abf729015a |
@@ -123,13 +123,24 @@
 | reports/2026-10-11-clean-rebuild/screenshots/38-q-folder-file-write-verified-after-reboot.jpg | 68718 | c411f677486a4ab945461b84bd7e9abe54b7fd67042a1959a10b6243eb25b171 |
 | reports/2026-10-29-disk-manager/README.md | 3785 | c2def2cb477160fc3c5c5d0b75b432501697e99e617771ffa7f79b4edfa7e877 |
 | reports/2026-10-29-disk-manager/screenshots/disks-after-reboot.jpg | 97046 | b705150ac35b43a9e6bc2cff650febfc946733bd04ee14c54d56aa2e1e7d2e76 |
-| reports/2026-10-30-android-integrated/README.md | 4078 | 75352d5ffd5ec7c9aae1c818676dab2ae59a315e3e87eba2e7505f5de8c7fb3d |
+| reports/2026-10-30-android-integrated/README.md | 4367 | a341ed1a4e58deeb27ada944f55c3d9d8293af5b049e0fc5fd611315da95bfa8 |
 | reports/2026-10-30-android-integrated/screenshots/disks.png | 41028 | 55eae3dd352f9602638d9d92981937ad9ebed60da016890fb87826becfbe3a24 |
 | reports/2026-10-30-android-integrated/screenshots/files.png | 32359 | 77d0ca182b51629aca602b93074d0ceecf83db4a91a5eb68895e99050e7b366f |
 | reports/2026-10-30-android-integrated/screenshots/tailscale-browser-handoff.png | 44090 | 439f3576005df3036f687d82e029f6c21ef1aea12a2261bd4cfd870f3d488bb1 |
 | reports/2026-10-30-connection-guide/README.md | 2507 | aec9450fd76a2f3a07e20e46c9f55b04de82d98121026ea6bd1bb81a515eb3aa |
 | reports/2026-10-30-connection-guide/screenshots/connection-guide.jpg | 89902 | a17321b67e4a0ca5ff3071beb9bb12adcca7655350a5bdaa52e906b069e63b77 |
 | reports/2026-10-30-connection-guide/screenshots/smb-password-form.jpg | 62775 | ff29de2271284916d12ab2ca276946fd8655f87440932cb4e552c8e721ee376a |
+| reports/2026-10-30-final-verification/Bao-cao-kiem-thu-va-huong-dan-KhoaNAS.pdf | 515285 | 2ad18a21a9d5e70f56026e74384a88f40bd88f7f387b1563a500b3970b127566 |
+| reports/2026-10-30-final-verification/README.md | 14017 | ca74d2587c35f6349ae30d21091a4e4a2227af10f213248845929ed4cbb13b14 |
+| reports/2026-10-30-final-verification/evidence.json | 3797 | 4e39f9b665e12c4a69d99906aa863d3c5d2bbbc190d46f80dd3531d0c5cba6ee |
+| reports/2026-10-30-final-verification/images/android-connect-current.png | 41254 | 4e8c22b57500deb0c823be57e47fe7c3558f131f20486474b60f242add24734d |
+| reports/2026-10-30-final-verification/images/android-disks-earlier.png | 41028 | 55eae3dd352f9602638d9d92981937ad9ebed60da016890fb87826becfbe3a24 |
+| reports/2026-10-30-final-verification/images/android-files-earlier.png | 32359 | 77d0ca182b51629aca602b93074d0ceecf83db4a91a5eb68895e99050e7b366f |
+| reports/2026-10-30-final-verification/images/android-validation-current.png | 41866 | b78d24f0fb83ccc8ec3608265a4baa82a3767321604c8d6aac434b713f5da4c2 |
+| reports/2026-10-30-final-verification/images/architecture.svg | 1341 | f2ae501d8be8a75c56da16b01cb1b5ed165faad8b54c4098a3102543597eabde |
+| reports/2026-10-30-final-verification/images/router-guide-earlier.jpg | 89902 | a17321b67e4a0ca5ff3071beb9bb12adcca7655350a5bdaa52e906b069e63b77 |
+| reports/2026-10-30-final-verification/images/smb-password-earlier.jpg | 62775 | ff29de2271284916d12ab2ca276946fd8655f87440932cb4e552c8e721ee376a |
+| reports/2026-10-30-final-verification/images/windows-qt-earlier.png | 21162 | 90cc4df940aa5bbe3d21cdf795bb42239a6de16bfe405f17070d8492141310d3 |
 | reports/2026-10-30-qt6-readwrite/README.md | 2156 | 941696247edd8d34efb9a8d6e82ca5e64c25be69b5aee00e7087f071ce72eba1 |
 | reports/2026-10-30-qt6-readwrite/screenshots/qt6-setup.png | 21162 | 90cc4df940aa5bbe3d21cdf795bb42239a6de16bfe405f17070d8492141310d3 |
 | reports/Bao-Cao-Hoan-Tat-Router-NAS.md | 22421 | a772cd3101696e6926ea84e939f94e1dbaf2d1620edd814432a00d33f404593e |

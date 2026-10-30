@@ -1,0 +1,121 @@
+{
+  "tested_at": "2026-10-30T13:06:02.648317+07:00",
+  "source_commit": "45e0abba93292c47e3eb39a31e21dfc6df0cd8df",
+  "disks": [
+    {
+      "model": "Generic External",
+      "size": 1000204885504,
+      "io_warning": true,
+      "partitions": [
+        {
+          "name": "/dev/sda1",
+          "size": 16759808,
+          "fstype": "",
+          "mount": null,
+          "key_saved": false,
+          "auto": false
+        },
+        {
+          "name": "DangKhoa",
+          "size": 892811083776,
+          "fstype": "ntfs",
+          "mount": {
+            "path": "/mnt/dangkhoa",
+            "mode": "rw"
+          },
+          "key_saved": false,
+          "auto": true
+        },
+        {
+          "name": "Data-DangKhoa",
+          "size": 107375230976,
+          "fstype": "BitLocker",
+          "mount": {
+            "path": "/mnt/bitlocker",
+            "mode": "rw"
+          },
+          "key_saved": true,
+          "auto": true
+        }
+      ]
+    }
+  ],
+  "connection": {
+    "lan_ip": "192.168.1.1",
+    "tailscale_ip": "100.114.53.95",
+    "shares": [
+      {
+        "name": "DANGKHOA",
+        "path": "/mnt/dangkhoa",
+        "users": "nas",
+        "guest": false,
+        "mounted": true,
+        "readonly": false
+      },
+      {
+        "name": "BITLOCKER",
+        "path": "/mnt/bitlocker",
+        "users": "nas",
+        "guest": false,
+        "mounted": true,
+        "readonly": false
+      }
+    ]
+  },
+  "key_permissions": [
+    "-rw-------"
+  ],
+  "services": "nas-disks-enabled\nrunning\nrunning\n 13:06:05 up 15:32,  load average: 0.22, 0.20, 0.17",
+  "smb_roundtrip": [
+    {
+      "host": "192.168.1.1",
+      "share": "DANGKHOA",
+      "bytes": 524325,
+      "sha256": "6d62c437d022b89470e1fb912da8d462b8ff6275a24af5548108c5b0a5591d26",
+      "result": "PASS",
+      "cleanup": "PASS"
+    },
+    {
+      "host": "192.168.1.1",
+      "share": "BITLOCKER",
+      "bytes": 524325,
+      "sha256": "4b3c385dc9c854bd26f0ffee64a1cafcb4d50dfd8a574dd3ca4907fba79358e6",
+      "result": "PASS",
+      "cleanup": "PASS"
+    },
+    {
+      "host": "100.114.53.95",
+      "share": "DANGKHOA",
+      "bytes": 524325,
+      "sha256": "0dbd0b9ea8f791a5c949e37b96622e9eaf5476270546f9561e517ea7d590f556",
+      "result": "PASS",
+      "cleanup": "PASS"
+    },
+    {
+      "host": "100.114.53.95",
+      "share": "BITLOCKER",
+      "bytes": 524325,
+      "sha256": "0a90c43c68e412f2c6d68d6be9fe7cf592805d22265fdcba5cded8ffde7427b9",
+      "result": "PASS",
+      "cleanup": "PASS"
+    }
+  ],
+  "apk": [
+    {
+      "file": "KhoaNAS-v2.0.0-arm64-v8a.apk",
+      "bytes": 40427235,
+      "sha256": "7b651f800d882f6261c4f82ba51ca38892b83d6c3cca7250df3be1a58ae8ddf7"
+    },
+    {
+      "file": "KhoaNAS-v2.0.0-x86_64.apk",
+      "bytes": 43551799,
+      "sha256": "7d15d15fd9149c7021c97d8735ed02b6f3b93dcbcfaed6ff0d89a17fa1c34dcb"
+    }
+  ],
+  "windows_exe_sha256": "66a9108c0aea55fc1ed3f4e32bb9d8ad7bcf20e4f8cbd979d878c47619a2d769",
+  "downloads": {
+    "KhoaNAS-v2.0.0-arm64-v8a.apk": 200,
+    "KhoaNAS-v2.0.0-x86_64.apk": 200
+  },
+  "i_o_messages_end": "[36156.189638] I/O error, dev sda, sector 34 op 0x0:(READ) flags 0x80700 phys_seg 4 prio class 2\n[36994.613112] I/O error, dev sda, sector 34 op 0x0:(READ) flags 0x80700 phys_seg 4 prio class 2\n[37183.126736] Buffer I/O error on dev dm-0, logical block 26214640, async page read\n[37183.135686] Buffer I/O error on dev dm-0, logical block 26214640, async page read\n[37194.027469] Buffer I/O error on dev dm-0, logical block 26214640, async page read\n[37194.340607] Buffer I/O error on dev dm-0, logical block 26214640, async page read\n[37254.043214] Buffer I/O error on dev dm-0, logical block 26214640, async page read\n[37254.400539] Buffer I/O error on dev dm-0, logical block 26214640, async page read"
+}

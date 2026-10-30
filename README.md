@@ -6,6 +6,7 @@ Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 
 - **[Truy cập NAS từ xa trên Windows và Android](docs/REMOTE-ACCESS.md)**: cài/kết nối Tailscale, map ổ vào This PC, thêm SMB trên Android và xử lý lỗi kết nối.
 - **[Khoa NAS 2 cho Android](software/android/README.md)**: quản lý tệp và ổ đĩa, tích hợp Tailscale ngay trong app.
+- **[Báo cáo kiểm thử cuối và hướng dẫn có hình](reports/2026-10-30-final-verification/README.md)**: PDF 11 trang, ảnh thực tế, ma trận kết quả và phạm vi chưa xác minh.
 - **[Hướng dẫn quản lý ổ đĩa trong LuCI](router/luci-disk-manager/README.md)**: quét ổ, tùy chỉnh mount, mở khóa/tự mở và cài lại giao diện.
 - [Trạng thái đã kiểm chứng](docs/CURRENT-STATE.md) và [báo cáo triển khai 29/10](reports/2026-10-29-disk-manager/README.md).
 

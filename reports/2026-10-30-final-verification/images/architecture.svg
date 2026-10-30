@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330">
+<rect width="1000" height="330" fill="#f4f8fa"/>
+<g font-family="Arial, sans-serif" fill="#173248">
+<text x="30" y="38" font-size="24" font-weight="bold">Sơ đồ minh họa đường kết nối NAS</text>
+<rect x="30" y="75" width="340" height="75" rx="12" fill="#dceff0"/>
+<text x="50" y="107" font-size="20">Windows + Tailscale</text><text x="50" y="133" font-size="16">File Explorer / SMB</text>
+<rect x="30" y="195" width="340" height="75" rx="12" fill="#dceff0"/>
+<text x="50" y="227" font-size="20">Khoa NAS trên Android</text><text x="50" y="253" font-size="16">Tailscale trong app / TCP netstack</text>
+<path d="M380 112L600 165M380 232L600 165" stroke="#087e83" stroke-width="4" fill="none"/>
+<rect x="610" y="95" width="360" height="145" rx="12" fill="#dceff0"/>
+<text x="635" y="128" font-size="22" font-weight="bold">Router OpenWrt</text>
+<text x="635" y="160" font-size="18">SMB + quản lý phân vùng theo UUID</text>
+<text x="635" y="190" font-size="18">USB 1 TB: NTFS + BitLocker</text>
+<text x="635" y="220" font-size="16">LAN hoặc mạng Tailscale được cấp quyền</text>
+<text x="30" y="310" font-size="16">Minh họa kiến trúc; không phải ảnh chụp hay bằng chứng kiểm thử từ xa.</text>
+</g></svg>

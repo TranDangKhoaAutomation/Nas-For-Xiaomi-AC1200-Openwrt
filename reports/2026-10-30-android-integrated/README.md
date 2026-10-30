@@ -1,5 +1,9 @@
 # Khoa NAS 2 — kiểm thử Android ngày 30/10/2026
 
+Xem [kiểm tra cuối cùng và báo cáo PDF](../2026-10-30-final-verification/README.md).
+Lần kiểm tra cuối đã dọn bổ sung bản ghi tài khoản thử trong passwd/group vì router thiếu
+`userdel`; kết quả dọn ghi ở báo cáo cũ chưa bao quát bản ghi này.
+
 Ứng dụng đã build và chạy trong LDPlayer 9.5.32, máy ảo riêng `KhoaNAS-Test`, Android 9,
 x86_64, 540×960/DPI 240, 2 CPU/2 GB RAM, không bật root. Không cài ứng dụng Tailscale riêng.
 
