@@ -72,7 +72,9 @@ return view.extend({
                 });
                 function row(label,input) { return E('div', {'style':'margin:16px 0'}, [E('label', {'style':'display:block;margin-bottom:8px'}, [label]),input]); }
                 ui.showModal(_('Change SMB password'), [
-                    row(_('SMB account'),user), row(_('New SMB password'),secret), row(_('Confirm password'),confirm),
+                    row(_('SMB account'), E('div', {'style':'display:flex;flex-wrap:wrap;gap:12px;align-items:center'}, [
+                        user, E('a', {'href':L.url('admin','services','ksmbd'),'target':'_blank','rel':'noopener noreferrer'}, [_('Configure SMB accounts')])
+                    ])), row(_('New SMB password'),secret), row(_('Confirm password'),confirm),
                     E('p', {}, [_('NAS sharing will reconnect. Devices using this account need the new password.')]), message,
                     E('div', {'style':'display:flex;gap:12px;justify-content:flex-end;margin-top:18px'}, [cancel,save])
                 ]);

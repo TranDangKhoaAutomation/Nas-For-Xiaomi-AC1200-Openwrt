@@ -8,6 +8,8 @@ Nút **Mở thư mục NAS** trên Windows dùng [tiện ích mở File Explorer
 
 Liên kết **Đổi mật khẩu SMB** ngay dưới tài khoản mở form nhập/xác nhận mật khẩu cho user SMB hiện có. RPC `nas.smb.password` cần quyền ghi của nhóm quản trị NAS, kiểm tra user trong cấu hình share và cập nhật qua stdin của `ksmbd.adduser -u`; không truyền mật khẩu qua URL, argv hay lưu tệp mật khẩu tạm. Kiểm tra tích hợp dùng cơ sở dữ liệu thử riêng, không đổi mật khẩu thật khi triển khai.
 
+Trong form, liên kết **Thiết lập tài khoản SMB** cạnh ô chọn tài khoản mở **Các dịch vụ → Chia sẻ mạng** ở tab mới, nơi cấu hình người dùng được phép cho từng thư mục. Liên kết chỉ điều hướng, không tạo tài khoản hoặc thay đổi quyền truy cập.
+
 ## Chức năng
 
 - Xem dung lượng, filesystem, trạng thái gắn/mở khóa, dung lượng trống và share SMB hiện có.

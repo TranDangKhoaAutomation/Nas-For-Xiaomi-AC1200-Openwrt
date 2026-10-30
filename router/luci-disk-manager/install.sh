@@ -20,6 +20,7 @@ backup="/root/nas-disks-install-$(date +%Y%m%d-%H%M%S)"
 mkdir "$backup"
 for file in /etc/config/nas_disks /etc/config/fstab /etc/crontabs/root \
     /usr/share/ucode/luci/template/themes/material/header.ut \
+    /usr/share/ucode/luci/template/header.ut \
     /usr/sbin/nas-disks-manager /usr/sbin/nas-disks-job /usr/sbin/nas-disks-scan \
     /etc/init.d/nas-disks /etc/hotplug.d/block/96-nas-disks \
     /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/ucode/nas-smb.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \

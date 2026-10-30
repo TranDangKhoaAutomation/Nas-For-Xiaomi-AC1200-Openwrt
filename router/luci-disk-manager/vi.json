@@ -127,6 +127,7 @@
   "Share name": "Tên thư mục chia sẻ",
   "Android permits one active VPN at a time. Another VPN may disconnect Tailscale.": "Android chỉ cho một VPN hoạt động tại một thời điểm. Bật VPN khác có thể ngắt Tailscale.",
   "SMB account": "Tài khoản SMB",
+  "Configure SMB accounts": "Thiết lập tài khoản SMB",
   "Use the SMB password for this account. It is separate from the router administrator password, the BitLocker password and the Tailscale account. This page never displays passwords.": "Dùng mật khẩu SMB của tài khoản này. Mật khẩu đó độc lập với mật khẩu quản trị router, mật khẩu BitLocker và tài khoản Tailscale. Trang này không hiển thị mật khẩu.",
   "2. Connect your device": "2. Kết nối thiết bị của bạn",
   "3. If the connection fails": "3. Khi không kết nối được",
