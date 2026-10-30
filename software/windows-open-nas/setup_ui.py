@@ -29,41 +29,40 @@ def run_setup(install, install_dir, valid_host, asset):
     window = QDialog()
     window.setWindowTitle('Khoa NAS · Thiết lập mở nhanh')
     window.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
-    window.resize(580, 390)
-    window.setMinimumSize(540, 370)
+    window.setFixedWidth(500)
     window.setStyleSheet('''
         QDialog { background: #f5f8fa; color: #163a46; }
         QLabel { background: transparent; color: #163a46; }
         QLabel#brand { color: #07898d; font-size: 12px; font-weight: 600; letter-spacing: 1px; }
-        QLabel#title { font-size: 27px; font-weight: 600; }
+        QLabel#title { font-size: 24px; font-weight: 600; }
         QLabel#subtitle, QLabel#hint, QLabel#footer { color: #647982; }
         QLabel#subtitle { font-size: 14px; }
-        QLabel#cardTitle { font-size: 17px; font-weight: 600; }
+        QLabel#cardTitle { font-size: 15px; font-weight: 600; }
         QFrame#card { background: white; border: 1px solid #dbe5e9; border-radius: 12px; }
         QLineEdit { background: #ffffff; color: #163a46; border: 1px solid #b9ced5;
-            border-radius: 7px; padding: 12px; font-size: 15px; selection-background-color: #c9edec; }
-        QLineEdit:focus { border: 2px solid #07898d; padding: 11px; }
+            border-radius: 7px; padding: 9px; font-size: 14px; selection-background-color: #c9edec; }
+        QLineEdit:focus { border: 2px solid #07898d; padding: 8px; }
         QLineEdit:read-only { background: #f5f8fa; }
-        QLabel#notice { background: #e7f3f1; color: #256f64; border-radius: 8px; padding: 14px; }
+        QLabel#notice { background: #e7f3f1; color: #256f64; border-radius: 8px; padding: 10px; }
         QLabel#notice[error="true"] { background: #fff0ed; color: #9c3829; }
         QPushButton { background: #ffffff; color: #385965; border: 1px solid #cfdee3;
-            border-radius: 7px; padding: 11px 22px; font-size: 14px; }
+            border-radius: 7px; padding: 9px 18px; font-size: 14px; }
         QPushButton:hover { background: #edf4f6; border-color: #9ebfc9; }
-        QPushButton:focus { border: 2px solid #07898d; padding: 10px 21px; }
+        QPushButton:focus { border: 2px solid #07898d; padding: 8px 17px; }
         QPushButton#primary { background: #07898d; color: white; border-color: #07898d; font-weight: 600; }
         QPushButton#primary:hover { background: #08777b; }
         QPushButton:disabled { color: #90a3ab; background: #eff3f5; border-color: #e1e9ed; }
     ''')
     layout = QVBoxLayout(window)
-    layout.setContentsMargins(30, 28, 30, 24)
-    layout.setSpacing(20)
+    layout.setContentsMargins(20, 18, 20, 18)
+    layout.setSpacing(14)
 
     header = QHBoxLayout()
-    header.setSpacing(18)
+    header.setSpacing(12)
     logo = QLabel()
     logo.setPixmap(QPixmap(str(asset('github-avatar.png'))).scaled(
-        78, 78, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-    logo.setFixedSize(80, 80)
+        56, 56, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+    logo.setFixedSize(58, 58)
     logo.setAccessibleName('Logo Trần Đăng Khoa Automation')
     header.addWidget(logo)
     heading = QVBoxLayout()
@@ -80,8 +79,8 @@ def run_setup(install, install_dir, valid_host, asset):
     card = QFrame()
     card.setObjectName('card')
     fields = QVBoxLayout(card)
-    fields.setContentsMargins(22, 20, 22, 20)
-    fields.setSpacing(12)
+    fields.setContentsMargins(16, 14, 16, 14)
+    fields.setSpacing(8)
     card_title = QLabel('Địa chỉ router')
     card_title.setObjectName('cardTitle')
     fields.addWidget(card_title)
@@ -89,7 +88,7 @@ def run_setup(install, install_dir, valid_host, asset):
     address.setAccessibleName('Địa chỉ IP router được phép')
     address.setPlaceholderText('IP LAN hoặc Tailscale của router')
     address.setClearButtonEnabled(True)
-    address.setMinimumHeight(48)
+    address.setMinimumHeight(40)
     try:
         saved = json.loads((install_dir() / 'allowed-hosts.json').read_text(encoding='utf-8'))
         address.setText(', '.join(valid_host(host) for host in saved))
@@ -108,10 +107,9 @@ def run_setup(install, install_dir, valid_host, asset):
     notice.setAccessibleName('Trạng thái thiết lập')
     layout.addWidget(notice)
     notice.hide()
-    layout.addStretch(1)
 
     buttons = QHBoxLayout()
-    buttons.setSpacing(12)
+    buttons.setSpacing(10)
     help_button = QPushButton('Trợ giúp')
     help_button.setFlat(True)
     help_button.clicked.connect(lambda: QMessageBox.information(window, 'Kết nối NAS',
@@ -159,4 +157,5 @@ def run_setup(install, install_dir, valid_host, asset):
 
     primary.clicked.connect(submit)
     address.setFocus()
+    window.adjustSize()
     window.exec()

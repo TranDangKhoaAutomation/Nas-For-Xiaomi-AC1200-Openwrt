@@ -12,6 +12,7 @@ done
 [ ! -d /tmp/nas-disks/action.lock ] || { echo 'Wait for the current disk operation to finish.' >&2; exit 1; }
 for file in nas-disks-manager nas-disks-job nas-disks.init 96-nas-disks; do sh -n "$DIR/$file"; done
 ucode -c -o /tmp/nas-disks-check.ucb "$DIR/disks.uc"
+ucode -c -o /tmp/nas-smb-check.ucb "$DIR/nas-smb.uc"
 ucode -c -o /tmp/nas-disks-scan-check.ucb "$DIR/nas-disks-scan"
 ucode -c -o /tmp/nas-disks-theme-check.ucb "$DIR/patch-material.uc"
 
@@ -21,7 +22,7 @@ for file in /etc/config/nas_disks /etc/config/fstab /etc/crontabs/root \
     /usr/share/ucode/luci/template/themes/material/header.ut \
     /usr/sbin/nas-disks-manager /usr/sbin/nas-disks-job /usr/sbin/nas-disks-scan \
     /etc/init.d/nas-disks /etc/hotplug.d/block/96-nas-disks \
-    /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
+    /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/ucode/nas-smb.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
     /usr/share/luci/menu.d/luci-app-nas-disks.json /www/luci-static/resources/view/nas-disks.js \
     /www/luci-static/resources/view/nas-connect.js \
     /www/luci-static/material/menu-layout-fix.css \
@@ -47,13 +48,14 @@ cp "$DIR/96-nas-disks" /etc/hotplug.d/block/96-nas-disks
 chmod 755 /etc/init.d/nas-disks
 chmod 700 /etc/hotplug.d/block/96-nas-disks
 cp "$DIR/disks.uc" /usr/share/rpcd/ucode/disks.uc
+cp "$DIR/nas-smb.uc" /usr/share/rpcd/ucode/nas-smb.uc
 cp "$DIR/acl.json" /usr/share/rpcd/acl.d/luci-app-nas-disks.json
 cp "$DIR/menu.json" /usr/share/luci/menu.d/luci-app-nas-disks.json
 cp "$DIR/nas-disks.js" /www/luci-static/resources/view/nas-disks.js
 cp "$DIR/nas-connect.js" /www/luci-static/resources/view/nas-connect.js
 cp "$DIR/nas-disks.vi.lmo" /usr/lib/lua/luci/i18n/nas-disks.vi.lmo
 cp "$DIR/nas-disks.en.lmo" /usr/lib/lua/luci/i18n/nas-disks.en.lmo
-chmod 644 /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
+chmod 644 /usr/share/rpcd/ucode/disks.uc /usr/share/rpcd/ucode/nas-smb.uc /usr/share/rpcd/acl.d/luci-app-nas-disks.json \
     /usr/share/luci/menu.d/luci-app-nas-disks.json /www/luci-static/resources/view/nas-disks.js \
     /www/luci-static/resources/view/nas-connect.js \
     /usr/lib/lua/luci/i18n/nas-disks.vi.lmo /usr/lib/lua/luci/i18n/nas-disks.en.lmo

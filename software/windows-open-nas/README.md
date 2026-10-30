@@ -4,6 +4,8 @@ Nút **Mở thư mục NAS** trong **Các dịch vụ → Hướng dẫn kết n
 
 Giao diện thiết lập dùng **Qt 6 / PySide6**: chỉ giữ logo, ô IP và nút Lưu kết nối; hướng dẫn nằm trong Trợ giúp, thông báo chỉ hiện khi lỗi hoặc hoàn tất. Logo trong cửa sổ, thanh tiêu đề và EXE lấy từ ảnh đại diện GitHub của chủ repo, đóng gói sẵn để app không cần tải ảnh khi chạy.
 
+Cửa sổ rộng 500 px và tự tính chiều cao theo nội dung; bỏ khoảng trống kéo giãn giữa ô IP và hàng nút. Thông báo xuất hiện sẽ tự điều chỉnh kích thước cửa sổ.
+
 ## Cài một lần trên mỗi máy Windows
 
 1. Tải [KhoaNAS-Open.exe](../../releases/windows-open-nas/KhoaNAS-Open.exe).

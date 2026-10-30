@@ -6,6 +6,8 @@ Mã đang triển khai trên OpenWrt 25.12.6, cập nhật ngày 30/10/2026. Tra
 
 Nút **Mở thư mục NAS** trên Windows dùng [tiện ích mở File Explorer](../../software/windows-open-nas/README.md); cài một lần cho từng máy. Trên Android dùng liên kết `smb://`, cần ứng dụng quản lý tệp tương thích. Nút lấy IP/share đang chọn và không đổi quyền đọc/ghi của ổ.
 
+Liên kết **Đổi mật khẩu SMB** ngay dưới tài khoản mở form nhập/xác nhận mật khẩu cho user SMB hiện có. RPC `nas.smb.password` cần quyền ghi của nhóm quản trị NAS, kiểm tra user trong cấu hình share và cập nhật qua stdin của `ksmbd.adduser -u`; không truyền mật khẩu qua URL, argv hay lưu tệp mật khẩu tạm. Kiểm tra tích hợp dùng cơ sở dữ liệu thử riêng, không đổi mật khẩu thật khi triển khai.
+
 ## Chức năng
 
 - Xem dung lượng, filesystem, trạng thái gắn/mở khóa, dung lượng trống và share SMB hiện có.

@@ -20,3 +20,7 @@ Trang có hướng dẫn Windows (mở File Explorer, map ổ vào This PC) và 
 Trạng thái mount trên trang chỉ nhận diện mount dữ liệu dưới `/mnt`; chưa kiểm tra kết nối Android hoặc 4G/5G thực tế. Không reboot, đổi firewall hay thao tác gắn/tháo ổ trong cập nhật giao diện này.
 
 Mã: [luci-disk-manager](../../router/luci-disk-manager/README.md). Hướng dẫn đầy đủ: [truy cập từ xa](../../docs/REMOTE-ACCESS.md).
+
+Bổ sung liên kết **Đổi mật khẩu SMB** trong đoạn hướng dẫn tài khoản. Đã kiểm tra form tiếng Việt, hủy không đổi mật khẩu, RPC cập nhật bằng stdin trong database thử riêng và từ chối user/mật khẩu không hợp lệ. Mật khẩu SMB thật chưa bị thay đổi khi triển khai.
+
+![Form đổi mật khẩu SMB](screenshots/smb-password-form.jpg)

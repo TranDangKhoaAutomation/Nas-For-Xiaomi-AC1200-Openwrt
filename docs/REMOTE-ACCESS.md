@@ -123,6 +123,8 @@ Mỗi phân vùng có cấu hình riêng theo UUID. Khi thay ổ, quét lại v�
 
 Các loại mật khẩu này độc lập. Khóa BitLocker lưu trên router chỉ root được đọc; người chiếm được quyền root hoặc flash/backup chứa khóa có thể lấy mật khẩu. Giữ recovery key riêng.
 
+Đổi mật khẩu SMB ngay trong **Các dịch vụ → Hướng dẫn kết nối**: bấm liên kết **Đổi mật khẩu SMB** ở đoạn dưới tài khoản, chọn user, nhập mật khẩu mới hai lần rồi lưu. Cần phiên LuCI có quyền quản trị NAS. Chỉ đổi mật khẩu tài khoản SMB đã có trong cấu hình share; không đổi mật khẩu root hoặc BitLocker. Sau khi đổi, kết nối lại thiết bị bằng mật khẩu mới.
+
 ## 5. Khi không truy cập được
 
 | Hiện tượng | Kiểm tra/xử lý |

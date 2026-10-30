@@ -139,5 +139,13 @@
   "Open NAS folder": "Mở thư mục NAS",
   "On Windows, install the NAS opener once and allow this router’s IP addresses. Your browser may ask before opening File Explorer.": "Trên Windows, cài tiện ích mở NAS một lần và nhập các IP router được phép. Trình duyệt có thể hỏi xác nhận trước khi mở File Explorer.",
   "Download Windows NAS opener": "Tải tiện ích mở NAS cho Windows",
-  "Requires an Android file manager that handles smb:// links. If no app opens, add the SMB connection manually using the details below.": "Cần ứng dụng quản lý tệp Android nhận liên kết smb://. Nếu không mở được ứng dụng, hãy thêm kết nối SMB theo thông tin bên dưới."
+  "Requires an Android file manager that handles smb:// links. If no app opens, add the SMB connection manually using the details below.": "Cần ứng dụng quản lý tệp Android nhận liên kết smb://. Nếu không mở được ứng dụng, hãy thêm kết nối SMB theo thông tin bên dưới.",
+  "Change SMB password": "Đổi mật khẩu SMB",
+  "New SMB password": "Mật khẩu SMB mới",
+  "Confirm password": "Nhập lại mật khẩu",
+  "Passwords do not match.": "Hai mật khẩu chưa khớp.",
+  "Use 8 to 128 UTF-8 bytes without line breaks.": "Dùng mật khẩu từ 8 đến 128 byte UTF-8, không chứa ký tự xuống dòng.",
+  "The SMB password could not be changed. Check that this account already exists.": "Chưa đổi được mật khẩu SMB. Hãy kiểm tra tài khoản này đã tồn tại.",
+  "SMB password changed. Reconnect your devices using the new password.": "Đã đổi mật khẩu SMB. Hãy kết nối lại các thiết bị bằng mật khẩu mới.",
+  "NAS sharing will reconnect. Devices using this account need the new password.": "Chia sẻ NAS sẽ kết nối lại. Thiết bị dùng tài khoản này cần nhập mật khẩu mới."
 }
