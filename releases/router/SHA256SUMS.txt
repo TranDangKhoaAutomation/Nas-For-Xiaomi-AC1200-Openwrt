@@ -1,0 +1,2 @@
+d19780444209a624c6b421cea387a5ae9943af1ed71f8f069715463bbe6fe4ac  KhoaNAS-Router.tar.gz
+717bf3cf4e5739dd7be4b230d38e5135ceb2cf133f12bf7836fa7f14a5c950b4  Cai-NAS.cmd

@@ -1,0 +1,30 @@
+KHOA NAS - BỘ CÀI SẴN
+
+1. Giải nén toàn bộ ZIP ra một thư mục trên Windows.
+2. Router: chạy Cai-NAS.cmd, nhập IP router, xác nhận SSH đúng thiết bị
+   và nhập mật khẩu quản trị khi được hỏi. Không cần sửa mã/cấu hình mẫu.
+3. Android: chép KhoaNAS-Android.apk vào điện thoại và mở để cài/cập nhật.
+   Đăng nhập Tailscale trong app, chọn router từ danh sách rồi nhập tài khoản SMB.
+   Tab Sao lưu: chọn thư mục ảnh/video, nơi lưu và lịch; mặc định tắt.
+   Ảnh/video mở trực tiếp trong Tệp; ảnh có nút cắt/xoay và lưu bản sao.
+4. Windows: chạy KhoaNAS-Open.exe một lần, nhập IP router được phép.
+
+Bộ cài router dành cho OpenWrt 25.12.6 / ramips/mt7621 / kernel 6.12.112.
+Không dùng làm tệp nâng cấp firmware và không flash ZIP/APK này qua Sysupgrade.
+Nếu sai firmware/kernel, bộ cài dừng. Không bỏ qua kiểm tra hoặc ép nạp module.
+Ưu tiên cài router từ LAN. Lần kiểm thử nâng cấp từ xa trước đó bị mất quản trị;
+mã đã sửa guard Tailscale nhưng chưa kiểm chứng lại đầy đủ trên router thật.
+Xem reports/2026-10-30-android-2.3/README.md trong repo để biết phạm vi kiểm thử.
+
+Cài lại trên router hiện tại: giữ cấu hình ổ theo UUID, tài khoản SMB,
+mật khẩu/khóa, mạng và Tailscale hiện có; không format hoặc gỡ BitLocker.
+Cài máy mới/reset: mở Các dịch vụ -> NAS. Chọn phân vùng trong Ổ đĩa,
+thêm thư mục tại Chia sẻ, sau đó thêm tài khoản SMB và chọn thư mục được phép.
+Nhập mật khẩu BitLocker nếu cần tự mở. Đăng nhập Tailscale của bạn.
+Đây là các thông tin riêng, không được đóng gói vào Git/bộ cài công khai.
+
+Chọn thiết bị Tailscale chỉ lấy các thiết bị được app nhìn thấy trong tailnet.
+Bạn cần chọn đúng router/NAS; việc thiết bị xuất hiện không tự cấp quyền SMB.
+
+Nguồn và cập nhật:
+https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt

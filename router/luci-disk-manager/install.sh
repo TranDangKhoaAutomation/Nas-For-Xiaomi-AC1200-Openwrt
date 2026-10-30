@@ -86,4 +86,4 @@ mv -f /etc/crontabs/root.nas-disks-new /etc/crontabs/root
 /etc/init.d/rpcd reload
 for cache in /tmp/luci-indexcache.*.json; do [ ! -f "$cache" ] || rm -f "$cache"; done
 /usr/sbin/nas-disks-scan >/dev/null 2>&1 &
-printf 'Installed. Backup: %s\nLog in to LuCI again, then open System -> Disk Manager.\n' "$backup"
+printf 'Installed. Backup: %s\nLog in to LuCI again, then open Services -> NAS.\n' "$backup"

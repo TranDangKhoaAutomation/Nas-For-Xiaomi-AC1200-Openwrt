@@ -1,10 +1,14 @@
 # Bắt đầu nhanh — cấu hình hiện tại
 
+## Cài bộ mới
+
+Tải [bộ cài sẵn và làm theo hướng dẫn](INSTALL.md). Không cần sửa mã; thông tin đăng nhập riêng được nhập trên thiết bị. Trạng thái dịch vụ hiện tại: [CURRENT-STATE](CURRENT-STATE.md).
+
 ## Dùng NAS từ xa
 
-1. Cài Tailscale trên Windows/Android, đăng nhập đúng tailnet và bật kết nối.
+1. Windows: cài Tailscale và đăng nhập đúng tailnet. Android: dùng Khoa NAS 2.3 có Tailscale tích hợp, không cần app VPN riêng.
 2. Mở share `\\100.114.53.95\BITLOCKER` bằng user `nas` và mật khẩu SMB. Windows có thể map thành ổ trong This PC; Android thêm kết nối SMB trong ứng dụng quản lý tệp.
-3. Muốn quản lý/mở khóa, vào [LuCI → Hệ thống → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/system/disks).
+3. Muốn quản lý/mở khóa, vào [LuCI → Các dịch vụ → NAS → Ổ đĩa](http://100.114.53.95/cgi-bin/luci/admin/services/nas/disks).
 
 **[Hướng dẫn chi tiết Windows và Android](REMOTE-ACCESS.md)** có bảng thông số, cách map ổ, phân biệt các loại mật khẩu và xử lý lỗi.
 

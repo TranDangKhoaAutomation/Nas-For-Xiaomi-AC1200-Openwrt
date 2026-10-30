@@ -2,12 +2,16 @@
 
 Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang **NAS → Ổ đĩa** để nhận ổ/phân vùng đang cắm, chỉnh thiết lập theo UUID và nhập mật khẩu BitLocker ngay trong LuCI. **Các dịch vụ → NAS → Hướng dẫn kết nối** có hướng dẫn Windows/Android với IP và share lấy trực tiếp từ router.
 
+**Tải bản đóng gói:** [KhoaNAS-Ready.zip](https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/latest/download/KhoaNAS-Ready.zip) · [Hướng dẫn cài](docs/INSTALL.md) · [Sao lưu ảnh Android](docs/ANDROID-BACKUP.md).
+
+**Cập nhật cuối phiên 30/10:** router vẫn trả lời ping Tailscale nhưng SSH/HTTP chưa truy cập được sau thử bộ cài. Chưa xác nhận phục hồi dịch vụ; xem [báo cáo 2.3 và giới hạn kiểm thử](reports/2026-10-30-android-2.3/README.md). Các kết quả đọc/ghi dưới đây được ghi nhận trước sự cố này.
+
 ## Bắt đầu sử dụng
 
 Giao diện NAS đã gộp thành một mục **Các dịch vụ → NAS** với bốn tab **Ổ đĩa · Chia sẻ · Tài khoản SMB · Hướng dẫn kết nối**. Tab tài khoản có nút thêm user, chọn thư mục được phép và đổi mật khẩu. Đường dẫn cũ vẫn hoạt động qua alias. Xem [kiểm thử bổ sung và ảnh giao diện](reports/2026-10-30-nas-consolidation/README.md).
 
 - **[Truy cập NAS từ xa trên Windows và Android](docs/REMOTE-ACCESS.md)**: cài/kết nối Tailscale, map ổ vào This PC, thêm SMB trên Android và xử lý lỗi kết nối.
-- **[Khoa NAS 2 cho Android](software/android/README.md)**: quản lý tệp và ổ đĩa, tích hợp Tailscale ngay trong app.
+- **[Khoa NAS 2.3 cho Android](software/android/README.md)**: quản lý tệp và ổ đĩa, tích hợp Tailscale ngay trong app.
 - **[Báo cáo kiểm thử cuối và hướng dẫn có hình](reports/2026-10-30-final-verification/README.md)**: PDF 11 trang, ảnh thực tế, ma trận kết quả và phạm vi chưa xác minh.
 - **[Hướng dẫn quản lý ổ đĩa trong LuCI](router/luci-disk-manager/README.md)**: quét ổ, tùy chỉnh mount, mở khóa/tự mở và cài lại giao diện.
 - [Trạng thái đã kiểm chứng](docs/CURRENT-STATE.md) và [báo cáo triển khai 29/10](reports/2026-10-29-disk-manager/README.md).

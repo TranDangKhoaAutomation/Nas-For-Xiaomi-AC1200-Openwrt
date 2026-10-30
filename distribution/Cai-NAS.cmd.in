@@ -1,0 +1,36 @@
+@echo off
+setlocal EnableExtensions DisableDelayedExpansion
+set "KHOANAS_EXIT=1"
+chcp 65001 >nul
+set "KHOANAS_ARCHIVE=%~dp0KhoaNAS-Router.tar.gz"
+echo Khoa NAS - Cài/cập nhật router
+echo OpenWrt 25.12.6 / MT7621 / kernel 6.12.112
+echo Giữ lại cấu hình, tài khoản và khóa đang có trên router.
+if not exist "%KHOANAS_ARCHIVE%" goto missing
+where ssh.exe >nul 2>nul
+if errorlevel 1 goto missing
+powershell.exe -NoProfile -Command "if ((Get-FileHash -LiteralPath $env:KHOANAS_ARCHIVE -Algorithm SHA256).Hash -ne '@@ROUTER_SHA@@') { exit 1 }"
+if errorlevel 1 goto checksum
+set /p "KHOANAS_HOST=Nhập IPv4 LAN hoặc Tailscale của router: "
+powershell.exe -NoProfile -Command "$v=$env:KHOANAS_HOST; if ($v -notmatch '^\d{1,3}(\.\d{1,3}){3}$') { exit 1 }; try { $b=[Net.IPAddress]::Parse($v).GetAddressBytes() } catch { exit 1 }; if ($b.Length -ne 4 -or -not ($b[0] -eq 10 -or ($b[0] -eq 172 -and $b[1] -ge 16 -and $b[1] -le 31) -or ($b[0] -eq 192 -and $b[1] -eq 168) -or ($b[0] -eq 100 -and $b[1] -ge 64 -and $b[1] -le 127))) { exit 1 }"
+if errorlevel 1 goto invalid
+echo SSH sẽ hỏi xác nhận máy chủ hoặc mật khẩu quản trị nếu cần.
+ssh.exe -T root@%KHOANAS_HOST% "umask 077; work=$(mktemp -d /tmp/khoanas-install.XXXXXX) || exit 1; tar -xzf - -C $work || exit 1; sh $work/KhoaNAS-Router/install.sh; result=$?; echo Installer-folder: $work; exit $result" < "%KHOANAS_ARCHIVE%"
+if errorlevel 1 goto failed
+echo Hoàn tất. Mở http://%KHOANAS_HOST%/cgi-bin/luci/admin/services/nas
+set "KHOANAS_EXIT=0"
+goto end
+:missing
+echo Cần KhoaNAS-Router.tar.gz cùng thư mục và Windows OpenSSH Client.
+goto end
+:checksum
+echo Tệp cài không khớp SHA-256. Hãy tải lại bộ cài từ GitHub.
+goto end
+:invalid
+echo Địa chỉ không hợp lệ. Hãy nhập IPv4 LAN hoặc Tailscale của router.
+goto end
+:failed
+echo Chưa cài xong. Đọc lỗi phía trên; không ép cài nếu sai kernel/firmware.
+:end
+pause
+exit /b %KHOANAS_EXIT%

@@ -29,3 +29,7 @@ scripts/kernel/dm-zero/** text eol=lf
 software/windows-open-nas/*.py text eol=lf
 # Generated upstream notices preserve the copyright holders' original spacing.
 software/android/assets/native-licenses.txt -whitespace
+
+*.gz binary
+releases/router/Cai-NAS.cmd -text
+releases/router/Cai-NAS.cmd whitespace=cr-at-eol

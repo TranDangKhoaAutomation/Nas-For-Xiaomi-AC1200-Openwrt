@@ -181,3 +181,7 @@ thật qua RPC có xác thực. Tailscale nhúng đã khởi tạo và mở trì
 
 Để tự kiểm thử từ xa độc lập: trên Android tắt Wi-Fi, dùng 4G/5G, mở Khoa NAS → Từ xa,
 đăng nhập Tailscale rồi mở `BITLOCKER`; trên Windows dùng mạng khác LAN router.
+
+## App Android 2.3
+
+[Tải/cài bản mới](INSTALL.md), đăng nhập Tailscale tích hợp và chọn router từ danh sách thiết bị. Duyệt ảnh dạng lưới, phát video trực tiếp, cắt/xoay ảnh và [tự sao lưu thư mục ảnh/video](ANDROID-BACKUP.md). Trạng thái dịch vụ mới nhất ở [CURRENT-STATE](CURRENT-STATE.md); kết quả cũ không bảo đảm router hiện vẫn truy cập được.

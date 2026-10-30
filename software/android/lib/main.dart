@@ -9,8 +9,12 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 import 'smb_service.dart';
+import 'file_browser.dart';
+import 'media_view.dart';
+import 'backup_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,12 +64,14 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
       adminPassword = TextEditingController();
   int tab = 2;
   bool remote = true, remember = false, busy = false, hidden = true;
+  bool discovering = false, discoveryAttempted = false;
   String network = 'Stopped', share = '', path = '', rootSession = '';
   String? message;
   List<String> shares = [];
   List<NasEntry> entries = [];
   Map<String, dynamic>? files, disks;
   double? progress;
+  String? transferRate;
   Timer? networkTimer, transferTimer;
 
   @override
@@ -171,9 +177,142 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
   Future<void> refreshNetwork() async {
     try {
       final state = await service.networkState();
-      if (mounted) setState(() => network = state['state'] ?? 'Stopped');
+      if (!mounted) return;
+      setState(() {
+        network = state['state'] ?? 'Stopped';
+        if (network != 'Running') discoveryAttempted = false;
+      });
+      if (network == 'Running' &&
+          remote &&
+          host.text.trim().isEmpty &&
+          !discoveryAttempted &&
+          !busy &&
+          !discovering) {
+        unawaited(findTailnetDevices());
+      }
     } catch (_) {
       /* The native transport is not available in desktop widget tests. */
+    }
+  }
+
+  Future<void> findTailnetDevices() async {
+    if (busy || discovering || network != 'Running' || !remote) return;
+    setState(() {
+      discovering = true;
+      discoveryAttempted = true;
+      message = null;
+    });
+    try {
+      final devices = await service.discoverDevices();
+      if (!mounted || !remote || network != 'Running') return;
+      if (devices.isEmpty) {
+        setState(
+          () => message = 'Chưa thấy thiết bị trong Tailscale. Kiểm tra router đã online và cùng mạng Tailscale được cấp quyền.',
+        );
+        return;
+      }
+      setState(() => discovering = false);
+      final selected = await showModalBottomSheet<TailnetDevice>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) {
+          var query = '';
+          return StatefulBuilder(
+            builder: (context, update) {
+              final matches = devices
+                  .where(
+                    (d) => '${d.name} ${d.ip}'.toLowerCase().contains(query),
+                  )
+                  .toList();
+              return SafeArea(
+                child: SizedBox(
+                  height: MediaQuery.sizeOf(context).height * .7,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Chọn NAS trong Tailscale',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        gap(12),
+                        TextField(
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                            labelText: 'Tên thiết bị hoặc IP',
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                          onChanged: (text) =>
+                              update(() => query = text.toLowerCase().trim()),
+                        ),
+                        gap(8),
+                        Expanded(
+                          child: matches.isEmpty
+                              ? const Center(
+                                  child: Text('Không có thiết bị phù hợp.'),
+                                )
+                              : ListView.builder(
+                                  itemCount: matches.length,
+                                  itemBuilder: (context, index) {
+                                    final d = matches[index];
+                                    return ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      leading: Icon(
+                                        Icons.devices,
+                                        color: d.online
+                                            ? brand
+                                            : Colors.blueGrey,
+                                      ),
+                                      title: Text(
+                                        d.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle: Text(
+                                        '${d.ip} · ${d.online ? 'Trực tuyến' : 'Ngoại tuyến'}',
+                                      ),
+                                      trailing: const Icon(Icons.chevron_right),
+                                      onTap: () => Navigator.pop(context, d),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+      if (selected == null || !mounted || !remote || network != 'Running') {
+        return;
+      }
+      final changed = host.text.trim() != selected.ip;
+      if (changed && service.isConnected) await service.disconnect();
+      if (!mounted) return;
+      setState(() {
+        host.text = selected.ip;
+        if (changed) {
+          password.clear();
+          adminPassword.clear();
+          rootSession = '';
+          disks = null;
+          files = null;
+          shares = [];
+          entries = [];
+          share = '';
+          path = '';
+        }
+        message = 'Đã chọn ${selected.name}. Nhập tài khoản SMB để kết nối.';
+      });
+    } catch (error) {
+      if (mounted) setState(() => message = readableError(error));
+    } finally {
+      if (mounted) setState(() => discovering = false);
     }
   }
 
@@ -186,6 +325,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
       busy = true;
       message = null;
       progress = null;
+      transferRate = null;
     });
     if (transfer) {
       transferTimer = Timer.periodic(const Duration(milliseconds: 500), (
@@ -195,11 +335,15 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
           final p = await service.transferState();
           if (!mounted) return;
           final total = (p['total'] as num?)?.toDouble() ?? 0;
-          setState(
-            () => progress = total > 0
+          setState(() {
+            progress = total > 0
                 ? ((p['done'] as num).toDouble() / total).clamp(0, 1)
-                : null,
-          );
+                : null;
+            final rate = p['speed'] as num? ?? 0;
+            transferRate = p['active'] == true
+                ? '${formatBytes(p['done'] as num?)} / ${formatBytes(total)} · ${formatBytes(rate)}/s'
+                : null;
+          });
         } catch (_) {}
       });
     }
@@ -213,6 +357,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
         setState(() {
           busy = false;
           progress = null;
+          transferRate = null;
         });
       }
     }
@@ -399,6 +544,107 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
     disks = await call('nas.disks', 'status', {});
     if (mounted) setState(() {});
   });
+
+  Future<void> openEntry(NasEntry entry) async {
+    if (entry.isDirectory) {
+      await openFolder(entry);
+      return;
+    }
+    if (!isImage(entry.name) && !isVideo(entry.name)) {
+      await download(entry);
+      return;
+    }
+    String? url;
+    await task(() async {
+      url = await service.mediaUrl(child(entry.name));
+    });
+    if (!mounted || url == null || url!.isEmpty) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => MediaViewer(
+          url: url!,
+          name: entry.name,
+          video: isVideo(entry.name),
+          download: () => download(entry),
+          edit: isImage(entry.name) ? () => editEntry(entry) : null,
+        ),
+      ),
+    );
+  }
+
+  Future<void> editEntry(NasEntry entry) async {
+    final origin = service.connection;
+    final originalShare = share;
+    final originalPath = path;
+    final targetFolder = path.isEmpty ? '' : '$path/';
+    final dir = await getTemporaryDirectory();
+    final source = File(
+      '${dir.path}/edit-${DateTime.now().microsecondsSinceEpoch}.${entry.name.split('.').last}',
+    );
+    String? edited;
+    try {
+      await service.download(child(entry.name), source.path);
+      final result = await ImageCropper().cropImage(
+        sourcePath: source.path,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 95,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cắt và xoay ảnh',
+            toolbarColor: brand,
+            toolbarWidgetColor: Colors.white,
+            lockAspectRatio: false,
+          ),
+        ],
+      );
+      if (result == null || !mounted) return;
+      edited = result.path;
+      final yes = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Lưu bản chỉnh sửa?'),
+          content: const Text(
+            'Tạo ảnh JPEG mới trong cùng thư mục NAS. Giữ nguyên ảnh gốc.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Hủy'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Lưu bản sao'),
+            ),
+          ],
+        ),
+      );
+      if (yes != true) return;
+      if (!identical(service.connection, origin) ||
+          share != originalShare ||
+          path != originalPath) {
+        throw StateError('Kết nối NAS đã thay đổi. Hãy mở lại ảnh.');
+      }
+      final stem = entry.name.contains('.')
+          ? entry.name.substring(0, entry.name.lastIndexOf('.'))
+          : entry.name;
+      await service.upload(
+        edited,
+        '$targetFolder${stem}_da-sua_${DateTime.now().microsecondsSinceEpoch}.jpg',
+      );
+      await reloadFiles();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đã lưu bản chỉnh sửa trên NAS')),
+        );
+      }
+    } finally {
+      if (await source.exists()) await source.delete();
+      if (edited != null && await File(edited).exists()) {
+        await File(edited).delete();
+      }
+    }
+  }
+
   Future<void> loadDisks() => task(() async {
     disks = await call('nas.disks', 'status', {});
     if (mounted) setState(() {});
@@ -579,6 +825,26 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
                     }),
             ),
             gap(20),
+            if (remote) ...[
+              OutlinedButton.icon(
+                onPressed: busy || discovering || network != 'Running'
+                    ? null
+                    : findTailnetDevices,
+                icon: discovering
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.manage_search),
+                label: Text(
+                  discovering
+                      ? 'Đang tìm thiết bị…'
+                      : 'Chọn NAS trong Tailscale',
+                ),
+              ),
+              gap(12),
+            ],
             TextField(
               controller: host,
               enabled: !busy,
@@ -667,135 +933,29 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
         Icons.folder_outlined,
       );
     }
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: panel(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: shares.contains(share) ? share : null,
-                  items: shares
-                      .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                      .toList(),
-                  onChanged: busy
-                      ? null
-                      : (name) => task(() async {
-                          share = name!;
-                          path = '';
-                          files = await service.mount(share);
-                          setState(parseFiles);
-                        }),
-                ),
-                if (files?['available'] != null)
-                  Text(
-                    '${formatBytes(files?['available'] as num?)} trống / ${formatBytes(files?['total'] as num?)}',
-                    style: const TextStyle(
-                      color: Colors.blueGrey,
-                      fontSize: 12,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: path.isEmpty || busy ? null : goUp,
-                icon: const Icon(Icons.arrow_upward),
-              ),
-              Expanded(
-                child: Text(
-                  path.isEmpty ? '/' : path,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              IconButton(
-                tooltip: 'Tạo thư mục',
-                onPressed: busy ? null : newFolder,
-                icon: const Icon(Icons.create_new_folder_outlined),
-              ),
-              IconButton(
-                tooltip: 'Tải lên',
-                onPressed: busy ? null : upload,
-                icon: const Icon(Icons.upload_outlined),
-              ),
-              IconButton(
-                tooltip: 'Làm mới',
-                onPressed: busy ? null : () => task(reloadFiles),
-                icon: const Icon(Icons.refresh),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: entries.isEmpty
-              ? const Center(child: Text('Thư mục trống'))
-              : RefreshIndicator(
-                  onRefresh: () => task(reloadFiles),
-                  child: ListView.separated(
-                    itemCount: entries.length,
-                    separatorBuilder: (_, _) =>
-                        const Divider(height: 1, indent: 68),
-                    itemBuilder: (context, index) {
-                      final e = entries[index];
-                      return ListTile(
-                        leading: Icon(
-                          e.isDirectory
-                              ? Icons.folder
-                              : Icons.insert_drive_file_outlined,
-                          color: e.isDirectory
-                              ? const Color(0xffdfa439)
-                              : brand,
-                          size: 30,
-                        ),
-                        title: Text(
-                          e.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          e.isDirectory ? 'Thư mục' : formatBytes(e.size),
-                        ),
-                        onTap: busy
-                            ? null
-                            : () => e.isDirectory ? openFolder(e) : download(e),
-                        trailing: PopupMenuButton<String>(
-                          enabled: !busy,
-                          onSelected: (value) {
-                            if (value == 'download') download(e);
-                            if (value == 'rename') rename(e);
-                            if (value == 'delete') remove(e);
-                          },
-                          itemBuilder: (_) => [
-                            if (!e.isDirectory)
-                              const PopupMenuItem(
-                                value: 'download',
-                                child: Text('Tải xuống'),
-                              ),
-                            const PopupMenuItem(
-                              value: 'rename',
-                              child: Text('Đổi tên'),
-                            ),
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Text('Xóa'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-        ),
-      ],
+    return NasFileBrowser(
+      service: service,
+      shares: shares,
+      share: share,
+      path: path,
+      entries: entries,
+      busy: busy,
+      available: files?['available'] as num?,
+      total: files?['total'] as num?,
+      onShare: (name) => task(() async {
+        share = name;
+        path = '';
+        files = await service.mount(share);
+        setState(parseFiles);
+      }),
+      onOpen: openEntry,
+      onDownload: download,
+      onRename: rename,
+      onRemove: remove,
+      onUp: goUp,
+      onNewFolder: newFolder,
+      onUpload: upload,
+      onRefresh: () => task(reloadFiles),
     );
   }
 
@@ -999,7 +1159,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
                   onPressed: () => showLicensePage(
                     context: context,
                     applicationName: 'Khoa NAS',
-                    applicationVersion: '2.0.0',
+                    applicationVersion: '2.3.0',
                   ),
                   child: const Text('Giấy phép'),
                 ),
@@ -1017,6 +1177,14 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
     body: Column(
       children: [
         if (busy) LinearProgressIndicator(value: progress),
+        if (busy && transferRate != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(
+              transferRate!,
+              style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
+            ),
+          ),
         if (message != null)
           Container(
             width: double.infinity,
@@ -1041,6 +1209,12 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
           child: switch (tab) {
             0 => fileBrowser(),
             1 => diskManager(),
+            3 => BackupPage(
+              host: host.text.trim(),
+              user: user.text.trim(),
+              share: share,
+              remote: remote,
+            ),
             _ => connections(),
           },
         ),
@@ -1061,6 +1235,11 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
           label: 'Ổ đĩa',
         ),
         NavigationDestination(icon: Icon(Icons.link), label: 'Kết nối'),
+        NavigationDestination(
+          icon: Icon(Icons.backup_outlined),
+          selectedIcon: Icon(Icons.backup),
+          label: 'Sao lưu',
+        ),
       ],
     ),
   );

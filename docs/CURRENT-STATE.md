@@ -1,10 +1,12 @@
-# Trạng thái hệ thống đã xác minh — 30/10/2026
+# Trạng thái hệ thống — 30/10/2026
+
+**Trạng thái cuối phiên:** router trả lời ping Tailscale qua DERP Hong Kong nhưng SSH 22/HTTP 80 không truy cập được sau chạy thử installer. Chưa thể phục hồi vì router ở xa. Bảng bên dưới là quan sát trước sự cố, không phải xác nhận dịch vụ đang hoạt động. Xem [báo cáo bổ sung](../reports/2026-10-30-android-2.3/README.md).
 
 | Thành phần | Trạng thái |
 |---|---|
 | Router | Xiaomi Mi Router 3G, MT7621, OpenWrt 25.12.6, kernel 6.12.112 |
 | Địa chỉ | LAN 192.168.1.1; Tailscale 100.114.53.95, tên openwrt |
-| Quản lý storage | Hệ thống → Ổ đĩa; mã generic theo UUID trong router/luci-disk-manager |
+| Quản lý storage | Các dịch vụ → NAS → Ổ đĩa; mã generic theo UUID trong router/luci-disk-manager |
 | Ổ USB | Khoảng 1 TB; bridge nhận dạng Generic External |
 | Vùng 16 MiB | Chưa nhận dạng filesystem/UUID; không mount |
 | DangKhoa 831.5 GiB | NTFS, UUID A8E46416E463E4D2, đã gắn đọc/ghi sau CHKDSK trên Windows |
@@ -16,7 +18,7 @@
 | Firewall | Tailnet cho quản trị/SMB; WAN không mở 22/80/445; fw4 check đạt |
 | Giao diện | Việt/Anh theo LuCI; Material sidebar không còn che nội dung |
 
-Reboot tự mở đã kiểm chứng ngày 29/10. Ngày 30/10 đã tháo ổ an toàn sang Windows, CHKDSK /f E: và F: đều exit 0 và NOT Dirty, rồi cắm lại router. Cả hai mount RW và SMB ghi được; chưa reboot lại sau khi chuyển RW. Chưa thử Android, 4G/5G độc lập hoặc thay bằng ổ khác. Lỗi I/O từng xuất hiện trước lần tháo/cắm; giữ bản sao lưu và theo dõi nếu lỗi lặp lại.
+Reboot tự mở đã kiểm chứng ngày 29/10. Ngày 30/10 đã tháo ổ an toàn sang Windows, CHKDSK /f E: và F: đều exit 0 và NOT Dirty, rồi cắm lại router. Cả hai mount RW và SMB ghi được; chưa reboot lại sau khi chuyển RW. Android 2.0 đã thử SMB nội bộ trên LDPlayer; các tính năng 2.3 có kiểm thử tự động nhưng chưa kiểm chứng trọn luồng với NAS thật. Chưa thử 4G/5G độc lập hoặc thay bằng ổ khác. Lỗi I/O từng xuất hiện trước lần tháo/cắm; giữ bản sao lưu và theo dõi nếu lỗi lặp lại.
 
 Truy cập: [Windows/Android từ xa](REMOTE-ACCESS.md). Chi tiết: [báo cáo triển khai](../reports/2026-10-29-disk-manager/README.md).
 

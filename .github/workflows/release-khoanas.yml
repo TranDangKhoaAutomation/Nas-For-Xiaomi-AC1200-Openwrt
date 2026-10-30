@@ -1,0 +1,45 @@
+name: Publish ready-to-install Khoa NAS
+on:
+  push:
+    tags: ['khoanas-*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing khoanas-YYYY.MM.DD.N tag to publish
+        required: true
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source, pinned apps and router archive
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          expected="khoanas-$(python -c "import json; print(json.load(open('distribution/release.json'))['version'])")"
+          test "$RELEASE_TAG" = "$expected"
+          python -m unittest discover -s distribution -p 'test_*.py'
+          python distribution/build.py --use-tracked-router --output "$RUNNER_TEMP/khoanas-release"
+          cd "$RUNNER_TEMP/khoanas-release"
+          sha256sum --check SHA256SUMS.txt
+      - name: Publish verified install files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/khoanas-release/"* --clobber
+          else
+            gh release create "$RELEASE_TAG" "$RUNNER_TEMP/khoanas-release/"* --verify-tag --latest --title "Khoa NAS ${RELEASE_TAG#khoanas-}" --notes-file distribution/RELEASE-NOTES.md
+          fi

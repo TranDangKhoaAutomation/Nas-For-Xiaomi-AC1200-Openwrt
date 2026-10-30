@@ -34,6 +34,8 @@ var socket net.Conn
 var activeHost, activeShare, activeRoute string
 var transferred atomic.Int64
 var transferTotal atomic.Int64
+var transferStarted atomic.Int64
+var transferActive atomic.Bool
 var transferCancelMu sync.Mutex
 var transferCancel context.CancelFunc
 
@@ -215,6 +217,7 @@ func dial(ctx context.Context, host string, port string, remote bool) (net.Conn,
 }
 
 func disconnectLocked() {
+	stopMediaLocked()
 	if socket != nil {
 		socket.SetDeadline(time.Now().Add(3 * time.Second))
 	}
@@ -293,6 +296,7 @@ func Mount(name string) (string, error) {
 	if name == "" || strings.ContainsAny(name, "\\/\x00") {
 		return "", errors.New("Tên thư mục chia sẻ không hợp lệ")
 	}
+	stopMediaLocked()
 	if share != nil {
 		share.Umount()
 		share = nil
@@ -428,14 +432,19 @@ func (w counterWriter) Write(p []byte) (int, error) {
 func beginTransfer() (context.Context, context.CancelFunc) {
 	transferred.Store(0)
 	transferTotal.Store(0)
+	transferStarted.Store(time.Now().UnixMilli())
+	transferActive.Store(true)
 	ctx, cancel := context.WithCancel(context.Background())
 	transferCancelMu.Lock()
 	transferCancel = cancel
 	transferCancelMu.Unlock()
-	return ctx, func() { cancel(); transferCancelMu.Lock(); transferCancel = nil; transferCancelMu.Unlock() }
+	return ctx, func() { cancel(); transferActive.Store(false); transferCancelMu.Lock(); transferCancel = nil; transferCancelMu.Unlock() }
 }
 func TransferState() string {
-	return encode(map[string]int64{"done": transferred.Load(), "total": transferTotal.Load()})
+	done := transferred.Load()
+	speed := int64(0)
+	if elapsed:=time.Now().UnixMilli()-transferStarted.Load(); elapsed>0 && transferActive.Load() { speed = done*1000/elapsed }
+	return encode(map[string]any{"done":done,"total":transferTotal.Load(),"active":transferActive.Load(),"speed":speed})
 }
 func CancelTransfer() {
 	transferCancelMu.Lock()
@@ -474,7 +483,7 @@ func Download(remotePath, destination string) error {
 	}
 	// Bound reads to the file-size snapshot and hide File.WriteTo, which would
 	// otherwise bypass our streaming buffer and request multi-megabyte reads.
-	copied, copyErr := io.CopyBuffer(counterWriter{out}, io.LimitReader(in, stat.Size()), make([]byte, 128*1024))
+	copied, copyErr := io.CopyBuffer(counterWriter{out}, io.LimitReader(in, stat.Size()), make([]byte, 1024*1024))
 	if copyErr == nil && copied != stat.Size() {
 		copyErr = io.ErrUnexpectedEOF
 	}
@@ -502,14 +511,21 @@ func Upload(source, remotePath string) error {
 	defer in.Close()
 	ctx, cancel := beginTransfer()
 	defer cancel()
-	if stat, e := in.Stat(); e == nil {
-		transferTotal.Store(stat.Size())
+	info, err := in.Stat()
+	if err != nil {
+		return err
 	}
+	transferTotal.Store(info.Size())
 	out, err := share.WithContext(ctx).OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 	if err != nil {
 		return err
 	}
-	_, copyErr := io.CopyBuffer(counterWriter{out}, in, make([]byte, 128*1024))
+	// Hide os.File.WriteTo, whose generic fallback would ignore this buffer and
+	// send 32 KiB writes, paying a network round trip for every tiny block.
+	copied, copyErr := io.CopyBuffer(counterWriter{out}, io.LimitReader(in, info.Size()), make([]byte, 1024*1024))
+	if copyErr == nil && copied != info.Size() {
+		copyErr = io.ErrUnexpectedEOF
+	}
 	closeErr := out.Close()
 	if copyErr != nil {
 		return fmt.Errorf("Tải lên chưa hoàn tất, tệp có thể còn một phần: %w", copyErr)

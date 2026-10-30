@@ -111,7 +111,7 @@ return view.extend({
                 } else if (host) {
                     guide.push(E('div', {'class':'nas-connect-actions'}, [E('a', {'class':'cbi-button cbi-button-action',
                         'href':'smb://' + host + '/' + encodeURIComponent(share.name)}, [_('Open NAS folder')]),
-                        E('a', {'class':'cbi-button','href':'https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/raw/refs/heads/main/releases/android/KhoaNAS-v2.0.0-arm64-v8a.apk','target':'_blank','rel':'noopener noreferrer'}, [_('Download Khoa NAS for Android')])]),
+                        E('a', {'class':'cbi-button','href':'https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/latest/download/KhoaNAS-Android.apk','target':'_blank','rel':'noopener noreferrer'}, [_('Download Khoa NAS for Android')])]),
                     E('p', {}, [_('Install Khoa NAS once, then use Open NAS folder. Remote access uses Tailscale inside the app, without a separate VPN app.')]),
                     steps([
                         _('In Khoa NAS, choose Remote and sign in to Tailscale, or choose Home network when at home.'),

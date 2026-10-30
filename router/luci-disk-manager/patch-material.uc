@@ -10,15 +10,15 @@ let lines = [];
 let hasCss = index(header, 'menu-layout-fix.css') >= 0;
 for (let line in split(header, '\n')) {
     if (index(line, 'admin/translations') >= 0) {
-        line = replace(line, /nas-disks-\d{8}-\d+/g, 'nas-disks-20261030-9');
-        line = replace(line, /nas_disks_v=\d{8}-\d+/g, 'nas_disks_v=20261030-9');
+        line = replace(line, /nas-disks-\d{8}-\d+/g, 'nas-disks-20261030-10');
+        line = replace(line, /nas_disks_v=\d{8}-\d+/g, 'nas_disks_v=20261030-10');
     }
     if (index(line, 'admin/translations') >= 0 && index(line, 'nas_disks_v=') < 0) {
         let end = index(line, '"></script>');
         if (end >= 0) {
             let before = substr(line, 0, end);
             line = before + (index(before, '?') >= 0 ? '&' : '?') +
-                'nas_disks_v=20261030-9' + substr(line, end);
+                'nas_disks_v=20261030-10' + substr(line, end);
         }
     }
     push(lines, line);
@@ -38,7 +38,7 @@ let commonLines = [];
 for (let line in split(common, '\n')) {
     if (index(line, '/luci.js?v=') >= 0) {
         line = replace(line, /-nas-disks-\d{8}-\d+/g, '');
-        line = replace(line, '"></script>', '-nas-disks-20261030-9"></script>');
+        line = replace(line, '"></script>', '-nas-disks-20261030-10"></script>');
     }
     push(commonLines, line);
 }

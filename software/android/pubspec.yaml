@@ -1,7 +1,7 @@
 name: nas_client
 description: Khoa NAS with embedded Tailscale and SMB management.
 publish_to: none
-version: 2.0.0+2
+version: 2.3.0+5
 environment:
   sdk: ^3.13.2
 dependencies:
@@ -10,6 +10,8 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   file_picker: ^13.1.0
   path_provider: ^2.1.6
+  video_player: 2.14.1
+  image_cropper: 13.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
