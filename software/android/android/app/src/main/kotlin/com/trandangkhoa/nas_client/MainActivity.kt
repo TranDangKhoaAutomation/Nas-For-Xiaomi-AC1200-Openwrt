@@ -131,6 +131,7 @@ class MainActivity : FlutterActivity() {
                         }
                         "networkLogout" -> { Nasnet.logout(); null }
                         "connect" -> Nasnet.connect(text("host"), text("user"), text("password"), text("domain"), remote())
+                        "cancelConnection" -> { Nasnet.cancelConnection(); null }
                         "disconnect" -> { Nasnet.disconnect(); null }
                         "mount" -> Nasnet.mount(text("share"))
                         "list" -> Nasnet.list(text("path"))

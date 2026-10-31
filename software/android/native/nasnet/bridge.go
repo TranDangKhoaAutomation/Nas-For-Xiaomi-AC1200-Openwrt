@@ -241,19 +241,24 @@ func Disconnect() { CancelTransfer(); filesMu.Lock(); defer filesMu.Unlock(); di
 
 // Connect authenticates SMB and discovers actual shares. Password is not saved here.
 func Connect(host, user, password, domain string, remote bool) (string, error) {
-	filesMu.Lock()
+	op := beginConnectionOperation(15 * time.Second)
+	defer op.finish()
+	ctx := op.ctx
+	if err := lockConnection(ctx); err != nil {
+		return "", connectionError(ctx, err)
+	}
 	defer filesMu.Unlock()
 	disconnectLocked()
 	if strings.TrimSpace(user) == "" {
 		return "", errors.New("Nhập tài khoản SMB")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
-	defer cancel()
 	conn, err := dial(ctx, host, "445", remote)
 	if err != nil {
-		return "", err
+		return "", connectionError(ctx, err)
 	}
-	conn.SetDeadline(time.Now().Add(25 * time.Second))
+	if err = op.bind(conn); err != nil {
+		return "", connectionError(ctx, err)
+	}
 	// Require verified signatures. Remote traffic also travels inside the app's
 	// encrypted Tailscale transport. Negotiate the highest supported SMB dialect.
 	d := &smb2.Dialer{Negotiator: smb2.Negotiator{RequireMessageSigning: true}, Initiator: &smb2.NTLMInitiator{User: strings.TrimSpace(user), Password: password, Domain: strings.TrimSpace(domain)}}
@@ -261,14 +266,16 @@ func Connect(host, user, password, domain string, remote bool) (string, error) {
 	password = ""
 	if err != nil {
 		conn.Close()
+		if ctx.Err() != nil {
+			return "", connectionError(ctx, err)
+		}
 		return "", errors.New("Không đăng nhập được SMB. Kiểm tra tài khoản và mật khẩu.")
 	}
-	conn.SetDeadline(time.Time{})
 	names, err := ss.WithContext(ctx).ListSharenames()
 	if err != nil {
 		ss.WithContext(ctx).Logoff()
 		conn.Close()
-		return "", err
+		return "", connectionError(ctx, err)
 	}
 	out := []string{}
 	for _, n := range names {
@@ -277,6 +284,9 @@ func Connect(host, user, password, domain string, remote bool) (string, error) {
 		}
 	}
 	sort.Strings(out)
+	if err = op.preserve(); err != nil {
+		return "", connectionError(ctx, err)
+	}
 	session = ss
 	socket = conn
 	activeHost = strings.TrimSpace(host)
@@ -288,7 +298,12 @@ func Connect(host, user, password, domain string, remote bool) (string, error) {
 }
 
 func Mount(name string) (string, error) {
-	filesMu.Lock()
+	op := beginConnectionOperation(15 * time.Second)
+	defer op.finish()
+	ctx := op.ctx
+	if err := lockConnection(ctx); err != nil {
+		return "", connectionError(ctx, err)
+	}
 	defer filesMu.Unlock()
 	if session == nil {
 		return "", errors.New("Chưa kết nối SMB")
@@ -296,20 +311,36 @@ func Mount(name string) (string, error) {
 	if name == "" || strings.ContainsAny(name, "\\/\x00") {
 		return "", errors.New("Tên thư mục chia sẻ không hợp lệ")
 	}
+	if socket != nil {
+		if err := op.bind(socket); err != nil {
+			return "", connectionError(ctx, err)
+		}
+	}
 	stopMediaLocked()
 	if share != nil {
 		share.Umount()
 		share = nil
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
 	fs, err := session.WithContext(ctx).Mount(name)
 	if err != nil {
-		return "", err
+		if ctx.Err() == nil {
+			op.preserve()
+		}
+		return "", connectionError(ctx, err)
 	}
 	share = fs.WithContext(context.Background())
 	activeShare = name
-	return listLocked("", ctx)
+	result, err := listLocked("", ctx)
+	if err != nil {
+		if ctx.Err() == nil {
+			op.preserve()
+		}
+		return "", connectionError(ctx, err)
+	}
+	if err = op.preserve(); err != nil {
+		return "", connectionError(ctx, err)
+	}
+	return result, nil
 }
 
 func cleanPath(p string, rootAllowed bool) (string, error) {
@@ -438,13 +469,21 @@ func beginTransfer() (context.Context, context.CancelFunc) {
 	transferCancelMu.Lock()
 	transferCancel = cancel
 	transferCancelMu.Unlock()
-	return ctx, func() { cancel(); transferActive.Store(false); transferCancelMu.Lock(); transferCancel = nil; transferCancelMu.Unlock() }
+	return ctx, func() {
+		cancel()
+		transferActive.Store(false)
+		transferCancelMu.Lock()
+		transferCancel = nil
+		transferCancelMu.Unlock()
+	}
 }
 func TransferState() string {
 	done := transferred.Load()
 	speed := int64(0)
-	if elapsed:=time.Now().UnixMilli()-transferStarted.Load(); elapsed>0 && transferActive.Load() { speed = done*1000/elapsed }
-	return encode(map[string]any{"done":done,"total":transferTotal.Load(),"active":transferActive.Load(),"speed":speed})
+	if elapsed := time.Now().UnixMilli() - transferStarted.Load(); elapsed > 0 && transferActive.Load() {
+		speed = done * 1000 / elapsed
+	}
+	return encode(map[string]any{"done": done, "total": transferTotal.Load(), "active": transferActive.Load(), "speed": speed})
 }
 func CancelTransfer() {
 	transferCancelMu.Lock()

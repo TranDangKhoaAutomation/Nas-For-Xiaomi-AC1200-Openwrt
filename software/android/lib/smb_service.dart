@@ -33,6 +33,7 @@ class NasService {
   static const channel = MethodChannel('com.trandangkhoa.nas/native');
   NasConnection? connection;
   String _mountedShare = '';
+  int _connectionEpoch = 0;
   final Map<String, Future<Map<String, dynamic>>> _previews = {};
   bool get isConnected => connection != null;
 
@@ -66,7 +67,19 @@ class NasService {
 
   Future<Map<String, dynamic>> transferState() => _json('transferState');
   Future<void> cancelTransfer() => channel.invokeMethod<void>('cancelTransfer');
+  Future<void> cancelConnection() async {
+    _connectionEpoch++;
+    connection = null;
+    _previews.clear();
+    try {
+      await channel
+          .invokeMethod<void>('cancelConnection')
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {}
+  }
+
   Future<List<String>> connect(NasConnection config) async {
+    final epoch = ++_connectionEpoch;
     _previews.clear();
     connection = null;
     final result = await _json('connect', {
@@ -76,6 +89,7 @@ class NasService {
       'domain': config.domain.trim(),
       'remote': config.remote,
     });
+    if (epoch != _connectionEpoch) throw StateError('Đã hủy kết nối NAS.');
     connection = NasConnection(
       host: config.host.trim(),
       username: config.username.trim(),
@@ -87,15 +101,19 @@ class NasService {
   }
 
   Future<void> disconnect() async {
+    _connectionEpoch++;
     _previews.clear();
     await channel.invokeMethod<void>('disconnect');
     connection = null;
   }
 
-  Future<Map<String, dynamic>> mount(String share) {
+  Future<Map<String, dynamic>> mount(String share) async {
+    final epoch = _connectionEpoch;
     _previews.clear();
     _mountedShare = share;
-    return _json('mount', {'share': share});
+    final result = await _json('mount', {'share': share});
+    if (epoch != _connectionEpoch) throw StateError('Đã hủy kết nối NAS.');
+    return result;
   }
 
   Future<String> mediaUrl(String path) async {

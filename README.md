@@ -8,6 +8,8 @@ Cập nhật **30/10/2026**: OpenWrt 25.12.6, kernel 6.12.112. Router có trang 
 
 ## Bắt đầu sử dụng
 
+Cập nhật **31/10**: Windows có **Khởi động cùng Windows**, một mục Start Menu và một phiên chạy ([hướng dẫn](software/windows-open-nas/README.md)); Android 2.3.1 thêm Hủy/giới hạn chờ khi Kết nối NAS bị kẹt ([báo cáo](reports/2026-10-31-android-connection/README.md)).
+
 Giao diện NAS đã gộp thành một mục **Các dịch vụ → NAS** với bốn tab **Ổ đĩa · Chia sẻ · Tài khoản SMB · Hướng dẫn kết nối**. Tab tài khoản có nút thêm user, chọn thư mục được phép và đổi mật khẩu. Đường dẫn cũ vẫn hoạt động qua alias. Xem [kiểm thử bổ sung và ảnh giao diện](reports/2026-10-30-nas-consolidation/README.md).
 
 - **[Truy cập NAS từ xa trên Windows và Android](docs/REMOTE-ACCESS.md)**: cài/kết nối Tailscale, map ổ vào This PC, thêm SMB trên Android và xử lý lỗi kết nối.

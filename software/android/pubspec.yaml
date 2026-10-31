@@ -1,7 +1,7 @@
 name: nas_client
 description: Khoa NAS with embedded Tailscale and SMB management.
 publish_to: none
-version: 2.3.0+5
+version: 2.3.1+6
 environment:
   sdk: ^3.13.2
 dependencies:

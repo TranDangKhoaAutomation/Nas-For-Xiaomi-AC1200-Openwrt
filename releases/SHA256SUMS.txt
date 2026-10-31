@@ -2,9 +2,11 @@
 7d15d15fd9149c7021c97d8735ed02b6f3b93dcbcfaed6ff0d89a17fa1c34dcb  android/KhoaNAS-v2.0.0-x86_64.apk
 7813fd89bd076ff40d0f5262c759d77e959dc4c97713efe127da1572c4c8b8d1  android/KhoaNAS-v2.3.0-arm64-v8a.apk
 7fef47e27b950577b1a18146ff78066ebb8a565861e05406b6701f9eec3dc24a  android/KhoaNAS-v2.3.0-x86_64.apk
+c32126ef25dce12ec3da178b4fd75402794745b21fdbcfe5be8e26d1f28361de  android/KhoaNAS-v2.3.1-arm64-v8a.apk
+a5debfb259b51390f41610f859f0a5b1a498a7085ba2c0fc3a1c3c1ca340c8a2  android/KhoaNAS-v2.3.1-x86_64.apk
 529230dbedb980ba65d7c0184da267fda0b403c5ed0c7f67565e2ea14dda9b10  dm-zero/6.12.112/kmod-dm-zero-6.12.112.6.12.112-r1.apk
 21ae7e50a677a99f14de731063e3d681bb8d08ec49e0d0972d4c3cda70dbd747  Khoa-NAS-Android-v1.0.0.apk
 62c627db4abebc853a19b48d4750b7023fa8dee959e72e9a35e0a81e904040a3  Khoa-NAS-PC.exe
-717bf3cf4e5739dd7be4b230d38e5135ceb2cf133f12bf7836fa7f14a5c950b4  router/Cai-NAS.cmd
-d19780444209a624c6b421cea387a5ae9943af1ed71f8f069715463bbe6fe4ac  router/KhoaNAS-Router.tar.gz
-66a9108c0aea55fc1ed3f4e32bb9d8ad7bcf20e4f8cbd979d878c47619a2d769  windows-open-nas/KhoaNAS-Open.exe
+bd33434203c9735746c953eb823eb44756c9ad35dc2697a0d6a27327d77e9aa5  router/Cai-NAS.cmd
+68acba14a6bfdfeef4d9d9baef3443746e61b97a3ef53957f8b65ce851cab967  router/KhoaNAS-Router.tar.gz
+acc840a7818f068ab38c65129d8b5a649656a1945ce6f5b539475c65be20a933  windows-open-nas/KhoaNAS-Open.exe

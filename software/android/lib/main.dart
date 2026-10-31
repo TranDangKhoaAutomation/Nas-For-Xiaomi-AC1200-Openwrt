@@ -73,6 +73,10 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
   double? progress;
   String? transferRate;
   Timer? networkTimer, transferTimer;
+  bool connecting = false;
+  String connectionStage = '';
+  int connectionGeneration = 0;
+  Completer<void>? connectionCancellation;
 
   @override
   void initState() {
@@ -369,13 +373,67 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
     await refreshNetwork();
   });
   Future<void> connect() => task(() async {
+    final generation = ++connectionGeneration;
+    final cancellation = Completer<void>();
+    connectionCancellation = cancellation;
+    setState(() {
+      connecting = true;
+      connectionStage = 'Đang liên hệ NAS…';
+    });
+    try {
+      await Future.any<void>([connectNas(generation), cancellation.future])
+          .timeout(
+            const Duration(seconds: 35),
+            onTimeout: () {
+              throw StateError(
+                'NAS không phản hồi sau 35 giây. Kiểm tra IP router, Tailscale và dịch vụ SMB.',
+              );
+            },
+          );
+    } catch (_) {
+      connectionGeneration++;
+      unawaited(service.cancelConnection());
+      rethrow;
+    } finally {
+      connectionCancellation = null;
+      if (mounted) setState(() => connecting = false);
+    }
+  });
+  void cancelConnect() {
+    final cancellation = connectionCancellation;
+    if (cancellation != null && !cancellation.isCompleted) {
+      cancellation.completeError(StateError('Đã hủy kết nối NAS.'));
+    }
+  }
+
+  void checkConnection(int generation) {
+    if (!mounted || generation != connectionGeneration) {
+      throw StateError('Đã hủy kết nối NAS.');
+    }
+  }
+
+  Future<void> connectNas(int generation) async {
     if (host.text.trim().isEmpty ||
         user.text.trim().isEmpty ||
         password.text.isEmpty) {
       throw StateError('Nhập địa chỉ router, tài khoản và mật khẩu SMB.');
     }
     files = null;
-    shares = await service.connect(
+    if (remote) {
+      final state = await service.networkState().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () => throw StateError(
+          'Chưa đọc được trạng thái Tailscale. Hãy mở lại ứng dụng và đăng nhập Tailscale.',
+        ),
+      );
+      checkConnection(generation);
+      if (state['state'] != 'Running') {
+        throw StateError(
+          'Hãy đăng nhập Tailscale trong ứng dụng trước khi kết nối NAS.',
+        );
+      }
+    }
+    final connectedShares = await service.connect(
       NasConnection(
         host: host.text,
         username: user.text,
@@ -383,12 +441,18 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
         remote: remote,
       ),
     );
+    checkConnection(generation);
+    shares = connectedShares;
     if (shares.isEmpty) throw StateError('Router chưa có thư mục chia sẻ SMB.');
     if (!shares.contains(share)) share = shares.first;
     Object? mountError;
     for (final candidate in [share, ...shares.where((item) => item != share)]) {
+      checkConnection(generation);
+      setState(() => connectionStage = 'Đang mở thư mục $candidate…');
       try {
-        files = await service.mount(candidate);
+        final mountedFiles = await service.mount(candidate);
+        checkConnection(generation);
+        files = mountedFiles;
         share = candidate;
         break;
       } catch (error) {
@@ -398,6 +462,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
     if (files == null) {
       throw mountError ?? StateError('Chưa mở được thư mục chia sẻ.');
     }
+    checkConnection(generation);
     path = '';
     parseFiles();
     try {
@@ -411,6 +476,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
           'share': share,
         }),
       );
+      checkConnection(generation);
     } catch (_) {
       if (mounted) {
         setState(
@@ -419,9 +485,11 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
         );
       }
     }
+    checkConnection(generation);
     if (!remember) password.clear();
     if (mounted) setState(() => tab = 0);
-  });
+  }
+
   void parseFiles() {
     entries = ((files?['entries'] as List?) ?? [])
         .map((e) => NasEntry.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -1159,7 +1227,7 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
                   onPressed: () => showLicensePage(
                     context: context,
                     applicationName: 'Khoa NAS',
-                    applicationVersion: '2.3.0',
+                    applicationVersion: '2.3.1',
                   ),
                   child: const Text('Giấy phép'),
                 ),
@@ -1177,6 +1245,24 @@ class _NasHomeState extends State<NasHome> with WidgetsBindingObserver {
     body: Column(
       children: [
         if (busy) LinearProgressIndicator(value: progress),
+        if (connecting)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    connectionStage,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                TextButton(
+                  onPressed: cancelConnect,
+                  child: const Text('Hủy kết nối'),
+                ),
+              ],
+            ),
+          ),
         if (busy && transferRate != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),

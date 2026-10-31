@@ -1,6 +1,7 @@
-# Khoa NAS 2.3.0 — Android
+# Khoa NAS 2.3.1 — Android
 
 App Material 3 có Tailscale tích hợp, chọn router từ danh sách tailnet, lưới/danh sách, ảnh/video trực tiếp, thumbnail/thời lượng, cắt/xoay ảnh lưu bản sao và sao lưu nền có thiết lập.
+2.3.1 thêm **Hủy kết nối**, giới hạn chờ và bỏ kết quả trả muộn sau hủy. [Báo cáo lỗi kết nối 31/10](../../reports/2026-10-31-android-connection/README.md). Router ping Tailscale được nhưng cổng SMB chưa truy cập được từ máy kiểm tra; bản sửa app không khôi phục dịch vụ trên router.
 Android tối thiểu 8.0/API 26. Chọn **arm64-v8a** cho điện thoại phổ biến;
 **x86_64** dành cho LDPlayer và máy ảo tương ứng. Không cần cài app Tailscale riêng.
 
@@ -11,7 +12,7 @@ Android tối thiểu 8.0/API 26. Chọn **arm64-v8a** cho điện thoại phổ
 
 | APK | Bytes | SHA-256 |
 |---|---:|---|
-| [KhoaNAS-v2.3.0-arm64-v8a.apk](KhoaNAS-v2.3.0-arm64-v8a.apk) | 42938042 | `7813fd89bd076ff40d0f5262c759d77e959dc4c97713efe127da1572c4c8b8d1` |
-| [KhoaNAS-v2.3.0-x86_64.apk](KhoaNAS-v2.3.0-x86_64.apk) | 46065650 | `7fef47e27b950577b1a18146ff78066ebb8a565861e05406b6701f9eec3dc24a` |
+| [KhoaNAS-v2.3.1-arm64-v8a.apk](KhoaNAS-v2.3.1-arm64-v8a.apk) | 42947642 | `c32126ef25dce12ec3da178b4fd75402794745b21fdbcfe5be8e26d1f28361de` |
+| [KhoaNAS-v2.3.1-x86_64.apk](KhoaNAS-v2.3.1-x86_64.apk) | 46075410 | `a5debfb259b51390f41610f859f0a5b1a498a7085ba2c0fc3a1c3c1ca340c8a2` |
 
 APK 2.0 được giữ cho các báo cáo lịch sử. [Tải bản ARM64 mới nhất](https://github.com/TranDangKhoaAutomation/Nas-For-Xiaomi-AC1200-Openwrt/releases/latest/download/KhoaNAS-Android.apk).

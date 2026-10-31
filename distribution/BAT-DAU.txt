@@ -8,6 +8,9 @@ KHOA NAS - BỘ CÀI SẴN
    Tab Sao lưu: chọn thư mục ảnh/video, nơi lưu và lịch; mặc định tắt.
    Ảnh/video mở trực tiếp trong Tệp; ảnh có nút cắt/xoay và lưu bản sao.
 4. Windows: chạy KhoaNAS-Open.exe một lần, nhập IP router được phép.
+   Về sau mở Khoa NAS từ Start Menu. Tích Khởi động cùng Windows rồi Lưu
+   thiết lập nếu muốn chạy nền ở khay hệ thống; bỏ tích để tắt.
+   Chỉ giữ một bản cài chính, không cần mở từng EXE đã tải/build.
 
 Bộ cài router dành cho OpenWrt 25.12.6 / ramips/mt7621 / kernel 6.12.112.
 Không dùng làm tệp nâng cấp firmware và không flash ZIP/APK này qua Sysupgrade.

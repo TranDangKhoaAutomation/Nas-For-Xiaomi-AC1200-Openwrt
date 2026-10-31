@@ -9,7 +9,7 @@ echo Giữ lại cấu hình, tài khoản và khóa đang có trên router.
 if not exist "%KHOANAS_ARCHIVE%" goto missing
 where ssh.exe >nul 2>nul
 if errorlevel 1 goto missing
-powershell.exe -NoProfile -Command "if ((Get-FileHash -LiteralPath $env:KHOANAS_ARCHIVE -Algorithm SHA256).Hash -ne 'd19780444209a624c6b421cea387a5ae9943af1ed71f8f069715463bbe6fe4ac') { exit 1 }"
+powershell.exe -NoProfile -Command "if ((Get-FileHash -LiteralPath $env:KHOANAS_ARCHIVE -Algorithm SHA256).Hash -ne '68acba14a6bfdfeef4d9d9baef3443746e61b97a3ef53957f8b65ce851cab967') { exit 1 }"
 if errorlevel 1 goto checksum
 set /p "KHOANAS_HOST=Nhập IPv4 LAN hoặc Tailscale của router: "
 powershell.exe -NoProfile -Command "$v=$env:KHOANAS_HOST; if ($v -notmatch '^\d{1,3}(\.\d{1,3}){3}$') { exit 1 }; try { $b=[Net.IPAddress]::Parse($v).GetAddressBytes() } catch { exit 1 }; if ($b.Length -ne 4 -or -not ($b[0] -eq 10 -or ($b[0] -eq 172 -and $b[1] -ge 16 -and $b[1] -le 31) -or ($b[0] -eq 192 -and $b[1] -eq 168) -or ($b[0] -eq 100 -and $b[1] -ge 64 -and $b[1] -le 127))) { exit 1 }"

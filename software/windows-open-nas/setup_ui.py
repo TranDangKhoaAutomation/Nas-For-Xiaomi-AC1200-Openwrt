@@ -5,7 +5,7 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon, QPixmap
 from PySide6.QtWidgets import (
-    QApplication, QDialog, QFrame, QHBoxLayout, QLabel, QLineEdit,
+    QApplication, QCheckBox, QDialog, QFrame, QHBoxLayout, QLabel, QLineEdit,
     QMessageBox, QPushButton, QVBoxLayout,
 )
 
@@ -24,10 +24,10 @@ def show_error(text, icon):
     QMessageBox.warning(None, 'Khoa NAS', text)
 
 
-def run_setup(install, install_dir, valid_host, asset):
+def create_setup(install, install_dir, valid_host, asset, startup_enabled, on_saved=None):
     app = application(asset('khoa-nas.ico'))
     window = QDialog()
-    window.setWindowTitle('Khoa NAS · Thiết lập mở nhanh')
+    window.setWindowTitle('Khoa NAS · Cài đặt')
     window.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
     window.setFixedWidth(500)
     window.setStyleSheet('''
@@ -43,6 +43,7 @@ def run_setup(install, install_dir, valid_host, asset):
             border-radius: 7px; padding: 9px; font-size: 14px; selection-background-color: #c9edec; }
         QLineEdit:focus { border: 2px solid #07898d; padding: 8px; }
         QLineEdit:read-only { background: #f5f8fa; }
+        QCheckBox { color: #163a46; spacing: 9px; padding: 5px 0; font-size: 14px; }
         QLabel#notice { background: #e7f3f1; color: #256f64; border-radius: 8px; padding: 10px; }
         QLabel#notice[error="true"] { background: #fff0ed; color: #9c3829; }
         QPushButton { background: #ffffff; color: #385965; border: 1px solid #cfdee3;
@@ -101,6 +102,15 @@ def run_setup(install, install_dir, valid_host, asset):
     fields.addWidget(hint)
     layout.addWidget(card)
 
+    startup = QCheckBox('Khởi động cùng Windows')
+    startup.setObjectName('startup')
+    startup.setChecked(startup_enabled())
+    startup.setAccessibleName('Khởi động cùng Windows')
+    layout.addWidget(startup)
+    startup_hint = QLabel('Chạy nền ở khay hệ thống khi đăng nhập.')
+    startup_hint.setObjectName('hint')
+    layout.addWidget(startup_hint)
+
     notice = QLabel()
     notice.setObjectName('notice')
     notice.setWordWrap(True)
@@ -115,26 +125,22 @@ def run_setup(install, install_dir, valid_host, asset):
     help_button.clicked.connect(lambda: QMessageBox.information(window, 'Kết nối NAS',
         'Lấy IP trong trang Hướng dẫn kết nối của router.\n'
         'Cài một lần, sau đó bấm Mở thư mục NAS trên router.\n'
+        'Khởi động cùng Windows: chạy nền, không mở cửa sổ hay tự mở ổ.\n'
+        'Mở lại cài đặt từ Start Menu hoặc biểu tượng ở khay hệ thống.\n'
         'Khi truy cập từ xa, giữ Tailscale kết nối.'))
     buttons.addWidget(help_button)
     buttons.addStretch(1)
     cancel = QPushButton('Đóng')
     cancel.clicked.connect(window.reject)
-    primary = QPushButton('Lưu kết nối')
+    primary = QPushButton('Lưu thiết lập')
     primary.setObjectName('primary')
     primary.setDefault(True)
     buttons.addWidget(cancel)
     buttons.addWidget(primary)
     layout.addLayout(buttons)
-    done = False
-
     def submit():
-        nonlocal done
-        if done:
-            window.accept()
-            return
         try:
-            install([host.strip() for host in address.text().split(',') if host.strip()])
+            install([host.strip() for host in address.text().split(',') if host.strip()], startup.isChecked())
         except Exception as exc:
             notice.show()
             notice.setText(str(exc))
@@ -144,18 +150,22 @@ def run_setup(install, install_dir, valid_host, asset):
             address.setFocus()
             window.adjustSize()
             return
-        done = True
-        address.setReadOnly(True)
         notice.setProperty('error', False)
         notice.style().unpolish(notice)
         notice.style().polish(notice)
-        notice.setText('Đã sẵn sàng. Bấm Mở thư mục NAS trên router.')
+        notice.setText('Đã lưu. Sẽ chạy nền khi đăng nhập Windows.' if startup.isChecked()
+                       else 'Đã lưu. Khởi động cùng Windows đang tắt.')
         notice.show()
-        primary.setText('Hoàn tất')
-        cancel.setEnabled(False)
+        if on_saved:
+            on_saved()
         window.adjustSize()
 
     primary.clicked.connect(submit)
     address.setFocus()
     window.adjustSize()
+    return window
+
+
+def run_setup(install, install_dir, valid_host, asset, startup_enabled=lambda: False):
+    window = create_setup(install, install_dir, valid_host, asset, startup_enabled)
     window.exec()

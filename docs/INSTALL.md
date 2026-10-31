@@ -36,6 +36,8 @@ Kiểm tra không thay đổi cấu hình: giải nén gói trên router rồi c
 
 ## Windows
 
-Chạy `KhoaNAS-Open.exe`, khai báo IP router được phép. Trong LuCI mở **NAS → Hướng dẫn kết nối → Windows → Mở thư mục NAS**. Nếu chưa cài tiện ích, sao chép đường dẫn UNC vào File Explorer. Truy cập từ xa cần Tailscale trên Windows. Hướng dẫn [kết nối và đổi mật khẩu SMB](REMOTE-ACCESS.md).
+Chạy `KhoaNAS-Open.exe`, khai báo IP router được phép. App chuyển về một bản cài cố định và tạo mục **Khoa NAS** trong Start Menu. Muốn chạy nền khi đăng nhập, mở cài đặt, tích **Khởi động cùng Windows** rồi **Lưu thiết lập**. Bỏ tích để tắt; mặc định tắt. App không tự mở ổ hoặc bật cửa sổ lúc đăng nhập. Có thể mở lại cài đặt từ biểu tượng khay hệ thống.
+
+Trong LuCI mở **NAS → Hướng dẫn kết nối → Windows → Mở thư mục NAS**. Nếu chưa cài tiện ích, sao chép đường dẫn UNC vào File Explorer. Truy cập từ xa cần Tailscale trên Windows. Hướng dẫn [kết nối và đổi mật khẩu SMB](REMOTE-ACCESS.md).
 
 Bộ cài công khai không chứa mật khẩu, SSH private key, khóa BitLocker hoặc trạng thái Tailscale. Máy mới vẫn cần đăng nhập và chọn đúng ổ bằng thông tin riêng của bạn.

@@ -17,7 +17,7 @@ from pathlib import PureWindowsPath
 a = Analysis([{str(source / 'open_nas.py')!r}], pathex=[{str(source)!r}],
     binaries=[], datas=[({str(source / 'assets')!r}, 'assets')],
     hiddenimports=[], hookspath=[], runtime_hooks=[],
-    excludes=['tkinter', 'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtNetwork'],
+    excludes=['tkinter', 'PySide6.QtQml', 'PySide6.QtQuick'],
     noarchive=False)
 # Qt on current Windows uses the OS ICU API. A developer PATH may contain
 # an unrelated ICU build with versioned exports (for example ICU 78). Never

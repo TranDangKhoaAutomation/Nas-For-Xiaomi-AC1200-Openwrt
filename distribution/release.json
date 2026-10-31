@@ -1,12 +1,13 @@
 {
-  "version": "2026.10.30.1",
-  "android_version": "2.3.0",
-  "android_arm64": "releases/android/KhoaNAS-v2.3.0-arm64-v8a.apk",
-  "android_x86_64": "releases/android/KhoaNAS-v2.3.0-x86_64.apk",
+  "version": "2026.10.31.1",
+  "windows_version": "1.1.0",
+  "android_version": "2.3.1",
+  "android_arm64": "releases/android/KhoaNAS-v2.3.1-arm64-v8a.apk",
+  "android_x86_64": "releases/android/KhoaNAS-v2.3.1-x86_64.apk",
   "windows": "releases/windows-open-nas/KhoaNAS-Open.exe",
   "sha256": {
-    "android_arm64": "7813fd89bd076ff40d0f5262c759d77e959dc4c97713efe127da1572c4c8b8d1",
-    "android_x86_64": "7fef47e27b950577b1a18146ff78066ebb8a565861e05406b6701f9eec3dc24a",
-    "windows": "66a9108c0aea55fc1ed3f4e32bb9d8ad7bcf20e4f8cbd979d878c47619a2d769"
+    "android_arm64": "c32126ef25dce12ec3da178b4fd75402794745b21fdbcfe5be8e26d1f28361de",
+    "android_x86_64": "a5debfb259b51390f41610f859f0a5b1a498a7085ba2c0fc3a1c3c1ca340c8a2",
+    "windows": "acc840a7818f068ab38c65129d8b5a649656a1945ce6f5b539475c65be20a933"
   }
 }

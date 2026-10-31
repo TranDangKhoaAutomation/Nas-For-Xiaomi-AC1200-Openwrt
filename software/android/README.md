@@ -1,4 +1,4 @@
-# Khoa NAS 2.3 — Android
+# Khoa NAS 2.3.1 — Android
 
 Ứng dụng Material 3 bằng Flutter, dùng logo GitHub của TranDangKhoaAutomation.
 Tailscale và SMB nằm trong tiến trình ứng dụng qua Go/gomobile; không cần cài ứng dụng
@@ -59,6 +59,10 @@ Lõi nhúng dùng [tsnet](https://tailscale.com/docs/features/tsnet) và
 [go-smb2](https://github.com/hirochachacha/go-smb2/tree/v1.1.0).
 Không nhúng auth key dùng chung hoặc thông tin đăng nhập vào mã nguồn/APK.
 
+## Kết nối chậm hoặc xoay mãi
+
+Luồng Kết nối NAS có nút Hủy, thông báo bước đang chạy và giới hạn toàn bộ 35 giây; mỗi bước native tối đa 15 giây. Kết quả trả muộn sau hủy không tự khôi phục phiên. Tailscale báo router online không có nghĩa cổng SMB truy cập được. Xem [kiểm thử và probe mạng 31/10](../../reports/2026-10-31-android-connection/README.md).
+
 ## Kiểm thử và giới hạn
 
-Xem [báo cáo 2.3](../../reports/2026-10-30-android-2.3/README.md). Native: 10 kiểm thử đạt, một kiểm thử SMB tích hợp bỏ qua vì không có fixture. Flutter: 9 kiểm thử đạt; kiểm tra tiếp tục tệp dùng filesystem fixture, không thay cho kiểm thử mạng SMB thật. Router hiện không truy cập được SSH/HTTP, vì vậy chưa xác minh sao lưu nền, codec và tốc độ 2.3 với NAS thật/4G.
+Xem [báo cáo 2.3](../../reports/2026-10-30-android-2.3/README.md) và [bản sửa 2.3.1](../../reports/2026-10-31-android-connection/README.md). Native: 13 kiểm thử đạt, một SMB tích hợp bỏ qua vì không có fixture. Flutter: 12 kiểm thử chức năng đạt, thêm một test tạo ảnh opt-in. Kiểm tra tiếp tục tệp dùng filesystem fixture, không thay cho kiểm thử mạng SMB thật. Chưa xác minh sao lưu nền, codec và tốc độ với NAS thật/4G trong lần này.
