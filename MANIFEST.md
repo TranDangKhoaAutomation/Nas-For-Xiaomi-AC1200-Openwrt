@@ -67,10 +67,11 @@
 | docs/BACKUP-RESTORE.md | 2121 | 72d39895c5ea555737d85319546738103ac081271ed14885333a51309196d9c6 |
 | docs/CLIENT-APPS.md | 1460 | 8671051b1b47e0e60bff81edaa790a22e38b0fc9d0ef1286d0e6dfb09e6438d5 |
 | docs/CURRENT-DEPLOYMENT.md | 1247 | b209866958500bff2275b0584303fc2b4446632787b6ec69d2867fbbbcd98809 |
-| docs/CURRENT-STATE.md | 3002 | af5824da873598ba9572830cf5c1efcbda64d20ceca2f0b1f05fd9d0ae45e17e |
+| docs/CURRENT-STATE.md | 3235 | 71d0bd4113a63d94f01378a57b073416881e6f5a41be508986ad577cb383cb7c |
 | docs/INSTALL.md | 5059 | 5c5612625a077f0da9f2bbf8f6adf4475a6ef3f45255aac4a11ce035b03b249a |
 | docs/OPERATIONS.md | 764 | 03cb074619013cca87815b98e9c33d32ed831dc25172f45b23c9c45c4f8fe005 |
 | docs/QUICK-START.md | 1911 | ec8489b539eb5bb05ee0c0f2111c8ba125a267027077af35951c8b5cdb07c0e5 |
+| docs/RECOVER-TAILSCALE.md | 3866 | b6f249c5734c1c06bca1e06be6271a512bb441ead7501eff29ea752ac64be1e5 |
 | docs/RECOVERY.md | 687 | f315f066bc63f0f16548422c698cd945a3a56b6cf874e4ab40410dd7cc5ca0c8 |
 | docs/REMOTE-ACCESS.md | 16091 | 30d92ed9b222b13f9a8246a8c3536d919a2cea98fab8489b23c881b73f6838f9 |
 | docs/ROUTER-CONFIG.md | 1114 | a19ce4933f6f8eb789aad315706dc303bc6ace36fed8dc166d350aa6c106545b |
@@ -178,6 +179,7 @@
 | reports/2026-10-30-qt6-readwrite/README.md | 2156 | 941696247edd8d34efb9a8d6e82ca5e64c25be69b5aee00e7087f071ce72eba1 |
 | reports/2026-10-30-qt6-readwrite/screenshots/qt6-setup.png | 21162 | 90cc4df940aa5bbe3d21cdf795bb42239a6de16bfe405f17070d8492141310d3 |
 | reports/2026-10-31-android-connection/README.md | 4090 | 6590900a8327cfbc35fcecec7dd245a89915cc1f6a095dead817dfb742ddfd5d |
+| reports/2026-10-31-router-recovery/README.md | 4613 | 5167d58892b4fcff23e54f5f4c65338d42386743dfed6cb511f814e57c9ba90b |
 | reports/2026-10-31-windows-startup/README.md | 4698 | f069d5bed58330e7709ea4c7c72a2744b183da023c83d7e2466f082d6367bc87 |
 | reports/2026-10-31-windows-startup/screenshots/01-startup-enabled.png | 26704 | a329e808fff4fe596937eec1568359b9f66115de74d74619c512fbfee20ac8bc |
 | reports/2026-10-31-windows-startup/screenshots/02-startup-disabled.png | 26059 | 1f56f790f02461f69c078651290cfbc2436b9bb648c2764a6d1fdc1ab6bb4ee2 |
@@ -195,6 +197,8 @@
 | router/current/usr-sbin-nas-storage-manager | 13189 | e1e2361544998160a48478f328d255df08fb84106bb2f56d58a7ecf44e75ab02 |
 | router/helpers/router/create-private-backup.sh | 311 | 27725c8cacda06b7a53f493cef950ba0f7a0cc718f74408e2bb3ce194862a798 |
 | router/helpers/router/install-packages.sh | 298 | c73ad578e480dab9883695f7da49d15fbe193252affe9bb626ec2d01ae709ffb |
+| router/helpers/router/repair-tailscale.sh | 3240 | 28f8f3dd8f7b22d48bb4964d4cc37b53bfe370361bdf16b417837e218aeca281 |
+| router/helpers/router/test_repair_tailscale.py | 3466 | fd13fec06093e53d7351e5ff5cfd85255ead00d3eadc8dce5aedbb6b92d9ce24 |
 | router/helpers/windows/Change-SMB-Password.ps1 | 355 | 85855dc83f3c4624040c14bf1b768fafbd59c240881a34907d147905a691ea9f |
 | router/helpers/windows/Clear-NAS-SMB-Sessions.ps1 | 240 | 7eab752b7f13b4bde13fd4ddb42f6ac0e81054ca9756b0f6f4c98d7efacf145c |
 | router/helpers/windows/Status-NAS.ps1 | 152 | f361dc7d62fdf5f1ea8f692aaec39c9c8f7f8a95854ae5bae78ddebffd1071bc |

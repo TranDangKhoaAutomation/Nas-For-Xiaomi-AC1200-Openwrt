@@ -1,6 +1,6 @@
-# Trạng thái hệ thống — 30/10/2026
+# Trạng thái hệ thống — 31/10/2026
 
-Probe bổ sung **31/10/2026**: ping Tailscale vẫn trả qua DERP Hong Kong, nhưng TCP IPv4 22/80/445 timeout từ Windows. Chưa khôi phục/xác minh dịch vụ; xem [bản sửa chờ kết nối Android](../reports/2026-10-31-android-connection/README.md).
+Kiểm tra bổ sung **31/10/2026, khoảng 10:08 GMT+7**: TSMP và PeerAPI vẫn trả lời, nhưng SSH/HTTP qua IPv4 vẫn timeout. Đã thử cấp IP tạm qua trang quản trị và hoàn nguyên về **100.114.53.95**, chưa khôi phục dịch vụ. Xem [kết quả thử khôi phục](../reports/2026-10-31-router-recovery/README.md), [công cụ dành cho khi có LAN](RECOVER-TAILSCALE.md) và [bản sửa chờ kết nối Android](../reports/2026-10-31-android-connection/README.md).
 
 **Trạng thái cuối phiên:** router trả lời ping Tailscale qua DERP Hong Kong nhưng SSH 22/HTTP 80 không truy cập được sau chạy thử installer. Chưa thể phục hồi vì router ở xa. Bảng bên dưới là quan sát trước sự cố, không phải xác nhận dịch vụ đang hoạt động. Xem [báo cáo bổ sung](../reports/2026-10-30-android-2.3/README.md).
 
